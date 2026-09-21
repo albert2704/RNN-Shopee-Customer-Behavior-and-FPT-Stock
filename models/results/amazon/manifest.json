@@ -1,0 +1,179 @@
+{
+  "name": "amazon",
+  "audit": {
+    "source_file": "data/raw/AMZN.csv",
+    "source_sha256": "0baf98d114fcf60cfea96f90b99f51b5ef7df19258536fa56f7c883d50af1050",
+    "source_url": "https://www.kaggle.com/datasets/henryshan/amazon-com-inc-amzn",
+    "raw_rows": 6684,
+    "missing_by_column": {
+      "Date": 0,
+      "Open": 0,
+      "High": 0,
+      "Low": 0,
+      "Close": 0,
+      "Adj Close": 0,
+      "Volume": 0
+    },
+    "duplicate_rows": 0,
+    "duplicate_decision": "Remove exact duplicate rows; reject conflicting dates.",
+    "clean_rows": 6684,
+    "raw_first_timestamp": "1997-05-15T00:00:00+00:00",
+    "raw_last_timestamp": "2023-12-05T00:00:00+00:00",
+    "first_timestamp": "1997-05-16T00:00:00+00:00",
+    "last_timestamp": "2023-12-05T00:00:00+00:00",
+    "series_rows": 6683,
+    "interval": "Next recorded trading session; weekends and exchange holidays are not interpolated",
+    "first_return_row_removed": 1,
+    "target_mean": 34.025392107736046,
+    "target_std": 49.831566731674265,
+    "target_min": 0.069792,
+    "target_max": 186.570496,
+    "target_quantiles": {
+      "0.0": 0.069792,
+      "0.25": 2.04275,
+      "0.5": 7.1085,
+      "0.75": 45.1534995,
+      "0.95": 156.9392488,
+      "1.0": 186.570496
+    },
+    "log_return_mean": 0.0010943066076396712,
+    "log_return_std": 0.035304419608328766,
+    "missing_decision": "No missing stock fields; no interpolation or resampling to non-trading dates.",
+    "outlier_decision": "Retain all sessions and large returns; no target clipping or winsorization.",
+    "adjustment_caveat": "Use source-provided retrospective Adj Close. Source adjustment factors may incorporate corporate actions that became known later; this is a historical educational benchmark, not a point-in-time trading backtest.",
+    "price_unit": "USD per source-adjusted share"
+  },
+  "features": [
+    "log_return"
+  ],
+  "lookback": 30,
+  "splits": {
+    "train": {
+      "n": 4657,
+      "first_timestamp": "1997-06-30T00:00:00+00:00",
+      "last_timestamp": "2015-12-30T00:00:00+00:00",
+      "first_target_index": 30,
+      "last_target_index": 4686
+    },
+    "validation": {
+      "n": 997,
+      "first_timestamp": "2015-12-31T00:00:00+00:00",
+      "last_timestamp": "2019-12-16T00:00:00+00:00",
+      "first_target_index": 4687,
+      "last_target_index": 5683
+    },
+    "test": {
+      "n": 999,
+      "first_timestamp": "2019-12-17T00:00:00+00:00",
+      "last_timestamp": "2023-12-05T00:00:00+00:00",
+      "first_target_index": 5684,
+      "last_target_index": 6682
+    }
+  },
+  "normalization": {
+    "x_mean": [
+      0.0012509591759619172
+    ],
+    "x_scale": [
+      0.03987402600859163
+    ],
+    "y_mean": 0.0013177686562846928,
+    "y_scale": 0.03981116388255411,
+    "fit_first_timestamp": "1997-05-16T00:00:00+00:00",
+    "fit_last_timestamp": "2015-12-30T00:00:00+00:00",
+    "feature_fit_rows": 4687,
+    "target_fit_rows": 4657,
+    "x_method": "Per-feature population mean/std fitted to training timestamps only, including available lookback context.",
+    "y_method": "Population mean/std of transformed training targets only."
+  },
+  "prediction_task": "Next-trading-session adjusted closing price",
+  "target_transform": "log(AdjClose_t / AdjClose_t-1)",
+  "inverse_transform": "AdjClose_t-1 * exp(predicted log return)",
+  "target_unit": "USD per source-adjusted share",
+  "evaluation_policy": "Chronological 70/15/15 split of eligible target indices. One-step rolling forecasts use observed history, including earlier validation/test observations. Hidden state is reset for each independent window. This is not recursive or multi-step forecasting.",
+  "transform_caveat": "MSE on log returns differs from dollar-price MSE; return errors are amplified when reconstructed at high price levels.",
+  "prepared_series_file": "data/processed/amazon.csv",
+  "prepared_windows_file": "data/processed/amazon_windows.npz",
+  "models": {
+    "rnn": {
+      "best_epoch": 4,
+      "epochs_run": 12,
+      "best_validation_loss": 0.19658662378787994,
+      "parameters": 1153,
+      "seconds": 1.5390411249827594,
+      "history_file": "results/amazon/rnn_history.csv",
+      "checkpoint_file": "checkpoints/amazon_rnn.pt",
+      "checkpoint_sha256": "d3044d3474e83ba68e34b2e658ff60c506b23af92b49665ceadd11bfe183847d",
+      "selection": "Minimum validation transformed-space MSE; test is not read during optimization/selection.",
+      "metrics": {
+        "validation": {
+          "MAE": 0.7638667261976443,
+          "RMSE": 1.1948620755606958
+        },
+        "test": {
+          "MAE": 2.268655560847747,
+          "RMSE": 3.114278727207287
+        }
+      },
+      "transformed_MSE": {
+        "validation": 0.19658662378787994,
+        "test": 0.35985809564590454
+      },
+      "predictions_file": "results/amazon/rnn_predictions.csv"
+    },
+    "gru": {
+      "best_epoch": 4,
+      "epochs_run": 12,
+      "best_validation_loss": 0.19593538343906403,
+      "parameters": 3393,
+      "seconds": 3.5968724169651978,
+      "history_file": "results/amazon/gru_history.csv",
+      "checkpoint_file": "checkpoints/amazon_gru.pt",
+      "checkpoint_sha256": "932684414b686c9c1b6b1e9159ce857661be570e6da15c6b57d4ab9560ef280f",
+      "selection": "Minimum validation transformed-space MSE; test is not read during optimization/selection.",
+      "metrics": {
+        "validation": {
+          "MAE": 0.763115406289645,
+          "RMSE": 1.193555909636214
+        },
+        "test": {
+          "MAE": 2.2613712012674356,
+          "RMSE": 3.1063959784893354
+        }
+      },
+      "transformed_MSE": {
+        "validation": 0.19593538343906403,
+        "test": 0.3581331670284271
+      },
+      "predictions_file": "results/amazon/gru_predictions.csv"
+    },
+    "persistence": {
+      "metrics": {
+        "validation": {
+          "MAE": 0.7662697773319957,
+          "RMSE": 1.1946426350779709
+        },
+        "test": {
+          "MAE": 2.262322936936937,
+          "RMSE": 3.104768188942769
+        }
+      },
+      "predictions_file": "results/amazon/persistence_predictions.csv",
+      "definition": "Previous observed target value"
+    },
+    "train_mean": {
+      "metrics": {
+        "validation": {
+          "MAE": 0.7617600715980882,
+          "RMSE": 1.1950838557665577
+        },
+        "test": {
+          "MAE": 2.2627000537511845,
+          "RMSE": 3.1093225761657277
+        }
+      },
+      "predictions_file": "results/amazon/train_mean_predictions.csv",
+      "definition": "Previous adjusted close multiplied by exp(mean training log return)"
+    }
+  }
+}

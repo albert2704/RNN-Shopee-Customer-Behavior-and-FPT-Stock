@@ -1,0 +1,209 @@
+{
+  "name": "retailrocket",
+  "audit": {
+    "source_file": "data/raw/events.csv",
+    "source_sha256": "3745aa83238b1e6d44d8fda209807899f420084398f94ddf745f3cbcfecbf9e7",
+    "source_url": "https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset",
+    "raw_rows": 2756101,
+    "missing_by_column": {
+      "timestamp": 0,
+      "visitorid": 0,
+      "event": 0,
+      "itemid": 0,
+      "transactionid": 2733644
+    },
+    "duplicate_rows": 460,
+    "duplicate_decision": "Remove exact full-row duplicates only. Simultaneous genuine identical actions cannot be distinguished; this is an explicit cleaning assumption.",
+    "raw_event_counts": {
+      "view": 2664312,
+      "addtocart": 69332,
+      "transaction": 22457
+    },
+    "raw_distinct_visitors": 1407580,
+    "descending_adjacent_timestamp_pairs": 1377377,
+    "raw_first_timestamp": "2015-05-03T03:00:04.384000+00:00",
+    "raw_last_timestamp": "2015-09-18T02:59:47.788000+00:00",
+    "first_timestamp": "2015-05-04T00:00:00+00:00",
+    "last_timestamp": "2015-09-17T23:00:00+00:00",
+    "clean_event_rows": 2740431,
+    "excluded_boundary_event_rows": 15210,
+    "series_rows": 3288,
+    "interval": "1 hour, UTC",
+    "source_was_sorted": false,
+    "empty_observation_hours": 0,
+    "zero_target_hours": 581,
+    "event_counts_after_cleaning": {
+      "view": 2649436,
+      "addtocart": 68636,
+      "transaction": 22359
+    },
+    "target_mean": 6.800182481751825,
+    "target_std": 6.930611801885643,
+    "target_min": 0.0,
+    "target_max": 51.0,
+    "target_quantiles": {
+      "0.0": 0.0,
+      "0.25": 1.0,
+      "0.5": 5.0,
+      "0.75": 10.0,
+      "0.95": 21.0,
+      "1.0": 51.0
+    },
+    "boundary_policy": "Discard first and last partial UTC calendar days; aggregate retained events by hour and sort the hourly index.",
+    "zero_assumption": "An hour/event type absent from the log is encoded as zero observed events. Logging outages cannot be separated from genuine inactivity; zero does not prove zero latent customer demand.",
+    "missing_decision": "Missing transactionid on non-transaction events is structurally expected; transactionid is not an input. No numeric interpolation or future filling.",
+    "outlier_decision": "Retain all observed counts; log1p reduces skew without clipping observed targets.",
+    "behavior_meaning": "Aggregate view/add-to-cart/transaction activity over time; not individual-user classification. Transactions are event rows, not guaranteed unique orders or revenue."
+  },
+  "features": [
+    "log_view",
+    "log_addtocart",
+    "log_transaction",
+    "hour_sin",
+    "hour_cos",
+    "weekday_sin",
+    "weekday_cos"
+  ],
+  "lookback": 24,
+  "splits": {
+    "train": {
+      "n": 2284,
+      "first_timestamp": "2015-05-05T00:00:00+00:00",
+      "last_timestamp": "2015-08-08T03:00:00+00:00",
+      "first_target_index": 24,
+      "last_target_index": 2307
+    },
+    "validation": {
+      "n": 489,
+      "first_timestamp": "2015-08-08T04:00:00+00:00",
+      "last_timestamp": "2015-08-28T12:00:00+00:00",
+      "first_target_index": 2308,
+      "last_target_index": 2796
+    },
+    "test": {
+      "n": 491,
+      "first_timestamp": "2015-08-28T13:00:00+00:00",
+      "last_timestamp": "2015-09-17T23:00:00+00:00",
+      "first_target_index": 2797,
+      "last_target_index": 3287
+    }
+  },
+  "normalization": {
+    "x_mean": [
+      6.466884555662053,
+      2.733393580521133,
+      1.647988207747776,
+      0.0006351498380801646,
+      0.0015333873532322037,
+      0.016578212228279536,
+      -0.004555171822133183
+    ],
+    "x_scale": [
+      0.8562914584362818,
+      1.0250367303153511,
+      1.0300971263431244,
+      0.7067439607735811,
+      0.7074674686640926,
+      0.7033239156648724,
+      0.7106615811642109
+    ],
+    "y_mean": 1.648861844339168,
+    "y_scale": 1.0300599693719097,
+    "fit_first_timestamp": "2015-05-04T00:00:00+00:00",
+    "fit_last_timestamp": "2015-08-08T03:00:00+00:00",
+    "feature_fit_rows": 2308,
+    "target_fit_rows": 2284,
+    "x_method": "Per-feature population mean/std fitted to training timestamps only, including available lookback context.",
+    "y_method": "Population mean/std of transformed training targets only."
+  },
+  "prediction_task": "Next-hour observed transaction-event count",
+  "target_transform": "log1p(count)",
+  "inverse_transform": "max(0, expm1(predicted transformed target))",
+  "target_unit": "transaction events per hour",
+  "evaluation_policy": "Chronological 70/15/15 split of eligible target indices. One-step rolling forecasts use observed history, including earlier validation/test observations. Hidden state is reset for each independent window. This is not recursive or multi-step forecasting.",
+  "transform_caveat": "MSE on log1p counts learns a transformed-space conditional mean; expm1 does not generally equal the arithmetic conditional mean of counts.",
+  "prepared_series_file": "data/processed/retailrocket.csv",
+  "prepared_windows_file": "data/processed/retailrocket_windows.npz",
+  "models": {
+    "rnn": {
+      "best_epoch": 34,
+      "epochs_run": 40,
+      "best_validation_loss": 0.22423861920833588,
+      "parameters": 1345,
+      "seconds": 2.2762971250340343,
+      "history_file": "results/retailrocket/rnn_history.csv",
+      "checkpoint_file": "checkpoints/retailrocket_rnn.pt",
+      "checkpoint_sha256": "e0745602f1b56f92767e3cbe9ade782603667d49321c73af7baae8b5fe4a7f52",
+      "selection": "Minimum validation transformed-space MSE; test is not read during optimization/selection.",
+      "metrics": {
+        "validation": {
+          "MAE": 2.4329878701184797,
+          "RMSE": 3.7568443785370946
+        },
+        "test": {
+          "MAE": 2.512026738508313,
+          "RMSE": 3.6458742406677667
+        }
+      },
+      "transformed_MSE": {
+        "validation": 0.22423861920833588,
+        "test": 0.28254032135009766
+      },
+      "predictions_file": "results/retailrocket/rnn_predictions.csv"
+    },
+    "gru": {
+      "best_epoch": 17,
+      "epochs_run": 25,
+      "best_validation_loss": 0.22504805028438568,
+      "parameters": 3969,
+      "seconds": 2.989312375022564,
+      "history_file": "results/retailrocket/gru_history.csv",
+      "checkpoint_file": "checkpoints/retailrocket_gru.pt",
+      "checkpoint_sha256": "48341232d052d93c6981ffe83cc0c8f3d2726f329cdad412c328557139ff942f",
+      "selection": "Minimum validation transformed-space MSE; test is not read during optimization/selection.",
+      "metrics": {
+        "validation": {
+          "MAE": 2.4531206676961843,
+          "RMSE": 3.7895986533616894
+        },
+        "test": {
+          "MAE": 2.5452778325590493,
+          "RMSE": 3.7205337707377795
+        }
+      },
+      "transformed_MSE": {
+        "validation": 0.22504805028438568,
+        "test": 0.2827945351600647
+      },
+      "predictions_file": "results/retailrocket/gru_predictions.csv"
+    },
+    "persistence": {
+      "metrics": {
+        "validation": {
+          "MAE": 3.5991820040899793,
+          "RMSE": 5.541071781038176
+        },
+        "test": {
+          "MAE": 3.4582484725050917,
+          "RMSE": 4.882739039671439
+        }
+      },
+      "predictions_file": "results/retailrocket/persistence_predictions.csv",
+      "definition": "Previous observed target value"
+    },
+    "seasonal": {
+      "metrics": {
+        "validation": {
+          "MAE": 3.689161554192229,
+          "RMSE": 5.517030706082842
+        },
+        "test": {
+          "MAE": 3.8126272912423627,
+          "RMSE": 5.642795453454925
+        }
+      },
+      "predictions_file": "results/retailrocket/seasonal_predictions.csv",
+      "definition": "Observed transaction-event count at the same hour 168 hours earlier"
+    }
+  }
+}

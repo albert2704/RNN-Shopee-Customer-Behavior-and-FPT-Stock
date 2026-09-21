@@ -1,0 +1,101 @@
+{
+  "assignment": "A6 - Recurrent Neural Networks",
+  "downloaded_at_utc": "2026-09-26T15:13:59.256694+00:00",
+  "download_method": "Public Kaggle API HTTPS GET without authentication; AMZN dataset ZIP and Retailrocket individual events.csv ZIP. ZIP contents extracted byte-for-byte.",
+  "datasets": [
+    {
+      "title": "Amazon Stock Price",
+      "slug": "henryshan/amazon-com-inc-amzn",
+      "canonical_url": "https://www.kaggle.com/datasets/henryshan/amazon-com-inc-amzn",
+      "metadata_url": "https://www.kaggle.com/api/v1/datasets/view/henryshan/amazon-com-inc-amzn",
+      "download_url": "https://www.kaggle.com/api/v1/datasets/download/henryshan/amazon-com-inc-amzn",
+      "version": 1,
+      "publisher": "Henry Shan",
+      "last_updated_utc": "2023-12-06T11:18:11.720Z",
+      "license_as_listed": "Apache 2.0",
+      "local_file": "data/raw/AMZN.csv",
+      "bytes": 457455,
+      "sha256": "0baf98d114fcf60cfea96f90b99f51b5ef7df19258536fa56f7c883d50af1050",
+      "rows": 6684,
+      "columns": [
+        "Date",
+        "Open",
+        "High",
+        "Low",
+        "Close",
+        "Adj Close",
+        "Volume"
+      ],
+      "date_range_inclusive": [
+        "1997-05-15",
+        "2023-12-05"
+      ],
+      "granularity": "One row per trading date",
+      "missing_values": {},
+      "selected_use": "Stock-market time series: predict next trading-day adjusted close from a rolling historical window.",
+      "caveats": [
+        "Despite the publisher subtitle Real Time Price, the downloaded snapshot ends on 2023-12-05.",
+        "Trading dates are irregular in calendar time: weekends and holidays must not be invented as observed stock prices.",
+        "The publisher lists USD prices but provides no detailed upstream market-data provenance.",
+        "This is an academic forecasting exercise; compare the RNN with a last-observation baseline and make no claim of profitable investment performance."
+      ]
+    },
+    {
+      "title": "Retailrocket recommender system dataset",
+      "slug": "retailrocket/ecommerce-dataset",
+      "canonical_url": "https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset",
+      "metadata_url": "https://www.kaggle.com/api/v1/datasets/view/retailrocket/ecommerce-dataset",
+      "download_url": "https://www.kaggle.com/api/v1/datasets/download/retailrocket/ecommerce-dataset/events.csv",
+      "version": 2,
+      "publisher": "Retailrocket / Roman Zykov",
+      "last_updated_utc": "2022-11-08T16:03:10.607Z",
+      "license_as_listed": "CC BY-NC-SA 4.0",
+      "local_file": "data/raw/events.csv",
+      "bytes": 94237913,
+      "sha256": "3745aa83238b1e6d44d8fda209807899f420084398f94ddf745f3cbcfecbf9e7",
+      "rows": 2756101,
+      "columns": [
+        "timestamp",
+        "visitorid",
+        "event",
+        "itemid",
+        "transactionid"
+      ],
+      "date_range_inclusive_utc": [
+        "2015-05-03T03:00:04.384Z",
+        "2015-09-18T02:59:47.788Z"
+      ],
+      "timestamp_encoding": "Unix epoch milliseconds; converted to UTC for reproducibility, not inferred store local time.",
+      "granularity": "One timestamped visitor-item event per row",
+      "event_counts": {
+        "view": 2664312,
+        "addtocart": 69332,
+        "transaction": 22457
+      },
+      "unique_visitors": 1407580,
+      "missing_values": {
+        "transactionid": 2733644
+      },
+      "out_of_order_adjacent_timestamps": 1377377,
+      "selected_use": "Customer behavior over time: aggregate observed view/addtocart/transaction events hourly, then forecast next-hour transaction-event count from historical hourly behavior.",
+      "caveats": [
+        "Raw rows are not chronologically sorted; sort or resample on timestamp before making sequences.",
+        "Missing transactionid on nonpurchase events is expected and must not cause those rows to be dropped.",
+        "Transaction event counts refer to purchase events/line items, not necessarily unique orders or unique purchasers.",
+        "Hourly aggregation describes population-level behavior; it does not predict an individual customer journey.",
+        "The dataset covers only about 4.5 months and may contain abnormal traffic.",
+        "The first and last observed clock periods are partial and should be excluded or clearly flagged.",
+        "Only events.csv was downloaded. Item properties and category tree are unnecessary for the selected aggregate forecast.",
+        "The source identifies this as real ecommerce data with anonymized/hashed values; retain source attribution and the listed noncommercial/share-alike license."
+      ]
+    }
+  ],
+  "modeling_recommendations": [
+    "Split chronologically by target timestamp, for example 70 percent train / 15 percent validation / 15 percent test; never randomly split time windows.",
+    "Fit feature and target transformations on training observations only. Use validation for model choice and keep test targets untouched until final evaluation.",
+    "Inputs for each target must end before the target time. Validation/test windows may use earlier known observations, but no future values.",
+    "Hourly customer behavior forecast: include previous day and previous week seasonal baselines when enough history exists.",
+    "Report MAE/RMSE in original units, plots of actual versus predicted targets, train/validation loss, and temporal train/validation/test boundaries."
+  ],
+  "selection_rationale": "The brief requires one customer-behavior-over-time dataset and one stock dataset. Retailrocket directly records customer actions over time, and Amazon provides the stock dataset."
+}

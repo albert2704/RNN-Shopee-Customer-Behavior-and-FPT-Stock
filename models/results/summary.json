@@ -1,0 +1,459 @@
+{
+  "config": {
+    "seed": 42,
+    "hidden_size": 32,
+    "num_layers": 1,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "max_epochs": 40,
+    "patience": 8,
+    "gradient_clip_norm": 1.0,
+    "cpu_threads": 2,
+    "dropout": 0.0,
+    "split_fractions": [
+      0.7,
+      0.15,
+      0.15
+    ],
+    "loss": "MSE on standardized transformed target"
+  },
+  "created_at_utc": "2026-09-26T15:16:55.465053+00:00",
+  "environment": {
+    "python": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "numpy": "2.5.3",
+    "pandas": "2.2.3",
+    "torch": "2.14.0",
+    "device": "cpu"
+  },
+  "source_file": "src/experiments.py",
+  "source_sha256": "190d1159a507e4442eabebb0e5c8c81ab5d1026f54c92f3a1f4c3c1c6f4dd240",
+  "datasets": {
+    "retailrocket": {
+      "name": "retailrocket",
+      "audit": {
+        "source_file": "data/raw/events.csv",
+        "source_sha256": "3745aa83238b1e6d44d8fda209807899f420084398f94ddf745f3cbcfecbf9e7",
+        "source_url": "https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset",
+        "raw_rows": 2756101,
+        "missing_by_column": {
+          "timestamp": 0,
+          "visitorid": 0,
+          "event": 0,
+          "itemid": 0,
+          "transactionid": 2733644
+        },
+        "duplicate_rows": 460,
+        "duplicate_decision": "Remove exact full-row duplicates only. Simultaneous genuine identical actions cannot be distinguished; this is an explicit cleaning assumption.",
+        "raw_event_counts": {
+          "view": 2664312,
+          "addtocart": 69332,
+          "transaction": 22457
+        },
+        "raw_distinct_visitors": 1407580,
+        "descending_adjacent_timestamp_pairs": 1377377,
+        "raw_first_timestamp": "2015-05-03T03:00:04.384000+00:00",
+        "raw_last_timestamp": "2015-09-18T02:59:47.788000+00:00",
+        "first_timestamp": "2015-05-04T00:00:00+00:00",
+        "last_timestamp": "2015-09-17T23:00:00+00:00",
+        "clean_event_rows": 2740431,
+        "excluded_boundary_event_rows": 15210,
+        "series_rows": 3288,
+        "interval": "1 hour, UTC",
+        "source_was_sorted": false,
+        "empty_observation_hours": 0,
+        "zero_target_hours": 581,
+        "event_counts_after_cleaning": {
+          "view": 2649436,
+          "addtocart": 68636,
+          "transaction": 22359
+        },
+        "target_mean": 6.800182481751825,
+        "target_std": 6.930611801885643,
+        "target_min": 0.0,
+        "target_max": 51.0,
+        "target_quantiles": {
+          "0.0": 0.0,
+          "0.25": 1.0,
+          "0.5": 5.0,
+          "0.75": 10.0,
+          "0.95": 21.0,
+          "1.0": 51.0
+        },
+        "boundary_policy": "Discard first and last partial UTC calendar days; aggregate retained events by hour and sort the hourly index.",
+        "zero_assumption": "An hour/event type absent from the log is encoded as zero observed events. Logging outages cannot be separated from genuine inactivity; zero does not prove zero latent customer demand.",
+        "missing_decision": "Missing transactionid on non-transaction events is structurally expected; transactionid is not an input. No numeric interpolation or future filling.",
+        "outlier_decision": "Retain all observed counts; log1p reduces skew without clipping observed targets.",
+        "behavior_meaning": "Aggregate view/add-to-cart/transaction activity over time; not individual-user classification. Transactions are event rows, not guaranteed unique orders or revenue."
+      },
+      "features": [
+        "log_view",
+        "log_addtocart",
+        "log_transaction",
+        "hour_sin",
+        "hour_cos",
+        "weekday_sin",
+        "weekday_cos"
+      ],
+      "lookback": 24,
+      "splits": {
+        "train": {
+          "n": 2284,
+          "first_timestamp": "2015-05-05T00:00:00+00:00",
+          "last_timestamp": "2015-08-08T03:00:00+00:00",
+          "first_target_index": 24,
+          "last_target_index": 2307
+        },
+        "validation": {
+          "n": 489,
+          "first_timestamp": "2015-08-08T04:00:00+00:00",
+          "last_timestamp": "2015-08-28T12:00:00+00:00",
+          "first_target_index": 2308,
+          "last_target_index": 2796
+        },
+        "test": {
+          "n": 491,
+          "first_timestamp": "2015-08-28T13:00:00+00:00",
+          "last_timestamp": "2015-09-17T23:00:00+00:00",
+          "first_target_index": 2797,
+          "last_target_index": 3287
+        }
+      },
+      "normalization": {
+        "x_mean": [
+          6.466884555662053,
+          2.733393580521133,
+          1.647988207747776,
+          0.0006351498380801646,
+          0.0015333873532322037,
+          0.016578212228279536,
+          -0.004555171822133183
+        ],
+        "x_scale": [
+          0.8562914584362818,
+          1.0250367303153511,
+          1.0300971263431244,
+          0.7067439607735811,
+          0.7074674686640926,
+          0.7033239156648724,
+          0.7106615811642109
+        ],
+        "y_mean": 1.648861844339168,
+        "y_scale": 1.0300599693719097,
+        "fit_first_timestamp": "2015-05-04T00:00:00+00:00",
+        "fit_last_timestamp": "2015-08-08T03:00:00+00:00",
+        "feature_fit_rows": 2308,
+        "target_fit_rows": 2284,
+        "x_method": "Per-feature population mean/std fitted to training timestamps only, including available lookback context.",
+        "y_method": "Population mean/std of transformed training targets only."
+      },
+      "prediction_task": "Next-hour observed transaction-event count",
+      "target_transform": "log1p(count)",
+      "inverse_transform": "max(0, expm1(predicted transformed target))",
+      "target_unit": "transaction events per hour",
+      "evaluation_policy": "Chronological 70/15/15 split of eligible target indices. One-step rolling forecasts use observed history, including earlier validation/test observations. Hidden state is reset for each independent window. This is not recursive or multi-step forecasting.",
+      "transform_caveat": "MSE on log1p counts learns a transformed-space conditional mean; expm1 does not generally equal the arithmetic conditional mean of counts.",
+      "prepared_series_file": "data/processed/retailrocket.csv",
+      "prepared_windows_file": "data/processed/retailrocket_windows.npz",
+      "models": {
+        "rnn": {
+          "best_epoch": 34,
+          "epochs_run": 40,
+          "best_validation_loss": 0.22423861920833588,
+          "parameters": 1345,
+          "seconds": 2.2762971250340343,
+          "history_file": "results/retailrocket/rnn_history.csv",
+          "checkpoint_file": "checkpoints/retailrocket_rnn.pt",
+          "checkpoint_sha256": "e0745602f1b56f92767e3cbe9ade782603667d49321c73af7baae8b5fe4a7f52",
+          "selection": "Minimum validation transformed-space MSE; test is not read during optimization/selection.",
+          "metrics": {
+            "validation": {
+              "MAE": 2.4329878701184797,
+              "RMSE": 3.7568443785370946
+            },
+            "test": {
+              "MAE": 2.512026738508313,
+              "RMSE": 3.6458742406677667
+            }
+          },
+          "transformed_MSE": {
+            "validation": 0.22423861920833588,
+            "test": 0.28254032135009766
+          },
+          "predictions_file": "results/retailrocket/rnn_predictions.csv"
+        },
+        "gru": {
+          "best_epoch": 17,
+          "epochs_run": 25,
+          "best_validation_loss": 0.22504805028438568,
+          "parameters": 3969,
+          "seconds": 2.989312375022564,
+          "history_file": "results/retailrocket/gru_history.csv",
+          "checkpoint_file": "checkpoints/retailrocket_gru.pt",
+          "checkpoint_sha256": "48341232d052d93c6981ffe83cc0c8f3d2726f329cdad412c328557139ff942f",
+          "selection": "Minimum validation transformed-space MSE; test is not read during optimization/selection.",
+          "metrics": {
+            "validation": {
+              "MAE": 2.4531206676961843,
+              "RMSE": 3.7895986533616894
+            },
+            "test": {
+              "MAE": 2.5452778325590493,
+              "RMSE": 3.7205337707377795
+            }
+          },
+          "transformed_MSE": {
+            "validation": 0.22504805028438568,
+            "test": 0.2827945351600647
+          },
+          "predictions_file": "results/retailrocket/gru_predictions.csv"
+        },
+        "persistence": {
+          "metrics": {
+            "validation": {
+              "MAE": 3.5991820040899793,
+              "RMSE": 5.541071781038176
+            },
+            "test": {
+              "MAE": 3.4582484725050917,
+              "RMSE": 4.882739039671439
+            }
+          },
+          "predictions_file": "results/retailrocket/persistence_predictions.csv",
+          "definition": "Previous observed target value"
+        },
+        "seasonal": {
+          "metrics": {
+            "validation": {
+              "MAE": 3.689161554192229,
+              "RMSE": 5.517030706082842
+            },
+            "test": {
+              "MAE": 3.8126272912423627,
+              "RMSE": 5.642795453454925
+            }
+          },
+          "predictions_file": "results/retailrocket/seasonal_predictions.csv",
+          "definition": "Observed transaction-event count at the same hour 168 hours earlier"
+        }
+      }
+    },
+    "amazon": {
+      "name": "amazon",
+      "audit": {
+        "source_file": "data/raw/AMZN.csv",
+        "source_sha256": "0baf98d114fcf60cfea96f90b99f51b5ef7df19258536fa56f7c883d50af1050",
+        "source_url": "https://www.kaggle.com/datasets/henryshan/amazon-com-inc-amzn",
+        "raw_rows": 6684,
+        "missing_by_column": {
+          "Date": 0,
+          "Open": 0,
+          "High": 0,
+          "Low": 0,
+          "Close": 0,
+          "Adj Close": 0,
+          "Volume": 0
+        },
+        "duplicate_rows": 0,
+        "duplicate_decision": "Remove exact duplicate rows; reject conflicting dates.",
+        "clean_rows": 6684,
+        "raw_first_timestamp": "1997-05-15T00:00:00+00:00",
+        "raw_last_timestamp": "2023-12-05T00:00:00+00:00",
+        "first_timestamp": "1997-05-16T00:00:00+00:00",
+        "last_timestamp": "2023-12-05T00:00:00+00:00",
+        "series_rows": 6683,
+        "interval": "Next recorded trading session; weekends and exchange holidays are not interpolated",
+        "first_return_row_removed": 1,
+        "target_mean": 34.025392107736046,
+        "target_std": 49.831566731674265,
+        "target_min": 0.069792,
+        "target_max": 186.570496,
+        "target_quantiles": {
+          "0.0": 0.069792,
+          "0.25": 2.04275,
+          "0.5": 7.1085,
+          "0.75": 45.1534995,
+          "0.95": 156.9392488,
+          "1.0": 186.570496
+        },
+        "log_return_mean": 0.0010943066076396712,
+        "log_return_std": 0.035304419608328766,
+        "missing_decision": "No missing stock fields; no interpolation or resampling to non-trading dates.",
+        "outlier_decision": "Retain all sessions and large returns; no target clipping or winsorization.",
+        "adjustment_caveat": "Use source-provided retrospective Adj Close. Source adjustment factors may incorporate corporate actions that became known later; this is a historical educational benchmark, not a point-in-time trading backtest.",
+        "price_unit": "USD per source-adjusted share"
+      },
+      "features": [
+        "log_return"
+      ],
+      "lookback": 30,
+      "splits": {
+        "train": {
+          "n": 4657,
+          "first_timestamp": "1997-06-30T00:00:00+00:00",
+          "last_timestamp": "2015-12-30T00:00:00+00:00",
+          "first_target_index": 30,
+          "last_target_index": 4686
+        },
+        "validation": {
+          "n": 997,
+          "first_timestamp": "2015-12-31T00:00:00+00:00",
+          "last_timestamp": "2019-12-16T00:00:00+00:00",
+          "first_target_index": 4687,
+          "last_target_index": 5683
+        },
+        "test": {
+          "n": 999,
+          "first_timestamp": "2019-12-17T00:00:00+00:00",
+          "last_timestamp": "2023-12-05T00:00:00+00:00",
+          "first_target_index": 5684,
+          "last_target_index": 6682
+        }
+      },
+      "normalization": {
+        "x_mean": [
+          0.0012509591759619172
+        ],
+        "x_scale": [
+          0.03987402600859163
+        ],
+        "y_mean": 0.0013177686562846928,
+        "y_scale": 0.03981116388255411,
+        "fit_first_timestamp": "1997-05-16T00:00:00+00:00",
+        "fit_last_timestamp": "2015-12-30T00:00:00+00:00",
+        "feature_fit_rows": 4687,
+        "target_fit_rows": 4657,
+        "x_method": "Per-feature population mean/std fitted to training timestamps only, including available lookback context.",
+        "y_method": "Population mean/std of transformed training targets only."
+      },
+      "prediction_task": "Next-trading-session adjusted closing price",
+      "target_transform": "log(AdjClose_t / AdjClose_t-1)",
+      "inverse_transform": "AdjClose_t-1 * exp(predicted log return)",
+      "target_unit": "USD per source-adjusted share",
+      "evaluation_policy": "Chronological 70/15/15 split of eligible target indices. One-step rolling forecasts use observed history, including earlier validation/test observations. Hidden state is reset for each independent window. This is not recursive or multi-step forecasting.",
+      "transform_caveat": "MSE on log returns differs from dollar-price MSE; return errors are amplified when reconstructed at high price levels.",
+      "prepared_series_file": "data/processed/amazon.csv",
+      "prepared_windows_file": "data/processed/amazon_windows.npz",
+      "models": {
+        "rnn": {
+          "best_epoch": 4,
+          "epochs_run": 12,
+          "best_validation_loss": 0.19658662378787994,
+          "parameters": 1153,
+          "seconds": 1.5390411249827594,
+          "history_file": "results/amazon/rnn_history.csv",
+          "checkpoint_file": "checkpoints/amazon_rnn.pt",
+          "checkpoint_sha256": "d3044d3474e83ba68e34b2e658ff60c506b23af92b49665ceadd11bfe183847d",
+          "selection": "Minimum validation transformed-space MSE; test is not read during optimization/selection.",
+          "metrics": {
+            "validation": {
+              "MAE": 0.7638667261976443,
+              "RMSE": 1.1948620755606958
+            },
+            "test": {
+              "MAE": 2.268655560847747,
+              "RMSE": 3.114278727207287
+            }
+          },
+          "transformed_MSE": {
+            "validation": 0.19658662378787994,
+            "test": 0.35985809564590454
+          },
+          "predictions_file": "results/amazon/rnn_predictions.csv"
+        },
+        "gru": {
+          "best_epoch": 4,
+          "epochs_run": 12,
+          "best_validation_loss": 0.19593538343906403,
+          "parameters": 3393,
+          "seconds": 3.5968724169651978,
+          "history_file": "results/amazon/gru_history.csv",
+          "checkpoint_file": "checkpoints/amazon_gru.pt",
+          "checkpoint_sha256": "932684414b686c9c1b6b1e9159ce857661be570e6da15c6b57d4ab9560ef280f",
+          "selection": "Minimum validation transformed-space MSE; test is not read during optimization/selection.",
+          "metrics": {
+            "validation": {
+              "MAE": 0.763115406289645,
+              "RMSE": 1.193555909636214
+            },
+            "test": {
+              "MAE": 2.2613712012674356,
+              "RMSE": 3.1063959784893354
+            }
+          },
+          "transformed_MSE": {
+            "validation": 0.19593538343906403,
+            "test": 0.3581331670284271
+          },
+          "predictions_file": "results/amazon/gru_predictions.csv"
+        },
+        "persistence": {
+          "metrics": {
+            "validation": {
+              "MAE": 0.7662697773319957,
+              "RMSE": 1.1946426350779709
+            },
+            "test": {
+              "MAE": 2.262322936936937,
+              "RMSE": 3.104768188942769
+            }
+          },
+          "predictions_file": "results/amazon/persistence_predictions.csv",
+          "definition": "Previous observed target value"
+        },
+        "train_mean": {
+          "metrics": {
+            "validation": {
+              "MAE": 0.7617600715980882,
+              "RMSE": 1.1950838557665577
+            },
+            "test": {
+              "MAE": 2.2627000537511845,
+              "RMSE": 3.1093225761657277
+            }
+          },
+          "predictions_file": "results/amazon/train_mean_predictions.csv",
+          "definition": "Previous adjusted close multiplied by exp(mean training log return)"
+        }
+      }
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checked_at_utc": "2026-09-26T15:17:35.011807+00:00",
+    "datasets": [
+      {
+        "dataset": "retailrocket",
+        "status": "passed",
+        "checks": [
+          "disjoint chronological targets",
+          "strictly historical input windows",
+          "train-only scaler recomputation",
+          "identical evaluation targets across models",
+          "saved CSV actual/previous values",
+          "baseline formulas",
+          "MAE/RMSE recomputation",
+          "validation-minimum checkpoint epoch",
+          "checkpoint SHA256",
+          "checkpoint reload prediction equivalence (checked during training)"
+        ]
+      },
+      {
+        "dataset": "amazon",
+        "status": "passed",
+        "checks": [
+          "disjoint chronological targets",
+          "strictly historical input windows",
+          "train-only scaler recomputation",
+          "identical evaluation targets across models",
+          "saved CSV actual/previous values",
+          "baseline formulas",
+          "MAE/RMSE recomputation",
+          "validation-minimum checkpoint epoch",
+          "checkpoint SHA256",
+          "checkpoint reload prediction equivalence (checked during training)"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "example_only": true,
+  "x": [
+    0.2,
+    -0.1,
+    0.4
+  ],
+  "target": 0.3,
+  "h0": 0,
+  "params": {
+    "wx": 0.5,
+    "wh": 0.8,
+    "b": 0.1,
+    "wy": 1.2,
+    "by": -0.05
+  },
+  "steps": [
+    {
+      "t": 1,
+      "x": 0.2,
+      "h_previous": 0.0,
+      "input_contribution": 0.1,
+      "memory_contribution": 0.0,
+      "preactivation": 0.2,
+      "h": 0.197375320224904
+    },
+    {
+      "t": 2,
+      "x": -0.1,
+      "h_previous": 0.197375320224904,
+      "input_contribution": -0.05,
+      "memory_contribution": 0.1579002561799232,
+      "preactivation": 0.2079002561799232,
+      "h": 0.20495582787706698
+    },
+    {
+      "t": 3,
+      "x": 0.4,
+      "h_previous": 0.20495582787706698,
+      "input_contribution": 0.2,
+      "memory_contribution": 0.1639646623016536,
+      "preactivation": 0.46396466230165356,
+      "h": 0.43331000316412877
+    }
+  ],
+  "prediction": 0.46997200379695453,
+  "loss": 0.014445241037375964,
+  "backward_steps": [
+    {
+      "t": 3,
+      "dL_dh": 0.20396640455634543,
+      "dL_da": 0.1656701703510464,
+      "wx_contribution": 0.06626806814041857,
+      "wh_contribution": 0.03395506691883343,
+      "b_contribution": 0.1656701703510464
+    },
+    {
+      "t": 2,
+      "dL_dh": 0.13253613628083713,
+      "dL_da": 0.12696870520006054,
+      "wx_contribution": -0.012696870520006055,
+      "wh_contribution": 0.025060488847403382,
+      "b_contribution": 0.12696870520006054
+    },
+    {
+      "t": 1,
+      "dL_dh": 0.10157496416004844,
+      "dL_da": 0.09761790655104934,
+      "wx_contribution": 0.01952358131020987,
+      "wh_contribution": 0.0,
+      "b_contribution": 0.09761790655104934
+    }
+  ],
+  "gradients_manual": {
+    "wx": 0.07309477893062238,
+    "wh": 0.059015555766236814,
+    "b": 0.39025678210215625,
+    "wy": 0.07365056950307168,
+    "by": 0.16997200379695454
+  },
+  "gradients_autograd": {
+    "wx": 0.07309477893062236,
+    "wh": 0.05901555576623681,
+    "b": 0.3902567821021562,
+    "wy": 0.07365056950307168,
+    "by": 0.16997200379695454
+  },
+  "gradients_finite_difference": {
+    "wx": 0.07309477893010369,
+    "wh": 0.05901555575910794,
+    "b": 0.39025678210454634,
+    "wy": 0.07365056949211468,
+    "by": 0.16997200379727934
+  },
+  "finite_difference_epsilon": 1e-06,
+  "learning_rate": 0.1,
+  "updated_params": {
+    "wx": 0.49269052210693776,
+    "wh": 0.7940984444233764,
+    "b": 0.060974321789784375,
+    "wy": 1.1926349430496928,
+    "by": -0.06699720037969546
+  },
+  "updated_prediction": 0.35143413303844945,
+  "updated_loss": 0.001322735020708459,
+  "max_abs_manual_autograd_error": 5.551115123125783e-17,
+  "max_abs_manual_finite_difference_error": 1.0956999196842787e-11,
+  "note": "Teaching loss is half squared error. Experiments use mean squared error."
+}
