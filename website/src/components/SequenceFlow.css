@@ -1,0 +1,444 @@
+.rnn-introduction {
+  padding: 24px 0 54px;
+  border-bottom: 1px solid #d5e0cc;
+  margin-bottom: 42px;
+}
+.intro-eyebrow {
+  font-size: 14px;
+  font-weight: 500;
+  color: #54674e;
+  margin-bottom: 15px;
+}
+.rnn-introduction h1 {
+  font-size: clamp(32px, 4vw, 52px);
+  letter-spacing: -0.045em;
+  line-height: 1.22;
+  max-width: 950px;
+}
+.intro-definition {
+  font-size: 21px;
+  line-height: 1.75;
+  max-width: 970px;
+  margin: 22px 0 35px;
+  color: #40563e;
+}
+.intro-definition strong {
+  color: #203b2b;
+  font-weight: 600;
+}
+.intro-explanation {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 55px;
+  align-items: start;
+}
+.intro-explanation h2 {
+  font-size: 24px;
+  letter-spacing: -0.025em;
+  line-height: 1.4;
+}
+.intro-explanation p {
+  font-size: 17px;
+  line-height: 1.8;
+  color: #4f6447;
+  margin-top: 13px;
+}
+.order-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  padding: 24px;
+  border: 1px solid #d0ddc9;
+  background: #fff;
+  border-radius: 12px;
+}
+.order-comparison > div > span {
+  font-size: 15px;
+  color: #5d7056;
+}
+.order-comparison > div > p {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  margin: 15px 0 5px;
+  color: #234632;
+  font-variant-numeric: tabular-nums;
+}
+.order-comparison p svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+.order-comparison > div > svg {
+  width: 100%;
+  display: block;
+  max-height: 70px;
+}
+.order-comparison path {
+  fill: none;
+  stroke: #3d6250;
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+.order-comparison circle {
+  fill: #3d6250;
+}
+.order-comparison small {
+  grid-column: 1/-1;
+  color: #56694e;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.intro-task {
+  display: flex;
+  gap: 30px;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  padding-top: 26px;
+  border-top: 1px solid #d5e0cc;
+}
+.intro-task p {
+  font-size: 17px;
+  line-height: 1.7;
+  max-width: 760px;
+  color: #40563e;
+}
+.intro-task .flow-button {
+  flex-shrink: 0;
+}
+.sequence-mechanism {
+  margin-top: 20px;
+  padding: 24px;
+  background: white;
+  border: 1px solid #d0ddc9;
+  border-radius: 12px;
+}
+.mechanism-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.mechanism-caption h3 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.5;
+}
+.mechanism-caption > span {
+  font-size: 14px;
+  color: #54674e;
+}
+.mechanism-network {
+  display: grid;
+  grid-template-columns: 1.1fr 24px 1fr 24px 1fr 24px 1.1fr;
+  align-items: center;
+  gap: 12px;
+}
+.mechanism-inputs {
+  display: grid;
+  gap: 8px;
+}
+.mechanism-node {
+  min-width: 0;
+  padding: 17px;
+  border: 1px solid #c7d5c0;
+  border-radius: 9px;
+  background: #f7faf4;
+}
+.mechanism-node > span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #53674b;
+  display: block;
+}
+.mechanism-node strong {
+  display: block;
+  font-size: 19px;
+  line-height: 1.5;
+  font-weight: 600;
+  margin: 8px 0;
+  letter-spacing: -0.02em;
+}
+.mechanism-node small {
+  display: block;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #586d50;
+}
+.mechanism-inputs .mechanism-node {
+  padding: 12px 16px;
+}
+.mechanism-inputs strong {
+  font-size: 17px;
+  margin: 3px 0;
+}
+.mechanism-inputs small {
+  font-size: 12px;
+}
+.update-node {
+  background: #eef3eb;
+  border-color: #9bb590;
+}
+.update-node > span {
+  color: #2d5136;
+}
+.new-state-node {
+  border-color: #94b29f;
+  background: #f3f8f3;
+}
+.output-node {
+  background: #f9fafc;
+  border-style: dashed;
+  color: #52604f;
+}
+.output-node.ready {
+  border-style: solid;
+  border-color: #a5b8f5;
+  background: #f0f4ff;
+}
+.output-node.ready strong {
+  color: #365eeb;
+}
+.mechanism-arrow {
+  color: #678162;
+  width: 24px;
+}
+.mechanism-arrow.pending {
+  color: #c0cabc;
+}
+.state-carry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #47613e;
+}
+.state-carry svg {
+  flex-shrink: 0;
+  color: #527149;
+}
+.rnn-flow .mechanism-math {
+  margin-top: 15px;
+  padding-top: 13px;
+}
+.mechanism-math summary {
+  font-size: 14px;
+}
+.mechanism-math dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  margin: 20px 0;
+}
+.mechanism-math dt {
+  font-size: 13px;
+  color: #56714c;
+  margin-bottom: 7px;
+}
+.mechanism-math dd {
+  margin: 0;
+  font:
+    14px/1.6 ui-monospace,
+    monospace;
+  overflow-wrap: anywhere;
+}
+.is-reading .input-node,
+.is-reading .new-state-node {
+  animation: read-node 0.6s ease-out;
+}
+.is-reading .mechanism-arrow:not(.pending) {
+  animation: flow-arrow 0.65s ease-in-out infinite alternate;
+}
+@keyframes read-node {
+  from {
+    box-shadow: 0 0 0 3px #d5e5cd;
+  }
+  to {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+@keyframes flow-arrow {
+  to {
+    transform: translateX(3px);
+    color: #234932;
+  }
+}
+@media (max-width: 1000px) {
+  .intro-explanation {
+    gap: 28px;
+  }
+  .mechanism-network {
+    gap: 7px;
+    grid-template-columns: 1.1fr 18px 1fr 18px 1fr 18px 1fr;
+  }
+  .mechanism-arrow {
+    width: 18px;
+  }
+  .mechanism-node {
+    padding: 12px;
+  }
+  .mechanism-node strong {
+    font-size: 16px;
+  }
+  .mechanism-node > span {
+    font-size: 12px;
+  }
+  .mechanism-inputs .mechanism-node {
+    padding: 10px;
+  }
+  .mechanism-node small {
+    font-size: 12px;
+  }
+  .mechanism-caption {
+    display: block;
+  }
+  .mechanism-caption > span {
+    display: block;
+    margin-top: 4px;
+  }
+}
+@media (max-width: 760px) {
+  .rnn-introduction {
+    padding-top: 8px;
+    margin-bottom: 32px;
+    padding-bottom: 32px;
+  }
+  .intro-definition {
+    font-size: 18px;
+    margin: 20px 0 26px;
+  }
+  .intro-explanation {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  .intro-explanation h2 {
+    font-size: 22px;
+  }
+  .intro-explanation p {
+    font-size: 16px;
+  }
+  .order-comparison {
+    padding: 18px;
+    gap: 15px;
+  }
+  .order-comparison p {
+    font-size: 16px;
+  }
+  .intro-task {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 19px;
+    margin-top: 23px;
+    padding-top: 22px;
+  }
+  .intro-task p {
+    font-size: 16px;
+  }
+  .sequence-mechanism {
+    padding: 19px 16px;
+  }
+  .mechanism-caption h3 {
+    font-size: 18px;
+  }
+  .mechanism-caption > span {
+    font-size: 13px;
+  }
+  .mechanism-network {
+    grid-template-columns: 1fr;
+    justify-items: stretch;
+    gap: 7px;
+  }
+  .mechanism-inputs {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .mechanism-arrow {
+    transform: rotate(90deg);
+    justify-self: center;
+    width: 20px;
+  }
+  .mechanism-node strong {
+    font-size: 18px;
+  }
+  .mechanism-node > span {
+    font-size: 14px;
+  }
+  .mechanism-node small {
+    font-size: 13px;
+  }
+  .mechanism-node {
+    padding: 14px;
+  }
+  .mechanism-inputs .mechanism-node {
+    padding: 12px;
+  }
+  .mechanism-inputs strong {
+    font-size: 16px;
+  }
+  .state-carry {
+    font-size: 14px;
+    align-items: flex-start;
+  }
+  .mechanism-math dl {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .is-reading .mechanism-arrow:not(.pending) {
+    animation: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .is-reading .input-node,
+  .is-reading .new-state-node,
+  .is-reading .mechanism-arrow:not(.pending) {
+    animation: none;
+  }
+}
+.intro-explanation {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+.intro-explanation > div {
+  min-width: 0;
+}
+.order-comparison {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.order-comparison > div {
+  min-width: 0;
+}
+@media (max-width: 760px) {
+  .intro-explanation {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .order-comparison > div > p {
+    gap: 3px;
+    font-size: 15px;
+  }
+  .order-comparison p svg {
+    width: 11px;
+    height: 11px;
+  }
+}
+@media (max-width: 480px) {
+  .order-comparison {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .order-comparison > div + div {
+    border-top: 1px solid #e0e7da;
+    padding-top: 17px;
+  }
+  .order-comparison > div > p {
+    font-size: 18px;
+    gap: 10px;
+  }
+  .order-comparison p svg {
+    width: 16px;
+    height: 16px;
+  }
+}

@@ -1,0 +1,454 @@
+/* Phép tính và ý nghĩa luôn hiện ngay trên sơ đồ, không cần mở bảng khác. */
+.stage-workspace {
+  grid-template-rows: minmax(0, 1fr) 248px;
+}
+/* Khi dự đoán, dành bảng bên phải cho từng phép đổi đơn vị. */
+.stage-workspace:has(.stage-output-block.has-output) {
+  grid-template-rows: minmax(0, 1fr) 202px;
+}
+.stage-mechanism[data-handover='output'] .stage-rnn-calculation > p,
+.stage-mechanism[data-handover='output'] .stage-rnn-calculation > small {
+  display: none;
+}
+.stage-observation {
+  grid-template-columns: minmax(0, 1fr) 350px;
+}
+.stage-mechanism-grid {
+  grid-template-columns: 1fr 20px 1.5fr 18px 1.1fr 18px 1.1fr;
+  gap: 8px;
+}
+.stage-rnn-calculation {
+  width: 100%;
+  text-align: left;
+}
+.stage-rnn-calculation header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px;
+}
+.stage-mechanism .stage-rnn-calculation header strong {
+  font-size: 21px;
+  line-height: 1.2;
+}
+.stage-mechanism .stage-rnn-calculation header span {
+  font-size: 12px;
+  margin: 0;
+}
+.stage-rnn-calculation > p {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 5px 0;
+}
+.stage-rnn-terms {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.stage-rnn-terms > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px;
+  padding: 0;
+}
+.stage-rnn-terms dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+.stage-rnn-result {
+  padding-top: 4px;
+  margin: 4px 0;
+  border-top: 1px solid #cfdbc7;
+  font-size: 14px;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}
+.stage-mechanism .stage-rnn-calculation > small {
+  display: block;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.stage-mechanism .stage-cell {
+  padding: 6px 10px;
+}
+.stage-mechanism .stage-state-sample {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.stage-mechanism .stage-feedback p {
+  font-size: 13px;
+  line-height: 20px;
+}
+.stage-mechanism .stage-memory > small,
+.stage-mechanism .stage-output-block > small {
+  font-size: 12px;
+  line-height: 1.45;
+}
+.stage-mechanism .stage-output-block > strong {
+  font-size: 19px;
+}
+.stage-mechanism .stage-input-block strong {
+  font-size: 17px;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+.stage-mechanism .stage-previous > small {
+  font-size: 12px;
+  line-height: 1.3;
+}
+.stage-mechanism .stage-previous > span {
+  font-weight: 500;
+}
+.stage-mechanism .stage-memory > span {
+  font-weight: 500;
+}
+.stage-mechanism .stage-state-legend {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+}
+.stage-mechanism .stage-state-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  line-height: 1.2;
+}
+.stage-state-legend i {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  border: 1px solid #d4dece;
+}
+.stage-mechanism .stage-output-block > strong {
+  margin: 3px 0 0;
+}
+.stage-mechanism .stage-output-conversion {
+  color: #36553f;
+  margin-top: 2px;
+}
+
+/* Bảng đầu vào: đại lượng trước biến đổi, không lẫn với vector chuẩn hóa. */
+.stage-current-inputs {
+  border-top: 1px solid #dce5d7;
+  margin-top: 12px;
+  padding-top: 10px;
+  min-width: 0;
+}
+.stage-current-inputs-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.stage-current-inputs-head small {
+  font-size: 12px;
+  color: #506546;
+  white-space: nowrap;
+}
+.stage-current-inputs-head h3 {
+  margin: 0;
+  font-size: inherit;
+  font-weight: 500;
+  line-height: inherit;
+}
+.stage-current-input-values {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  margin: 9px 0 7px;
+}
+.retailrocket .stage-current-input-values {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.stage-current-input-values dt {
+  font-size: 12px;
+  color: #506546;
+  line-height: 1.4;
+}
+.stage-current-input-values dd {
+  margin: 1px 0 0;
+  font-size: 23px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.3;
+}
+.stage-current-input-values dd small {
+  font-size: 13px;
+  margin-left: 3px;
+}
+.stage-focus-content .stage-current-inputs-note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #506546;
+}
+.stage-focus-content .stage-current-inputs-note p {
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
+}
+.stage-prediction-readout {
+  border-top: 1px solid #dce5d7;
+  margin-top: 12px;
+  padding-top: 10px;
+}
+.stage-linear-result {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+.stage-linear-result strong {
+  color: #365eeb;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.stage-focus-content .stage-prediction-readout p {
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 3px 0 0;
+  color: #506546;
+}
+.stage-focus-content .stage-prediction-date {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 5px 0 0;
+  color: #506546;
+}
+.stage-conversion-step {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.stage-conversion-step > span {
+  font-weight: 500;
+}
+.stage-prediction-readout .stage-converted-result {
+  display: block;
+  font-size: 26px;
+  line-height: 1.3;
+  color: #365eeb;
+  font-variant-numeric: tabular-nums;
+  margin-top: 3px;
+}
+.stage-converted-result small {
+  font-size: 14px;
+  font-weight: 400;
+}
+.stage-focus-content .stage-prediction-readout .stage-rounding-note {
+  font-size: 10px;
+  margin-top: 5px;
+}
+
+/* Đến MAE: giảm nhấn hình, giữ nguyên độ tương phản của chữ. */
+.stage-mechanism.is-context {
+  background: #f3f5f0;
+}
+.stage-mechanism.is-context .stage-vector,
+.stage-mechanism.is-context .stage-state-legend i {
+  opacity: 0.4;
+}
+.stage-mechanism.is-context .stage-join,
+.stage-mechanism.is-context .stage-arrow,
+.stage-mechanism.is-context[data-handover] .stage-memory + .stage-arrow {
+  opacity: 0.3;
+  color: #537644;
+  stroke: #537644;
+}
+.stage-mechanism.is-context .stage-cell {
+  background: transparent;
+}
+.stage-mechanism.is-context .stage-memory,
+.stage-mechanism.is-context .stage-output-block {
+  box-shadow: none;
+}
+.stage-mechanism.is-context .stage-output-block strong {
+  color: #33533f;
+}
+
+@media (min-width: 701px) and (max-height: 760px) {
+  .stage-workspace {
+    grid-template-rows: minmax(0, 1fr) 240px;
+  }
+  .stage-current-inputs {
+    margin-top: 9px;
+    padding-top: 8px;
+  }
+  .stage-current-input-values {
+    margin-top: 6px;
+    margin-bottom: 5px;
+  }
+  .stage-current-input-values dd {
+    font-size: 20px;
+  }
+  .stage-prediction-readout {
+    margin-top: 8px;
+    padding-top: 7px;
+  }
+}
+@media (min-width: 701px) and (max-height: 650px) {
+  /* Sau khi đọc chuỗi, giữ kết quả ô 1 và nhường chỗ cho phép đổi đơn vị. */
+  .stage-workspace:has(.stage-output-block.has-output) {
+    grid-template-rows: minmax(0, 1fr) 158px;
+  }
+  .stage-mechanism[data-handover='output'] .stage-rnn-calculation > p,
+  .stage-mechanism[data-handover='output'] .stage-rnn-terms,
+  .stage-mechanism[data-handover='output'] .stage-rnn-calculation > small,
+  .stage-mechanism[data-handover='output'] .stage-output-operation {
+    display: none;
+  }
+  .stage-observation {
+    grid-template-columns: minmax(0, 1fr) 370px;
+  }
+  .stage-mechanism {
+    grid-template-rows: minmax(0, 1fr) 30px;
+  }
+  .stage-mechanism .stage-feedback {
+    min-height: 30px;
+  }
+  .stage-workspace {
+    grid-template-rows: minmax(0, 1fr) 204px;
+  }
+  .stage-mechanism .stage-input-block strong {
+    font-size: 15px;
+    line-height: 1.2;
+  }
+  .stage-mechanism .stage-previous > small {
+    font-size: 11px;
+    line-height: 1.2;
+  }
+  .stage-mechanism .stage-state-legend {
+    margin-top: 3px;
+  }
+  .stage-focus-content .stage-reading-explanation {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .stage-focus-content .stage-takeaway {
+    margin-top: 5px;
+    padding-top: 5px;
+  }
+  .stage-current-inputs {
+    margin-top: 7px;
+    padding-top: 6px;
+  }
+  .stage-current-inputs-head {
+    font-size: 13px;
+  }
+  .stage-current-input-values {
+    margin-top: 4px;
+    margin-bottom: 3px;
+  }
+  .stage-current-input-values dd {
+    font-size: 19px;
+  }
+  .stage-focus-content .stage-current-inputs-note {
+    line-height: 1.35;
+  }
+  /* Tiêu đề trang và lời dẫn đã cho biết đang dự đoán; ưu tiên đủ phép tính. */
+  .stage-focus-content:has(.stage-prediction-readout) > h2,
+  .stage-focus-content .stage-prediction-date {
+    display: none;
+  }
+  .stage-prediction-readout {
+    border-top: 0;
+    margin-top: 0;
+    padding-top: 0;
+  }
+  .stage-focus-content .stage-prediction-readout p {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .stage-mechanism .stage-cell {
+    padding: 6px 8px;
+  }
+  .stage-rnn-calculation header span,
+  .stage-rnn-calculation > p,
+  .stage-rnn-terms {
+    font-size: 11px;
+  }
+  .stage-rnn-terms > div {
+    padding: 0;
+  }
+  .stage-rnn-calculation > p {
+    margin: 3px 0;
+  }
+  .stage-rnn-result {
+    font-size: 12px;
+    margin: 3px 0;
+    padding-top: 3px;
+  }
+  .stage-mechanism .stage-rnn-calculation > small {
+    font-size: 10px;
+    line-height: 1.4;
+  }
+  .stage-mechanism .stage-memory > small,
+  .stage-mechanism .stage-output-block > small,
+  .stage-mechanism .stage-state-sample {
+    font-size: 11px;
+    line-height: 1.3;
+  }
+  .stage-conversion-step {
+    font-size: 12px;
+    line-height: 1.3;
+    margin-top: 5px;
+  }
+  .stage-prediction-readout .stage-converted-result {
+    font-size: 23px;
+    line-height: 1.1;
+    margin-top: 2px;
+  }
+  .stage-focus-content .stage-prediction-date {
+    font-size: 11px;
+    margin-top: 3px;
+  }
+  .stage-mechanism .stage-output-block > strong {
+    font-size: 17px;
+  }
+  .stage-mechanism .stage-feedback p {
+    font-size: 12px;
+    line-height: 18px;
+  }
+}
+@media (min-width: 701px) and (max-width: 900px) and (min-height: 761px) {
+  .stage-workspace {
+    grid-template-rows: minmax(0, 1fr) 282px;
+  }
+  .stage-observation {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+}
+@media (max-width: 700px) {
+  .stage-mechanism .stage-feedback p {
+    padding-top: 8px;
+  }
+  .stage-workspace,
+  .stage-workspace:has(.stage-output-block.has-output) {
+    grid-template-rows: auto auto;
+  }
+  .stage-observation {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .stage-mechanism-grid {
+    grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr);
+  }
+  .stage-current-input-values dd {
+    font-size: 23px;
+  }
+  .stage-current-inputs {
+    margin-bottom: 4px;
+  }
+  .stage-mechanism .stage-input-block strong {
+    font-size: 15px;
+  }
+  .stage-mechanism .stage-output-block {
+    align-self: start;
+  }
+}

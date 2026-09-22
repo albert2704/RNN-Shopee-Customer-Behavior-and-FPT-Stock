@@ -1,0 +1,244 @@
+/* Nhịp và vị trí truyền trạng thái do useDemoPlayback điều khiển.
+   CSS chỉ thể hiện pha hiện tại, không chạy một đồng hồ hoạt ảnh riêng. */
+.stage-mechanism {
+  --stage-vector-width: clamp(112px, 14vw, 176px);
+  --stage-vector-row-height: 8px;
+  position: relative;
+  isolation: isolate;
+  grid-template-rows: minmax(0, 1fr) 44px;
+  padding-bottom: 4px;
+}
+
+.stage-mechanism-grid {
+  min-height: 0;
+}
+
+/* Cùng kích thước và thứ tự ô để nhận ra h mới trở thành h trước. */
+.stage-mechanism .stage-vector,
+.stage-mechanism .stage-state-grid,
+.stage-mechanism .stage-previous-values {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  grid-template-rows: repeat(2, var(--stage-vector-row-height));
+  gap: 2px;
+  width: min(100%, var(--stage-vector-width));
+  margin: 4px 0;
+}
+
+.stage-mechanism .stage-vector i,
+.stage-mechanism .stage-state-grid i,
+.stage-mechanism .stage-previous-values i {
+  display: block;
+  height: var(--stage-vector-row-height);
+  border-radius: 2px;
+  transition: none;
+}
+
+.stage-mechanism .stage-inputs {
+  gap: 3px;
+}
+
+.stage-mechanism .stage-input-block strong {
+  line-height: 1.25;
+}
+
+.stage-mechanism .stage-previous {
+  padding-top: 3px;
+}
+
+.stage-mechanism .stage-input-block,
+.stage-mechanism .stage-previous,
+.stage-mechanism .stage-memory,
+.stage-mechanism .stage-output-block {
+  border-radius: 5px;
+}
+
+/* Đổi box-shadow thay cho border để khối không nhảy vị trí giữa các pha. */
+.stage-mechanism[data-handover='input'] .stage-input-block,
+.stage-mechanism[data-handover='input'] .stage-previous,
+.stage-mechanism[data-handover='update'] .stage-cell,
+.stage-mechanism[data-handover='state'] .stage-memory,
+.stage-mechanism[data-handover='output'] .stage-output-block {
+  box-shadow:
+    0 0 0 2px #90a8f3,
+    0 0 0 5px #edf1ff;
+}
+
+.stage-mechanism[data-handover='input'] .stage-join,
+.stage-mechanism[data-handover='state'] .stage-cell + .stage-arrow,
+.stage-mechanism[data-handover='output'] .stage-memory + .stage-arrow {
+  color: #365eeb;
+  stroke: #365eeb;
+  opacity: 1;
+}
+
+/* Giữ nguyên chỗ của vector; lời giải thích chờ/cập nhật nằm trong component. */
+.stage-mechanism .stage-memory.is-pending .stage-state-grid {
+  opacity: 0.12;
+  filter: saturate(0);
+}
+
+.stage-mechanism .stage-memory.is-transferring .stage-state-grid {
+  opacity: 0.28;
+}
+
+.stage-mechanism .stage-feedback {
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.stage-mechanism .stage-feedback p {
+  top: 0;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  font-size: 15px;
+  line-height: 24px;
+  text-align: center;
+}
+
+/* SVG phủ đúng vùng sơ đồ; tọa độ và vector dịch chuyển được tính bằng JS. */
+.stage-mechanism .stage-transfer-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.stage-transfer-route {
+  fill: none;
+  stroke: #90a185;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.3;
+  vector-effect: non-scaling-stroke;
+}
+
+.stage-mechanism[data-handover='transfer'] .stage-transfer-route {
+  stroke: #365eeb;
+  opacity: 0.65;
+}
+
+.stage-transfer-packet {
+  filter: drop-shadow(0 2px 2px #20372b20);
+}
+
+.stage-transfer-packet .stage-transfer-outline {
+  fill: #fff;
+  stroke: #365eeb;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+@media (min-width: 701px) and (max-height: 760px) {
+  .stage-mechanism {
+    padding-top: 6px;
+  }
+
+  .stage-mechanism .stage-input-block > span,
+  .stage-mechanism .stage-previous > span {
+    line-height: 1.25;
+  }
+
+  .stage-mechanism .stage-cell {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+}
+
+@media (min-width: 701px) and (max-height: 650px) {
+  .stage-mechanism {
+    --stage-vector-row-height: 6px;
+    grid-template-rows: minmax(0, 1fr) 44px;
+    padding-top: 5px;
+  }
+
+  .stage-mechanism .stage-inputs {
+    gap: 2px;
+  }
+
+  .stage-mechanism .stage-input-block > span,
+  .stage-mechanism .stage-previous > span {
+    font-size: 13px;
+    line-height: 1.2;
+  }
+
+  .stage-mechanism .stage-input-block strong {
+    font-size: 18px;
+    line-height: 1.15;
+  }
+
+  .stage-mechanism .stage-state-grid,
+  .stage-mechanism .stage-previous-values {
+    margin-top: 3px;
+    margin-bottom: 3px;
+  }
+
+  .stage-mechanism .stage-join {
+    height: 76px;
+  }
+
+  .stage-mechanism .stage-cell {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .stage-mechanism .stage-cell span {
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
+
+  .stage-mechanism .stage-feedback p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 700px) {
+  .stage-mechanism {
+    grid-template-rows: auto 68px;
+    padding-bottom: 4px;
+  }
+
+  .stage-mechanism .stage-feedback {
+    min-height: 68px;
+    margin-top: 0;
+  }
+
+  .stage-mechanism .stage-feedback p {
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .stage-mechanism .stage-transfer-layer {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-mechanism .stage-transfer-packet,
+  .stage-mechanism .stage-transfer-route {
+    display: none;
+  }
+
+  .stage-mechanism .stage-memory.is-pending .stage-state-grid,
+  .stage-mechanism .stage-memory.is-transferring .stage-state-grid {
+    opacity: 1;
+    filter: none;
+  }
+
+  .stage-mechanism *,
+  .stage-mechanism *::before,
+  .stage-mechanism *::after {
+    animation: none;
+    transition: none;
+  }
+}
