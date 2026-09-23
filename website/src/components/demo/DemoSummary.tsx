@@ -2,14 +2,17 @@ import { ArrowRight } from 'lucide-react';
 import type { DemoDataset } from '../../demoTypes';
 import { formatNumber } from '../../types';
 import { compareText, DATASET_COPY } from '../../domain/demo/demoCopy';
+import CodeLink from './CodeLink';
 
 /** MAE của toàn tập kiểm tra, không phải sai số của riêng ví dụ đang phát. */
 export default function DemoSummary({
   datasets,
   onChoose,
+  onCode,
 }: {
   datasets: DemoDataset[];
   onChoose: (index: number) => void;
+  onCode: () => void;
 }) {
   return (
     <section className="stage-summary" aria-labelledby="summary-title">
@@ -49,6 +52,10 @@ export default function DemoSummary({
       <p className="stage-summary-limit">
         Kết quả của một lần huấn luyện. Không so trực tiếp MAE giữa các tập có đơn vị khác nhau.
       </p>
+      <div className="stage-mechanism-actions">
+        <CodeLink source="evaluation" onOpen={onCode} />
+        <CodeLink source="training" onOpen={onCode} />
+      </div>
     </section>
   );
 }

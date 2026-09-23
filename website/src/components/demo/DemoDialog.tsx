@@ -3,12 +3,16 @@ import { X } from 'lucide-react';
 import type { DemoDataset } from '../../demoTypes';
 import QuickAnswers from '../QuickAnswers';
 import DatasetDetails from './DatasetDetails';
+import RNNCalculation from './RNNCalculation';
+import PredictionReadout from './PredictionReadout';
+import CodeLink from './CodeLink';
 
-export type DemoModal = 'quick' | 'reference' | 'details' | null;
+export type DemoModal = 'quick' | 'reference' | 'details' | 'calculation' | null;
 interface Props {
   modal: DemoModal;
   data?: DemoDataset;
   read: number;
+  predicted: boolean;
   referenceContent: ReactNode;
   onClose: () => void;
   onReference: () => void;
@@ -20,6 +24,7 @@ export default function DemoDialog({
   modal,
   data,
   read,
+  predicted,
   referenceContent,
   onClose,
   onReference,
@@ -36,7 +41,9 @@ export default function DemoDialog({
       ? 'Giải thích nhanh'
       : modal === 'reference'
         ? 'Giải thích RNN'
-        : `${data?.title ?? 'Dữ liệu'} · dữ liệu & phép tính`;
+        : modal === 'calculation'
+          ? `${data?.title ?? 'RNN'} · phép tính tại bước ${read}`
+          : `${data?.title ?? 'Dữ liệu'} · dữ liệu & phép tính`;
   return (
     <dialog
       ref={dialog}
@@ -57,7 +64,28 @@ export default function DemoDialog({
         </button>
       </div>
       <div className="stage-dialog-body">
-        {modal === 'quick' && data ? (
+        {modal === 'calculation' && data ? (
+          <div className="stage-calculation-details">
+            <section>
+              <h3>Cập nhật một giá trị trạng thái</h3>
+              <p>Cùng trọng số từ checkpoint, đầu vào và trạng thái ở bước đang xem.</p>
+              <RNNCalculation data={data} read={read} pending={false} />
+              <CodeLink source="replay" />
+            </section>
+            <section>
+              <h3>Từ trạng thái cuối đến dự đoán</h3>
+              {predicted ? (
+                <PredictionReadout data={data} />
+              ) : (
+                <p>
+                  Phép đổi đơn vị xuất hiện sau khi đọc đủ {data.lookback} {data.stepUnit} và đến
+                  pha dự đoán.
+                </p>
+              )}
+              <CodeLink source="evaluation" />
+            </section>
+          </div>
+        ) : modal === 'quick' && data ? (
           <QuickAnswers data={data} read={read} onReference={onReference} />
         ) : modal === 'reference' ? (
           referenceContent

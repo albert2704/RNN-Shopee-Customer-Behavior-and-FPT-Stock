@@ -126,12 +126,18 @@ try {
     assert.deepEqual(await previousStates.locator('[title]').evaluateAll(nodes => nodes.map(node => node.title)),
       item.context[3].hiddenState.map((value, unit) => `h trước[${unit}]: ${number(value, 4)}`));
     await expect(focusPanel(item, 'Đọc chuỗi')).toBeVisible();
-    await expect(workspace(item)).toContainText('giữ nguyên khi dự đoán.');
-    const calculation = workspace(item).locator('.stage-rnn-calculation');
+    await expect(workspace(item)).toContainText('trọng số đã học giữ nguyên.');
+    await expect(workspace(item).locator('.stage-rnn-calculation')).toHaveCount(0);
+    await page.getByRole('button', {name: 'Xem phép tính', exact: true}).click();
+    const calculationDialog = page.getByRole('dialog');
+    const calculation = calculationDialog.locator('.stage-rnn-calculation');
     await expect(calculation).toContainText('Ví dụ: tính ô 1 / 32');
     await expect(calculation).toContainText(`${item.inputSize} tích từ dữ liệu mới`);
     await expect(calculation.locator('.stage-rnn-result')).toContainText(number(item.context[4].calculation.stateValue, 4));
     await expect(workspace(item).locator('.stage-prediction-readout')).toHaveCount(0);
+    await expect(calculationDialog.locator('.stage-prediction-readout')).toHaveCount(0);
+    await calculationDialog.getByRole('button', {name: 'Đóng và về demo'}).click();
+    await expect(progress()).toHaveValue('5');
     await expect(workspace(item).locator('.stage-transfer-packet')).toHaveCount(0);
     await expect(workspace(item).locator('.stage-mechanism')).toHaveAttribute('data-handover', 'state');
     await fitsProjector();
@@ -195,10 +201,13 @@ try {
 
     await scrubTo(item.lookback + 1);
     await expect(focusPanel(item, 'Dự đoán')).toContainText('Đọc đủ chuỗi → dự đoán');
-    const predictionReadout = focusPanel(item, 'Dự đoán').locator('.stage-prediction-readout');
+    await expect(focusPanel(item, 'Dự đoán').locator('.stage-forecast-hero')).toContainText(number(item.target.prediction, 2));
+    await page.getByRole('button', {name: 'Xem cách đổi đơn vị', exact: true}).click();
+    const predictionReadout = page.getByRole('dialog').locator('.stage-prediction-readout');
     await expect(predictionReadout).toBeVisible();
     await expect(predictionReadout.locator('.stage-linear-result')).toContainText(number(item.target.predictedStandardized, 4));
     await expect(predictionReadout.locator('.stage-converted-result')).toContainText(amount(item, item.target.prediction));
+    await page.getByRole('dialog').getByRole('button', {name: 'Đóng và về demo'}).click();
     await expect(chart(item)).toHaveAccessibleName(/RNN dự đoán/);
     await expect(chart(item)).not.toHaveAccessibleName(/Thực tế/);
     await expect(page.getByRole('status')).toHaveText(`RNN dự đoán ${amount(item, item.target.prediction)}.`);
@@ -206,6 +215,7 @@ try {
 
     await progress().press('ArrowRight');
     await expect(progress()).toHaveValue(String(item.lookback + 2));
+    await expect(focusPanel(item, 'Thực tế').locator('.stage-baseline strong')).toHaveText(number(item.target.baseline, 2));
     await expect(focusPanel(item, 'Thực tế')).toContainText(amount(item, item.target.absoluteError));
     await expect(focusPanel(item, 'Thực tế')).toContainText(amount(item, item.target.baselineAbsoluteError));
     await expect(focusPanel(item, 'Thực tế')).not.toContainText('MAE');

@@ -19,10 +19,12 @@ export default function PlaybackControls({ data, playback, caption, announcement
       <p className="sr-only" role="status" aria-atomic="true">
         {announcement}
       </p>
-      <div className="stage-caption">
-        <span className={playing ? 'stage-live-dot active' : 'stage-live-dot'} />
-        <p>{caption}</p>
-      </div>
+      {!summary && (
+        <div className="stage-caption">
+          <span className={playing ? 'stage-live-dot active' : 'stage-live-dot'} />
+          <p>{caption}</p>
+        </div>
+      )}
       <div className="stage-controls">
         <button className="stage-primary" onClick={playback.toggle} aria-label={playLabel}>
           {playing ? <Pause size={19} /> : <Play size={19} />}

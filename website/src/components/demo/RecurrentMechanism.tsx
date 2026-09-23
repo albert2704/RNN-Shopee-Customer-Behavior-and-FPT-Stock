@@ -2,7 +2,7 @@ import { ArrowRight } from 'lucide-react';
 import { useRef } from 'react';
 import { getHandoverPhase } from '../../domain/demo/stateHandover';
 import StateHandover from './StateHandover';
-import RNNCalculation from './RNNCalculation';
+import CodeLink from './CodeLink';
 import type { DemoDataset } from '../../demoTypes';
 import { formatNumber as n } from '../../types';
 import { formatAmount as amount, stateColor, OUTPUT_COPY } from '../../domain/demo/demoCopy';
@@ -15,6 +15,8 @@ export default function RecurrentMechanism({
   progress,
   snapshot,
   evaluated,
+  onCalculate,
+  onCode,
 }: {
   data: DemoDataset;
   read: number;
@@ -22,6 +24,8 @@ export default function RecurrentMechanism({
   progress: number;
   snapshot: boolean;
   evaluated: boolean;
+  onCalculate: () => void;
+  onCode: () => void;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const source = useRef<HTMLDivElement>(null);
@@ -45,7 +49,7 @@ export default function RecurrentMechanism({
   return (
     <div
       ref={root}
-      className={`stage-mechanism ${evaluated ? 'is-context' : ''}`}
+      className={`stage-mechanism ${evaluated ? 'is-context' : ''} ${predicted ? 'is-result' : ''}`}
       data-handover={phase}
       aria-label="Đầu vào và trạng thái trước đi qua RNN để cập nhật trạng thái; trạng thái mới được dùng ở bước tiếp theo"
     >
@@ -81,7 +85,9 @@ export default function RecurrentMechanism({
           <path d="M1 24 H10 V50 H28 M1 76 H10 V50 M23 45 L28 50 L23 55" />
         </svg>
         <div className="stage-cell">
-          <RNNCalculation data={data} read={read} pending={pending} />
+          <strong>RNN</strong>
+          <span>Dữ liệu mới + trạng thái trước</span>
+          <small>Cập nhật trạng thái</small>
         </div>
         <ArrowRight className="stage-arrow" size={24} aria-hidden="true" />
         <div
@@ -98,14 +104,8 @@ export default function RecurrentMechanism({
               <i key={i} title={`h[${i}]: ${n(v, 4)}`} style={{ background: stateColor(v) }} />
             ))}
           </div>
-          <small>Mỗi ô = 1 giá trị trạng thái</small>
           <small className="stage-hidden-definition">
             {data.hiddenSize} số tóm tắt chuỗi đã đọc.
-            <br />
-            Nhóm đặt hidden_size = {data.hiddenSize}.
-          </small>
-          <small className="stage-state-sample">
-            {pending ? 'Đang tính…' : `Ô 1: ${n(hidden[0], 3)} · Ô 2: ${n(hidden[1], 3)}`}
           </small>
           <div
             className="stage-state-legend"
@@ -131,11 +131,7 @@ export default function RecurrentMechanism({
         />
         <div className={`stage-output-block ${predicted ? 'has-output' : ''}`}>
           <span>Tạo 1 dự báo</span>
-          <small>Linear: {data.hiddenSize} giá trị trạng thái cuối</small>
-          <small className="stage-output-operation">
-            × {data.hiddenSize} trọng số, cộng các tích
-            <br />+ 1 độ lệch → 1 số chuẩn hóa.
-          </small>
+          <small>Trạng thái cuối → Linear</small>
           <small className="stage-output-conversion">{OUTPUT_COPY[data.id].conversion}</small>
           <strong>
             {predicted
@@ -148,8 +144,22 @@ export default function RecurrentMechanism({
         <p>
           {transferring
             ? `Chuyển cả ${data.hiddenSize} số này sang làm trạng thái trước của bước ${read + 1}.`
-            : 'Trọng số = hệ số nhân; độ lệch = số cộng thêm. Cả hai được học khi huấn luyện và giữ nguyên khi dự đoán.'}
+            : predicted
+              ? `Đã đọc đủ ${data.lookback} ${data.stepUnit}. Dự báo dùng trọng số RNN đã học.`
+              : 'Trạng thái thay đổi theo dữ liệu; trọng số đã học giữ nguyên.'}
         </p>
+        <div className="stage-mechanism-actions">
+          <button
+            className="stage-calculation-trigger"
+            onClick={onCalculate}
+            aria-haspopup="dialog"
+          >
+            Xem phép tính
+          </button>
+          {!predicted && <CodeLink source="data" onOpen={onCode} />}
+          <CodeLink source="model" onOpen={onCode} />
+          <CodeLink source="training" onOpen={onCode} />
+        </div>
       </div>
       <StateHandover
         root={root}

@@ -91,14 +91,24 @@ export default function DemoStage({ referenceContent, onExplore, active }: Props
             onSummary={playback.toggleSummary}
           />
           {summary ? (
-            <DemoSummary datasets={bundle.datasets} onChoose={playback.choose} />
+            <DemoSummary
+              datasets={bundle.datasets}
+              onChoose={playback.choose}
+              onCode={playback.pause}
+            />
           ) : (
             <>
               <DemoHeading data={data} phase={phase} />
               <section className="stage-workspace" aria-label={`Hoạt ảnh ${data.title}`}>
                 <div className="stage-observation">
                   <ReplayChart data={data} read={read} predicted={predicted} revealed={revealed} />
-                  <PhasePanel data={data} read={read} phase={phase} />
+                  <PhasePanel
+                    data={data}
+                    read={read}
+                    phase={phase}
+                    onCalculate={() => setModal('calculation')}
+                    onCode={playback.pause}
+                  />
                 </div>
                 <RecurrentMechanism
                   data={data}
@@ -107,6 +117,8 @@ export default function DemoStage({ referenceContent, onExplore, active }: Props
                   progress={playback.progress}
                   snapshot={playback.snapshot}
                   evaluated={playback.evaluated}
+                  onCalculate={() => setModal('calculation')}
+                  onCode={playback.pause}
                 />
               </section>
             </>
@@ -123,6 +135,7 @@ export default function DemoStage({ referenceContent, onExplore, active }: Props
         modal={modal}
         data={data}
         read={read}
+        predicted={predicted}
         referenceContent={referenceContent}
         onClose={closeModal}
         onReference={() => setModal('reference')}

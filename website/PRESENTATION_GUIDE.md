@@ -24,9 +24,9 @@ Bấm **Chạy cả 2 demo**. Biểu đồ giữ nguyên vị trí, còn bảng 
 
 Chỉ vào dấu đang chạy trên biểu đồ, hai khối trạng thái và mũi tên vòng. Ở bước đầu, trạng thái trước là 32 số 0; sang bước hai, trạng thái mới vừa tính trở thành trạng thái trước. Đây là cách khởi tạo theo từng cửa sổ của thí nghiệm này, không phải quy tắc bắt buộc với mọi RNN.
 
-Đọc định nghĩa có sẵn dưới sơ đồ: **32 là số giá trị trong trạng thái ẩn, do nhóm chọn khi tạo mô hình**. Mỗi ô màu biểu diễn một giá trị. Khối RNN hiện phép tính thật của ô 1: tổng các tích từ dữ liệu mới, tổng các tích từ trạng thái trước, cộng hai độ lệch đã học, rồi qua `tanh`. 31 ô còn lại dùng cùng công thức với các hàng trọng số riêng. Trọng số là hệ số nhân; độ lệch là số cộng thêm. Chúng giữ nguyên khi dự đoán.
+Trong lượt demo chính, chỉ cần nói: **trạng thái thay đổi theo dữ liệu, trọng số đã học giữ nguyên**. Không cần giảng lại tanh, BPTT hoặc từng phép nhân sau phần lý thuyết của nhóm.
 
-Đọc đủ chuỗi mới dùng Linear: nhân 32 giá trị trạng thái cuối với 32 trọng số, cộng các tích và một độ lệch để tạo một số đã chuẩn hóa. Bảng dự đoán hiện phép bỏ chuẩn hóa và đổi về đơn vị gốc bằng số thật. Giải thích trực tiếp trên màn hình, không cần mở trợ giúp; có thể tạm dừng nếu muốn người xem đọc kỹ một phép tính.
+Nếu được hỏi cách tính, mở **Xem phép tính**. Hộp thoại tạm dừng ở đúng bước, trình bày các tổng có trọng số và tanh của ô 1. Khi đã đến pha Dự đoán, phần bên cạnh giải thích Linear, bỏ chuẩn hóa và đổi về đơn vị gốc. Đóng hộp thoại rồi chủ động bấm **Tiếp tục**.
 
 Nếu được hỏi đầu vào, nói mô hình có bảy giá trị ở mỗi giờ: ba số đếm sự kiện qua `log1p` và bốn giá trị sin/cos biểu diễn giờ, thứ trong tuần; cả bảy được chuẩn hóa bằng thống kê train. Không cần mở hộp thoại để nói hết các chi tiết này trong lượt chạy chính.
 
@@ -75,6 +75,7 @@ Không so trực tiếp các con số MAE giữa hai tập: đơn vị khác nha
 - **Giải thích nhanh:** chọn **Trạng thái, Trọng số, Huấn luyện** hoặc **Đầu vào** để trả lời đúng chủ đề đang hỏi. Mỗi chủ đề có một lời giải thích ngắn kèm hình. Phần đầu vào dùng đúng tập đang xem. **Đọc giải thích đầy đủ** mở tài liệu tham khảo dài hơn nếu cần.
 - Phép tính RNN nằm ngay trong sơ đồ; phép đổi đơn vị nằm ngay bảng dự đoán. Số của dự báo cuối chỉ hiện khi đến pha **Dự đoán** và ẩn lại nếu tua lùi. Không cần bấm mở trợ giúp để giải thích hai phần này.
 - Mở hộp thoại sẽ tạm dừng. Đóng hộp thoại quay về đúng tập và bước cũ, vẫn đang dừng; bấm **Tiếp tục** khi sẵn sàng.
+- **Xem phép tính:** xem các phép nhân của bước hiện tại; **Code mô hình / Code huấn luyện / Code đánh giá** mở Python trên GitHub và tạm dừng.
 - **Dữ liệu & phép tính:** xem dữ liệu đầu vào, trạng thái hoặc công thức. Phân tích chi tiết và mã nguồn là phụ lục tùy chọn, không phải bước tiếp theo bắt buộc của demo.
 
 ## Những câu cần trả lời rõ
@@ -107,7 +108,7 @@ Dữ liệu được chia theo thời gian; chỉ tập học được dùng đ�
 
 Demo chính đọc cả dữ liệu hoạt ảnh lẫn chỉ số toàn test từ `public/data/demo.json`, xuất bằng `scripts/export_demo.py` từ checkpoint thật và các kết quả đã lưu. Đọc số của từng mẫu trực tiếp trong demo; không thay bằng số minh họa. `public/data/retailrocket.json` và `public/data/amazon.json` phục vụ phần phân tích chi tiết.
 
-Khi cần mở code chứng minh phép tính: `replay_recurrence` tính lại toàn vector trạng thái để đối chiếu PyTorch; `trace_first_component` xuất riêng từng tích của hàng 0 để giải thích ô 1. JSON còn chứa hàng trọng số đó, đủ trọng số/bias đầu ra Linear và thống kê chuẩn hóa mục tiêu từ train. `components/demo/RecurrentMechanism.tsx` trình bày phép tính trạng thái ngay trong sơ đồ; `PredictionReadout.tsx` trình bày phép bỏ chuẩn hóa và đổi đơn vị khi đến pha Dự đoán. Website không học thêm khi phát các phép tính này.
+Khi cần mở code chứng minh phép tính: `replay_recurrence` tính lại toàn vector trạng thái để đối chiếu PyTorch; `trace_first_component` xuất riêng từng tích của hàng 0 để giải thích ô 1. JSON còn chứa hàng trọng số đó, đủ trọng số/bias đầu ra Linear và thống kê chuẩn hóa mục tiêu từ train. `components/demo/RNNCalculation.tsx` trình bày phép tính trạng thái trong hộp thoại; `PredictionReadout.tsx` trình bày phép bỏ chuẩn hóa và đổi đơn vị khi đã đến pha Dự đoán. Website không học thêm khi phát các phép tính này.
 
 | Tập dữ liệu | Số mục tiêu test | MAE RNN | MAE giữ nguyên | Đơn vị |
 |---|---:|---:|---:|---|

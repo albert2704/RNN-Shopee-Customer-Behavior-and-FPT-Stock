@@ -1,135 +1,191 @@
-/* Phép tính và ý nghĩa luôn hiện ngay trên sơ đồ, không cần mở bảng khác. */
+/* Main demo follows the forecast. Arithmetic is available in a paused dialog. */
+.demo-stage-shell {
+  --demo-accent: #294dcd;
+  --demo-muted: #506546;
+  --demo-border: #dce5d7;
+  --demo-surface: #f3f5f0;
+  --demo-blue-surface: #edf1ff;
+  --demo-actual: #244f38;
+  --demo-baseline: #805a34;
+}
 .stage-workspace {
-  grid-template-rows: minmax(0, 1fr) 248px;
-}
-/* Khi dự đoán, dành bảng bên phải cho từng phép đổi đơn vị. */
-.stage-workspace:has(.stage-output-block.has-output) {
-  grid-template-rows: minmax(0, 1fr) 202px;
-}
-.stage-mechanism[data-handover='output'] .stage-rnn-calculation > p,
-.stage-mechanism[data-handover='output'] .stage-rnn-calculation > small {
-  display: none;
+  grid-template-rows: minmax(0, 1fr) 190px;
 }
 .stage-observation {
-  grid-template-columns: minmax(0, 1fr) 350px;
+  grid-template-columns: minmax(0, 1fr) minmax(350px, 38%);
+}
+.stage-mechanism {
+  grid-template-rows: minmax(0, 1fr) auto;
+  padding-bottom: 6px;
 }
 .stage-mechanism-grid {
-  grid-template-columns: 1fr 20px 1.5fr 18px 1.1fr 18px 1.1fr;
-  gap: 8px;
-}
-.stage-rnn-calculation {
-  width: 100%;
-  text-align: left;
-}
-.stage-rnn-calculation header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 6px;
-}
-.stage-mechanism .stage-rnn-calculation header strong {
-  font-size: 21px;
-  line-height: 1.2;
-}
-.stage-mechanism .stage-rnn-calculation header span {
-  font-size: 12px;
-  margin: 0;
-}
-.stage-rnn-calculation > p {
-  font-size: 12px;
-  line-height: 1.4;
-  margin: 5px 0;
-}
-.stage-rnn-terms {
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.5;
-}
-.stage-rnn-terms > div {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 5px;
-  padding: 0;
-}
-.stage-rnn-terms dd {
-  margin: 0;
-  font-variant-numeric: tabular-nums;
-  font-weight: 500;
-}
-.stage-rnn-result {
-  padding-top: 4px;
-  margin: 4px 0;
-  border-top: 1px solid #cfdbc7;
-  font-size: 14px;
-  line-height: 1.4;
-  font-variant-numeric: tabular-nums;
-}
-.stage-mechanism .stage-rnn-calculation > small {
-  display: block;
-  font-size: 11px;
-  line-height: 1.5;
+  grid-template-columns: 1.1fr 20px 1fr 18px 1.1fr 18px 1fr;
+  gap: 10px;
 }
 .stage-mechanism .stage-cell {
-  padding: 6px 10px;
+  padding: 12px;
 }
-.stage-mechanism .stage-state-sample {
-  font-variant-numeric: tabular-nums;
-  font-size: 12px;
-  white-space: nowrap;
+.stage-mechanism .stage-cell strong {
+  font-size: 30px;
 }
-.stage-mechanism .stage-feedback p {
-  font-size: 13px;
-  line-height: 20px;
-}
-.stage-mechanism .stage-memory > small,
-.stage-mechanism .stage-output-block > small {
-  font-size: 12px;
-  line-height: 1.45;
-}
-.stage-mechanism .stage-output-block > strong {
-  font-size: 19px;
+.stage-mechanism .stage-cell span {
+  font-size: 14px;
 }
 .stage-mechanism .stage-input-block strong {
-  font-size: 17px;
-  line-height: 1.35;
-  letter-spacing: 0;
+  font-size: 18px;
 }
+.stage-mechanism .stage-output-block strong {
+  font-size: 20px;
+  white-space: normal;
+}
+.stage-mechanism .stage-memory > small,
 .stage-mechanism .stage-previous > small {
-  font-size: 12px;
-  line-height: 1.3;
-}
-.stage-mechanism .stage-previous > span {
-  font-weight: 500;
-}
-.stage-mechanism .stage-memory > span {
-  font-weight: 500;
+  font-size: 13px;
 }
 .stage-mechanism .stage-state-legend {
   display: flex;
   gap: 10px;
   margin-top: 5px;
 }
-.stage-mechanism .stage-state-legend span {
+.stage-state-legend span {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   font-size: 11px;
-  line-height: 1.2;
 }
 .stage-state-legend i {
   width: 8px;
   height: 8px;
   border-radius: 2px;
-  border: 1px solid #d4dece;
+  border: 1px solid var(--demo-border);
 }
-.stage-mechanism .stage-output-block > strong {
-  margin: 3px 0 0;
+.stage-mechanism .stage-feedback {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 44px;
 }
-.stage-mechanism .stage-output-conversion {
-  color: #36553f;
-  margin-top: 2px;
+.stage-mechanism .stage-feedback p {
+  width: auto;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: left;
 }
-
+.stage-mechanism-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  flex-shrink: 0;
+}
+.stage-mechanism-actions svg {
+  position: static;
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  stroke: currentColor;
+  fill: none;
+}
+.stage-code-link,
+.stage-calculation-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 44px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--demo-accent);
+}
+.stage-code-link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.stage-code-link:hover {
+  text-decoration-thickness: 2px;
+}
+.stage-calculation-trigger {
+  border: 1px solid var(--demo-border);
+  background: white;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.stage-calculation-trigger:hover {
+  background: var(--demo-blue-surface);
+}
+.stage-panel-source {
+  margin-top: 8px;
+}
+.stage-focus-panel {
+  overflow-y: auto;
+  align-items: safe center;
+}
+.stage-focus-content .stage-result-units {
+  font-size: 13px;
+  color: var(--demo-muted);
+  margin-bottom: 10px;
+}
+.stage-result-pair {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.stage-result-pair > div {
+  border: 1px solid var(--demo-border);
+  border-radius: 8px;
+  padding: 10px 8px;
+}
+.stage-result-pair > div:first-child {
+  background: var(--demo-blue-surface);
+}
+.stage-result-pair span {
+  display: block;
+  font-size: 13px;
+}
+.stage-result-pair strong {
+  font-size: clamp(25px, 2.5vw, 40px);
+  margin: 6px 0 0;
+  line-height: 1.2;
+}
+.stage-baseline strong {
+  color: var(--demo-baseline);
+}
+.stage-forecast-hero {
+  padding: 18px 0 12px;
+}
+.stage-forecast-hero > span {
+  font-size: 16px;
+  color: var(--demo-muted);
+}
+.stage-forecast-hero strong {
+  display: block;
+  font-size: clamp(44px, 5vw, 72px);
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--demo-accent);
+}
+.stage-forecast-hero + .stage-focus-note {
+  margin-bottom: 12px;
+}
+/* Once a forecast exists, give the result the space previously used by the diagram. */
+.stage-workspace:has(.stage-mechanism.is-result) {
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+.stage-mechanism.is-result {
+  display: block;
+  background: var(--demo-surface);
+}
+.stage-mechanism.is-result .stage-mechanism-grid {
+  display: none;
+}
+.stage-mechanism.is-result .stage-feedback {
+  min-height: 48px;
+}
 /* Bảng đầu vào: đại lượng trước biến đổi, không lẫn với vector chuẩn hóa. */
 .stage-current-inputs {
   border-top: 1px solid #dce5d7;
@@ -247,208 +303,219 @@
   margin-top: 5px;
 }
 
-/* Đến MAE: giảm nhấn hình, giữ nguyên độ tương phản của chữ. */
-.stage-mechanism.is-context {
-  background: #f3f5f0;
+/* Both calculation panels preserve the original checkpoint values. */
+.stage-calculation-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
 }
-.stage-mechanism.is-context .stage-vector,
-.stage-mechanism.is-context .stage-state-legend i {
-  opacity: 0.4;
+.stage-calculation-details section {
+  min-width: 0;
 }
-.stage-mechanism.is-context .stage-join,
-.stage-mechanism.is-context .stage-arrow,
-.stage-mechanism.is-context[data-handover] .stage-memory + .stage-arrow {
-  opacity: 0.3;
-  color: #537644;
-  stroke: #537644;
+.stage-calculation-details h3 {
+  font-size: 20px;
+  margin: 0 0 10px;
 }
-.stage-mechanism.is-context .stage-cell {
-  background: transparent;
+.stage-calculation-details p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--demo-muted);
+  margin: 8px 0;
 }
-.stage-mechanism.is-context .stage-memory,
-.stage-mechanism.is-context .stage-output-block {
-  box-shadow: none;
+.stage-calculation-details .stage-rnn-calculation {
+  border: 1px solid var(--demo-border);
+  border-radius: 8px;
+  padding: 18px;
+  margin: 16px 0 8px;
+  background: white;
 }
-.stage-mechanism.is-context .stage-output-block strong {
-  color: #33533f;
+.stage-rnn-calculation header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
 }
-
+.stage-rnn-calculation header strong {
+  font-size: 26px;
+}
+.stage-rnn-calculation header span {
+  font-size: 13px;
+}
+.stage-rnn-terms {
+  margin: 12px 0;
+  font-size: 15px;
+}
+.stage-rnn-terms > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 8px 0;
+}
+.stage-rnn-terms dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.stage-rnn-result {
+  border-top: 1px solid var(--demo-border);
+  padding: 12px 0;
+  font-size: 20px;
+}
+.stage-rnn-calculation > small {
+  display: block;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--demo-muted);
+}
+.stage-calculation-details .stage-conversion-step {
+  margin-top: 18px;
+  font-size: 15px;
+}
+.stage-calculation-details .stage-linear-result {
+  font-size: 15px;
+}
+.stage-calculation-details .stage-converted-result {
+  font-size: 36px;
+}
+@media (min-width: 701px) and (max-width: 1100px) {
+  .stage-workspace {
+    grid-template-rows: minmax(0, 1fr) 224px;
+  }
+  .stage-mechanism .stage-feedback {
+    display: grid;
+    gap: 0;
+  }
+  .stage-mechanism-actions {
+    justify-content: flex-start;
+  }
+  .stage-mechanism .stage-cell {
+    padding: 8px;
+  }
+  .stage-mechanism .stage-cell span {
+    font-size: 12px;
+  }
+  .stage-mechanism .stage-cell small {
+    display: none;
+  }
+  .stage-mechanism .stage-output-block strong {
+    font-size: 17px;
+  }
+  .stage-mechanism span {
+    font-size: 13px;
+  }
+  .stage-observation {
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+  .stage-result-pair {
+    gap: 5px;
+  }
+  .stage-result-pair > div {
+    padding: 10px 5px;
+  }
+  .stage-result-pair strong {
+    font-size: 26px;
+  }
+}
 @media (min-width: 701px) and (max-height: 760px) {
   .stage-workspace {
-    grid-template-rows: minmax(0, 1fr) 240px;
+    grid-template-rows: minmax(0, 1fr) 166px;
   }
-  .stage-current-inputs {
-    margin-top: 9px;
-    padding-top: 8px;
+  .stage-mechanism .stage-input-block > small {
+    display: none;
   }
-  .stage-current-input-values {
-    margin-top: 6px;
-    margin-bottom: 5px;
+  .stage-mechanism .stage-cell {
+    padding: 6px 10px;
   }
-  .stage-current-input-values dd {
-    font-size: 20px;
+  .stage-mechanism .stage-cell small {
+    display: none;
   }
-  .stage-prediction-readout {
-    margin-top: 8px;
-    padding-top: 7px;
+  .stage-mechanism .stage-cell strong {
+    font-size: 26px;
+  }
+  .stage-mechanism .stage-input-block strong {
+    font-size: 17px;
+  }
+  .stage-mechanism span {
+    font-size: 13px;
+  }
+  .stage-mechanism .stage-feedback {
+    gap: 0 12px;
   }
 }
 @media (min-width: 701px) and (max-height: 650px) {
-  /* Sau khi đọc chuỗi, giữ kết quả ô 1 và nhường chỗ cho phép đổi đơn vị. */
-  .stage-workspace:has(.stage-output-block.has-output) {
-    grid-template-rows: minmax(0, 1fr) 158px;
+  .stage-summary {
+    justify-content: safe center;
+    gap: 6px;
   }
-  .stage-mechanism[data-handover='output'] .stage-rnn-calculation > p,
-  .stage-mechanism[data-handover='output'] .stage-rnn-terms,
-  .stage-mechanism[data-handover='output'] .stage-rnn-calculation > small,
-  .stage-mechanism[data-handover='output'] .stage-output-operation {
-    display: none;
-  }
-  .stage-observation {
-    grid-template-columns: minmax(0, 1fr) 370px;
+  .stage-workspace {
+    grid-template-rows: minmax(0, 1fr) 166px;
   }
   .stage-mechanism {
-    grid-template-rows: minmax(0, 1fr) 30px;
-  }
-  .stage-mechanism .stage-feedback {
-    min-height: 30px;
-  }
-  .stage-workspace {
-    grid-template-rows: minmax(0, 1fr) 204px;
-  }
-  .stage-mechanism .stage-input-block strong {
-    font-size: 15px;
-    line-height: 1.2;
-  }
-  .stage-mechanism .stage-previous > small {
-    font-size: 11px;
-    line-height: 1.2;
-  }
-  .stage-mechanism .stage-state-legend {
-    margin-top: 3px;
-  }
-  .stage-focus-content .stage-reading-explanation {
-    font-size: 14px;
-    line-height: 1.4;
-  }
-  .stage-focus-content .stage-takeaway {
-    margin-top: 5px;
-    padding-top: 5px;
-  }
-  .stage-current-inputs {
-    margin-top: 7px;
-    padding-top: 6px;
-  }
-  .stage-current-inputs-head {
-    font-size: 13px;
-  }
-  .stage-current-input-values {
-    margin-top: 4px;
-    margin-bottom: 3px;
-  }
-  .stage-current-input-values dd {
-    font-size: 19px;
-  }
-  .stage-focus-content .stage-current-inputs-note {
-    line-height: 1.35;
-  }
-  /* Tiêu đề trang và lời dẫn đã cho biết đang dự đoán; ưu tiên đủ phép tính. */
-  .stage-focus-content:has(.stage-prediction-readout) > h2,
-  .stage-focus-content .stage-prediction-date {
-    display: none;
-  }
-  .stage-prediction-readout {
-    border-top: 0;
-    margin-top: 0;
-    padding-top: 0;
-  }
-  .stage-focus-content .stage-prediction-readout p {
-    font-size: 12px;
-    line-height: 1.4;
-  }
-  .stage-mechanism .stage-cell {
-    padding: 6px 8px;
-  }
-  .stage-rnn-calculation header span,
-  .stage-rnn-calculation > p,
-  .stage-rnn-terms {
-    font-size: 11px;
-  }
-  .stage-rnn-terms > div {
-    padding: 0;
-  }
-  .stage-rnn-calculation > p {
-    margin: 3px 0;
-  }
-  .stage-rnn-result {
-    font-size: 12px;
-    margin: 3px 0;
-    padding-top: 3px;
-  }
-  .stage-mechanism .stage-rnn-calculation > small {
-    font-size: 10px;
-    line-height: 1.4;
-  }
-  .stage-mechanism .stage-memory > small,
-  .stage-mechanism .stage-output-block > small,
-  .stage-mechanism .stage-state-sample {
-    font-size: 11px;
-    line-height: 1.3;
-  }
-  .stage-conversion-step {
-    font-size: 12px;
-    line-height: 1.3;
-    margin-top: 5px;
-  }
-  .stage-prediction-readout .stage-converted-result {
-    font-size: 23px;
-    line-height: 1.1;
-    margin-top: 2px;
-  }
-  .stage-focus-content .stage-prediction-date {
-    font-size: 11px;
-    margin-top: 3px;
-  }
-  .stage-mechanism .stage-output-block > strong {
-    font-size: 17px;
+    padding-top: 4px;
   }
   .stage-mechanism .stage-feedback p {
+    display: none;
+  }
+  .stage-mechanism .stage-feedback {
+    display: flex;
+    justify-content: center;
+  }
+  .stage-mechanism .stage-hidden-definition {
     font-size: 12px;
-    line-height: 18px;
   }
-}
-@media (min-width: 701px) and (max-width: 900px) and (min-height: 761px) {
-  .stage-workspace {
-    grid-template-rows: minmax(0, 1fr) 282px;
+  .stage-mechanism .stage-output-conversion {
+    display: none;
   }
-  .stage-observation {
-    grid-template-columns: minmax(0, 1fr) 320px;
+  .stage-forecast-hero {
+    padding: 8px 0;
+  }
+  .stage-forecast-hero strong {
+    font-size: 48px;
+  }
+  .stage-focus-content .stage-prediction-date {
+    font-size: 12px;
+  }
+  .stage-panel-source {
+    margin-top: 0;
   }
 }
 @media (max-width: 700px) {
-  .stage-mechanism .stage-feedback p {
-    padding-top: 8px;
-  }
-  .stage-workspace,
-  .stage-workspace:has(.stage-output-block.has-output) {
+  .stage-workspace {
     grid-template-rows: auto auto;
   }
   .stage-observation {
     grid-template-columns: minmax(0, 1fr);
   }
+  .stage-focus-panel {
+    overflow: visible;
+  }
+  .stage-mechanism {
+    grid-template-rows: auto auto;
+  }
   .stage-mechanism-grid {
     grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr);
   }
-  .stage-current-input-values dd {
-    font-size: 23px;
+  .stage-mechanism .stage-feedback {
+    display: grid;
+    margin-top: 14px;
+    gap: 4px;
   }
-  .stage-current-inputs {
-    margin-bottom: 4px;
+  .stage-mechanism-actions {
+    gap: 4px 12px;
   }
-  .stage-mechanism .stage-input-block strong {
-    font-size: 15px;
+  .stage-result-pair strong {
+    font-size: 29px;
   }
-  .stage-mechanism .stage-output-block {
-    align-self: start;
+  .stage-result-pair > div {
+    padding: 10px 5px;
+  }
+  .stage-calculation-details {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .stage-rnn-terms {
+    font-size: 14px;
+  }
+  .stage-rnn-calculation header {
+    flex-wrap: wrap;
   }
 }

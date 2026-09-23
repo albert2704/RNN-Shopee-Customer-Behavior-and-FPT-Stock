@@ -2,7 +2,7 @@ import type { DemoDataset } from '../../demoTypes';
 import type { DemoPhase } from '../../domain/demo/replayTimeline';
 import { formatDate, formatNumber as n } from '../../types';
 import CurrentInputs from './CurrentInputs';
-import PredictionReadout from './PredictionReadout';
+import CodeLink from './CodeLink';
 import {
   DATASET_COPY,
   PHASE_LABELS as phases,
@@ -15,10 +15,14 @@ export default function PhasePanel({
   data,
   read,
   phase,
+  onCalculate,
+  onCode,
 }: {
   data: DemoDataset;
   read: number;
   phase: DemoPhase;
+  onCalculate: () => void;
+  onCode: () => void;
 }) {
   const metricDigits = data.id === 'amazon' ? 4 : 2;
   return (
@@ -39,19 +43,38 @@ export default function PhasePanel({
             <p className="stage-prediction-date">
               Mốc dự báo: {formatDate(data.target.timestamp, data.id !== 'amazon')}
             </p>
-            <PredictionReadout data={data} />
+            <div className="stage-forecast-hero">
+              <span>Dự đoán RNN</span>
+              <strong>{n(data.target.prediction, 2)}</strong>
+              <span>{data.unit}</span>
+            </div>
+            <p className="stage-focus-note">
+              Đã đọc đủ {data.lookback} {data.stepUnit} quá khứ.
+            </p>
+            <button
+              className="stage-calculation-trigger"
+              onClick={onCalculate}
+              aria-haspopup="dialog"
+            >
+              Xem cách đổi đơn vị
+            </button>
           </>
         ) : phase === 2 ? (
           <>
             <h2>Đối chiếu một dự đoán</h2>
+            <p className="stage-result-units">Cùng đơn vị: {data.unit}</p>
             <div className="stage-result-pair">
               <div className="stage-result-value visible">
                 <span>RNN</span>
                 <strong>{n(data.target.prediction, 2)}</strong>
               </div>
               <div className="stage-result-value stage-actual visible">
-                <span>Thực tế · {data.unit}</span>
+                <span>Thực tế</span>
                 <strong>{n(data.target.value, 2)}</strong>
+              </div>
+              <div className="stage-result-value stage-baseline visible">
+                <span>Giữ nguyên</span>
+                <strong>{n(data.target.baseline, 2)}</strong>
               </div>
             </div>
             <dl className="stage-error-pair">
@@ -90,6 +113,11 @@ export default function PhasePanel({
             <p className="stage-takeaway">{compareText(data)}</p>
             <p className="stage-chart-reminder">Biểu đồ bên cạnh chỉ là một ví dụ.</p>
           </>
+        )}
+        {phase >= 2 && (
+          <div className="stage-panel-source">
+            <CodeLink source="evaluation" onOpen={onCode} />
+          </div>
         )}
       </div>
     </aside>

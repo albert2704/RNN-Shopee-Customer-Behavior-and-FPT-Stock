@@ -6,7 +6,9 @@ Website tiếng Việt dùng sau khi nhóm hoàn thành bài thuyết trình b�
 
 Bắt đầu ở [CODE_MAP_VI.md](../models/CODE_MAP_VI.md): sáu điểm mở code và bảng câu hỏi → file → hàm. `DemoStage.tsx` chỉ ghép giao diện; `hooks/useDemoPlayback.ts` giữ phát/dừng; `hooks/useReplayClock.ts` dùng một đồng hồ chung cho biểu đồ và trạng thái. `domain/demo/replayTimeline.ts` quy định bốn giai đoạn của demo; `domain/demo/stateHandover.ts` chia chuyển động bên trong một bước, tính đường truyền vector và cộng thời gian đã phát. `components/demo/` chứa từng phần màn hình. Ví dụ forward/BPTT/SGD độc lập nằm ở `domain/learning/scalarRnn.ts`; huấn luyện thật nằm trong `../models/src/`.
 
-[RecurrentMechanism.tsx](src/components/demo/RecurrentMechanism.tsx) trình bày phép tính trạng thái ngay trong sơ đồ; [PredictionReadout.tsx](src/components/demo/PredictionReadout.tsx) trình bày phép đổi đầu ra bằng số khi đến pha Dự đoán. Trong bộ xuất Python, `replay_recurrence` đối chiếu toàn vector trạng thái với PyTorch; `trace_first_component` tách từng phép nhân của hàng 0 để giải thích ô 1. JSON giữ các hàng trọng số truy hồi đó, đủ trọng số/bias Linear và thống kê chuẩn hóa mục tiêu từ train. Các phép tính được lấy từ checkpoint; component không huấn luyện mô hình.
+[RecurrentMechanism.tsx](src/components/demo/RecurrentMechanism.tsx) giữ sơ đồ đầu vào → RNN → trạng thái trong lượt đọc. Từ pha Dự đoán, sơ đồ thu lại để ưu tiên kết quả. **Xem phép tính** mở hộp thoại tại đúng bước và tạm dừng hoạt ảnh. [RNNCalculation.tsx](src/components/demo/RNNCalculation.tsx) giữ phép tính ô 1; [PredictionReadout.tsx](src/components/demo/PredictionReadout.tsx) giữ phép bỏ chuẩn hóa và đổi đơn vị, chỉ hiện khi đã đến pha dự đoán. Đóng hộp thoại không tự phát tiếp.
+
+Các liên kết **Code dữ liệu**, **Code mô hình**, **Code huấn luyện** và **Code đánh giá** mở đúng file Python trên GitHub trong tab mới và tạm dừng demo. Chúng là đường dẫn đến repository hiện có, cần Internet. Khi trình bày ngoại tuyến, mở các file tương ứng trong `models/src/` trước buổi demo.
 
 Code có chú thích tiếng Việt tại các phép tính/quyết định quan trọng. Định dạng thống nhất bằng `npm run format`; kiểm tra bằng `npm run format:check`, `npm run test:logic`, `npm run build`. `test:logic` dùng Node.js 22.18+ để đọc module TypeScript trực tiếp. ZIP source tải về có hai thư mục `models/` và `website/`, gồm mã nguồn, checkpoint, dữ liệu đã xử lý, kết quả và hướng dẫn đọc code. Hai hướng dẫn Markdown tải riêng trong mục tham khảo dùng cùng nội dung với các file gốc trong repo.
 
@@ -38,7 +40,7 @@ Bảng **Đầu vào** hiện đúng quan sát đang đọc. Retailrocket có **
 
 Sơ đồ cho thấy **trạng thái trước + đầu vào hiện tại → RNN → trạng thái mới**. Hai bước đầu lần lượt nhấn vào đầu vào, phần cập nhật, trạng thái vừa tạo và đường truyền trạng thái sang bước kế tiếp. Từ bước 3, bỏ chuyển động truyền vector và đổi pha nhấn sáng; biểu đồ và các giá trị vẫn cập nhật theo từng quan sát. Đầu vào cuối giữ lại trạng thái cuối để tạo dự đoán; không truyền sang một bước lịch sử thứ 25 hoặc thứ 31.
 
-Ngay dưới sơ đồ luôn có định nghĩa: **32 là số giá trị trong trạng thái ẩn, do nhóm chọn khi tạo mô hình**. Trọng số là hệ số nhân, độ lệch là số cộng thêm; chúng đã được học và giữ nguyên khi dự đoán. Khối RNN hiện phép tính bằng số cho ô 1: tổng các tích từ dữ liệu mới, tổng các tích từ trạng thái trước, cộng hai độ lệch, rồi qua `tanh`. 31 ô còn lại dùng các hàng trọng số riêng theo cùng công thức. Khi đến pha Dự đoán, bảng bên cạnh hiện đầu ra chuẩn hóa → bỏ chuẩn hóa → đổi thành số sự kiện hoặc USD bằng số thật. Người trình bày giải thích trực tiếp trên màn hình, không cần mở trợ giúp.
+Màn hình chính ưu tiên ba câu hỏi: input là gì, dự đoán bao nhiêu, và sai số có tốt hơn baseline không. Pha Dự đoán hiện số lớn theo đơn vị gốc; pha Thực tế đặt **RNN / Thực tế / Giữ nguyên** cạnh nhau. Pha Toàn tập giữ MAE riêng với sai số của một mẫu. Phép nhân, bias, tanh và đổi đơn vị nằm trong **Xem phép tính**, dùng khi có câu hỏi. Các giá trị và checkpoint giữ nguyên.
 
 Ở tốc độ 1×, mỗi tập có nhịp mở đầu 1,2 giây, giữ hai bước đầu 4,4 giây mỗi bước để nhìn rõ quá trình truyền trạng thái, rồi 0,7 giây mỗi bước giữa. Bước đầu vào cuối dài 1,5 giây; tiếp theo là 2,6 giây xem dự đoán, 5 giây xem thực tế và nhận xét, 7 giây xem MAE trước khi chuyển tiếp.
 
@@ -47,7 +49,7 @@ Ngay dưới sơ đồ luôn có định nghĩa: **32 là số giá trị trong 
 - Thanh thời gian cho phép xem lại bước đã chọn; thay đổi thanh sẽ tạm dừng và hiện trạng thái hoàn tất tại bước đó. Bấm phát sẽ tiếp tục từ bước được chọn; chỉ bước 1 và 2 có chuyển động truyền trạng thái. Kéo lùi trước đầu ra sẽ ẩn lại kết quả tương lai.
 - Đổi tốc độ giữ nguyên phần đã chạy, chỉ thay nhịp của phần tiếp theo. Chọn một tab đưa tập đó về đầu và dừng; bấm **Chạy tập này** để chạy riêng tập vừa chọn. Khi tập đó kết thúc, nút chính đổi thành **Chạy lại tập này**. Nút biểu tượng chạy lại có nhãn **Chạy lại cả 2 từ đầu** bắt đầu lại toàn bộ lượt trình diễn.
 - **Giải thích nhanh** mở bốn chủ đề: **Trạng thái, Trọng số, Huấn luyện, Đầu vào**. Mỗi chủ đề có một lời giải thích và hình minh họa ngắn; **Đọc giải thích đầy đủ** mở phần tham khảo có sẵn. Ví dụ học một trạng thái với chuỗi ba bước dùng phép tính riêng, không cập nhật hai mô hình thực.
-- Phép tính RNN và phép đổi đầu ra nằm trực tiếp trên màn hình. Khi cần nói kỹ, tạm dừng tại bước đang xem rồi tiếp tục. Các số của dự báo cuối chỉ hiện sau khi đến pha **Dự đoán**, và ẩn lại khi tua lùi.
+- **Xem phép tính** và **Xem cách đổi đơn vị** mở chi tiết tại bước đang xem, đồng thời tạm dừng. Các số của dự báo cuối chỉ hiện sau khi đến pha **Dự đoán**, và ẩn lại khi tua lùi.
 - **Giải thích nhanh** và **Dữ liệu & phép tính** tạm dừng hoạt ảnh. Đóng hộp thoại để về đúng tập và bước đang xem, vẫn ở trạng thái dừng; chỉ tiếp tục khi chủ động bấm phát.
 
 Phần phân tích chi tiết vẫn có sẵn khi cần trả lời câu hỏi. Đây là phụ lục tùy chọn, không thuộc đường đi bắt buộc của demo. **Về demo** quay lại sân khấu chính.
@@ -56,9 +58,9 @@ Phần phân tích chi tiết vẫn có sẵn khi cần trả lời câu hỏi. 
 
 Trình duyệt **phát lại phép tính từ mô hình đã huấn luyện**, không huấn luyện mới. Đầu vào chuẩn hóa, trạng thái 32 chiều và dự báo phải khớp checkpoint. Trạng thái thay đổi sau mỗi quan sát; trọng số giữ nguyên trong lượt dự đoán. Trong cách triển khai của thí nghiệm này, mỗi cửa sổ bắt đầu từ trạng thái 0; đây không phải yêu cầu chung cho mọi RNN. Chú giải **Âm · 0 · Dương** giải thích dấu của từng thành phần trạng thái; độ đậm biểu diễn độ lớn. Màu không được gán thành “xu hướng”, “mùa vụ” hoặc chất lượng mô hình.
 
-Sau trạng thái cuối, **Linear · 32 → 1** tạo một số đã chuẩn hóa. Bảng dự đoán hiện số này và bước đổi về đơn vị gốc: Retailrocket bỏ chuẩn hóa, hoàn tác log1p rồi chặn âm; Amazon bỏ chuẩn hóa lợi suất log rồi nhân giá cuối với exp(lợi suất). [CurrentInputs.tsx](src/components/demo/CurrentInputs.tsx) và [inputReadout.ts](src/domain/demo/inputReadout.ts) trình bày đầu vào; [PredictionReadout.tsx](src/components/demo/PredictionReadout.tsx) cùng `OUTPUT_COPY` trong [demoCopy.ts](src/domain/demo/demoCopy.ts) trình bày đường ra.
+Sau trạng thái cuối, **Linear · 32 → 1** tạo một số đã chuẩn hóa. Hộp thoại phép tính hiện số này và bước đổi về đơn vị gốc: Retailrocket bỏ chuẩn hóa, hoàn tác log1p rồi chặn âm; Amazon bỏ chuẩn hóa lợi suất log rồi nhân giá cuối với exp(lợi suất). [CurrentInputs.tsx](src/components/demo/CurrentInputs.tsx) và [inputReadout.ts](src/domain/demo/inputReadout.ts) trình bày đầu vào; [PredictionReadout.tsx](src/components/demo/PredictionReadout.tsx) cùng `OUTPUT_COPY` trong [demoCopy.ts](src/domain/demo/demoCopy.ts) trình bày đường ra.
 
-Một dự đoán chỉ minh họa cách mô hình xử lý chuỗi. Chất lượng được đánh giá bằng MAE/RMSE trên toàn test. Ở giai đoạn MAE, màu của các vector và mũi tên trong sơ đồ được giảm nhấn để tập trung vào bảng sai số; chữ vẫn giữ độ tương phản. Không so trực tiếp MAE giữa hai tập vì đơn vị khác nhau. Giữ nguyên giá trị gần nhất là cách dự báo đối chứng, không phải kết quả của RNN.
+Một dự đoán chỉ minh họa cách mô hình xử lý chuỗi. Chất lượng được đánh giá bằng MAE/RMSE trên toàn test. Từ pha Dự đoán, sơ đồ được thu lại để nhường chỗ cho kết quả; nút xem phép tính và liên kết code vẫn sẵn có. Không so trực tiếp MAE giữa hai tập vì đơn vị khác nhau. Giữ nguyên giá trị gần nhất là cách dự báo đối chứng, không phải kết quả của RNN.
 
 Retailrocket và Amazon là hai tập trong demo A6. Mỗi tập có một RNN và một GRU được huấn luyện riêng, tổng cộng bốn mạng; hoạt ảnh chính phát lại hai RNN. Retailrocket dự báo **số sự kiện giao dịch theo giờ**, không phải số đơn hàng hay hành vi của một người. Amazon dùng lợi suất làm đầu vào dù biểu đồ có thể hiển thị giá điều chỉnh.
 
@@ -83,6 +85,10 @@ Các thí nghiệm dự báo từng bước với lịch sử đã quan sát, kh
 Nguồn: [Retailrocket](https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset) — CC BY-NC-SA 4.0; [Amazon](https://www.kaggle.com/datasets/henryshan/amazon-com-inc-amzn) — Apache 2.0. JSON và ZIP giữ chi tiết nguồn/giấy phép; ZIP không chứa bản ghi khách hàng cá nhân hay thông tin sinh viên. ZIP, website và kịch bản trình bày dùng Retailrocket và Amazon.
 
 ## Kiểm tra và thiết kế
+
+**Bản tập trung vào trình diễn, 01/10/2026.** 32/32 kiểm tra logic đạt. Kiểm tra trực tiếp trên trình duyệt: tự chạy 2× qua Retailrocket → Amazon → tổng kết; tua lùi; hộp thoại phép tính giữ đúng bước, không hiện dự báo sớm và đóng bằng Escape; kết quả RNN/thực tế/giữ nguyên; khung hiệu dụng 1280×720, 1024×600 và điện thoại 390×844. Không có cuộn ngang hoặc lỗi console. Các liên kết mã nguồn trỏ tới file Python hiện có trên GitHub. `verify-flow.mjs` đã cập nhật và kiểm tra cú pháp; bộ Playwright độc lập chưa chạy.
+
+**Lịch sử kiểm tra trước bản giao diện hiện tại.**
 
 Bản giải thích cụ thể ngày 28/09/2026: **32/32 kiểm tra logic và hợp đồng số học đạt**. Sáu kiểm tra mới dựng lại phép nhân, tổng bias và tanh của ô 1 trên đủ 54 bước; đối chiếu Linear với trạng thái cuối, rồi bỏ chuẩn hóa và đổi về đơn vị gốc. Bộ xuất kiểm tra với checkpoint; các dự báo, trạng thái gốc và chỉ số giữ nguyên, chỉ bổ sung dữ liệu giải thích.
 

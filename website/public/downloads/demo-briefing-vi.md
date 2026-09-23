@@ -51,7 +51,7 @@ Bạn nói:
 
 Bấm **Chạy cả 2 demo**. Toàn bộ lượt chính đi theo Retailrocket → Amazon → tổng kết. Nếu cần nói kỹ cơ chế, chỉ dừng ngắn ở bước 2 của Retailrocket, sau đó tiếp tục. Không cần mở các hộp thoại trong lượt giải thích chính.
 
-Ngay trên sơ đồ có định nghĩa: **32 là số giá trị trong trạng thái ẩn, do nhóm chọn khi tạo mô hình**. Khối RNN hiện phép tính bằng số cho ô trạng thái đầu tiên: tổng các tích từ dữ liệu mới, tổng các tích từ trạng thái trước, tổng hai độ lệch, rồi qua `tanh`. Khi đến pha dự đoán, bảng bên cạnh hiện cả phép bỏ chuẩn hóa và đổi đơn vị bằng số thật. Dùng trực tiếp các dòng đang hiện để dẫn chuyện; không cần mở hộp thoại trợ giúp.
+Sơ đồ chính chỉ giữ dữ liệu mới, RNN và 32 giá trị trạng thái. Khi đến pha dự đoán, tập trung vào kết quả, rồi đối chiếu với thực tế và cách giữ nguyên giá trị cuối. Nếu được hỏi cách tính, mở **Xem phép tính**: hộp thoại giữ phép tính ô trạng thái đầu tiên và bước đổi đơn vị bằng số thật từ checkpoint. Phần đổi đơn vị chỉ hiện sau khi đã đến pha dự đoán.
 
 ### 3.2. Retailrocket: dùng tập đầu để giải thích cơ chế
 
@@ -107,39 +107,41 @@ Khi so mẫu: RNN khoảng **88,55 USD**, thực tế **89,53 USD**, giữ giá 
 
 Sau đó chuyển sang câu hỏi. Chỉ mở code khi cần chứng minh một điểm cụ thể.
 
-### 3.5. Giải thích trực tiếp trên màn hình
+### 3.5. Mở chi tiết khi có câu hỏi
 
-Nếu cần nói kỹ một phép tính, bấm **Tạm dừng** và chỉ ngay vào số đang hiện:
+Nếu cần nói kỹ một phép tính, bấm **Xem phép tính**. Hoạt ảnh tạm dừng tại đúng bước:
 
 | Giảng viên chỉ vào | Vị trí trên màn hình | Nội dung để trả lời |
 | --- | --- | --- |
 | “32 là gì?” | Dòng định nghĩa và các ô trạng thái | Nhóm chọn `hidden_size=32`. Cả 32 giá trị được tính lại sau mỗi bước; 7/1 là số đặc trưng, 24/30 là độ dài chuỗi. |
-| “Khối RNN thực sự tính gì?” | Phép tính ô 1 trong khối RNN | Dữ liệu mới và trạng thái trước được nhân với các trọng số tương ứng. Cộng các tích và hai độ lệch đã học, rồi qua tanh để ra giá trị mới của ô 1. 31 ô còn lại dùng cùng công thức với các hàng trọng số riêng. |
-| “Linear biến trạng thái thành dự đoán thế nào?” | Khối đầu ra và bảng ở pha Dự đoán | 32 tích cộng một bias tạo số chuẩn hóa; phép tính bên cạnh bỏ chuẩn hóa bằng thống kê train, rồi đổi về số sự kiện hoặc USD. |
+| “Khối RNN thực sự tính gì?” | Hộp thoại Xem phép tính, phần trạng thái | Dữ liệu mới và trạng thái trước được nhân với các trọng số tương ứng. Cộng các tích và hai độ lệch đã học, rồi qua tanh để ra giá trị mới của ô 1. 31 ô còn lại dùng cùng công thức với các hàng trọng số riêng. |
+| “Linear biến trạng thái thành dự đoán thế nào?” | Hộp thoại Xem phép tính, phần đổi đơn vị | 32 tích cộng một bias tạo số chuẩn hóa; phép tính bên cạnh bỏ chuẩn hóa bằng thống kê train, rồi đổi về số sự kiện hoặc USD. |
 
-Trọng số là hệ số nhân, độ lệch là số cộng thêm; cả hai được học khi huấn luyện và giữ nguyên trong lượt dự đoán. Các phép tính bằng số xuất hiện theo tiến trình: chưa đọc đầu vào thì chưa có ví dụ tính trạng thái, chưa đến pha **Dự đoán** thì chưa hiện các số của dự báo cuối. Tua lùi sẽ ẩn lại đầu ra. Sau câu trả lời, bấm **Tiếp tục** để chạy từ đúng vị trí; không cần chuyển trang hoặc mở trợ giúp.
+Trọng số là hệ số nhân, độ lệch là số cộng thêm; cả hai được học khi huấn luyện và giữ nguyên trong lượt dự đoán. Các phép tính bằng số xuất hiện theo tiến trình: chưa đọc đầu vào thì chưa có ví dụ tính trạng thái, chưa đến pha **Dự đoán** thì chưa hiện các số của dự báo cuối. Tua lùi sẽ ẩn lại đầu ra. Sau câu trả lời, bấm **Tiếp tục** để chạy từ đúng vị trí; đóng hộp thoại trước khi tiếp tục.
 
 ## 4. Mở code khi bị hỏi
 
-Mở sẵn sáu file Python: `../models/src/models.py`, `../models/src/training.py`, `../models/src/preprocessing.py`, `../models/src/evaluation.py`, `../models/src/config.py`, `scripts/export_demo.py`. Có thể dùng [CODE_MAP_VI.md](../../../models/CODE_MAP_VI.md) để tìm thêm. Số dòng dưới đây ứng với bản đã đối chiếu; tên hàm/từ khóa giúp tìm lại nếu số dòng thay đổi.
+Các liên kết Code trên website mở trực tiếp file tương ứng trong tab GitHub mới và tạm dừng hoạt ảnh. Trả lời ngắn bằng lời trước, rồi chỉ các dòng liên quan. Nếu không có Internet, dùng các file local đã mở sẵn.
+
+Mở sẵn sáu file Python: `../models/src/models.py`, `../models/src/training.py`, `../models/src/preprocessing.py`, `../models/src/evaluation.py`, `../models/src/config.py`, `scripts/export_demo.py`. Có thể dùng [CODE_MAP_VI.md](../models/CODE_MAP_VI.md) để tìm thêm. Số dòng dưới đây ứng với bản đã đối chiếu; tên hàm/từ khóa giúp tìm lại nếu số dòng thay đổi.
 
 | Giảng viên hỏi | Mở file / dòng | Chỉ vào đâu và trả lời gì |
 | --- | --- | --- |
-| “Mạng RNN nằm ở đâu?” | [models.py](../../../models/src/models.py), dòng 14–33 | `self.recurrent` khai báo mạng; `nn.Linear(hidden_size, 1)` tạo đầu ra; `forward` đọc chuỗi và lấy trạng thái cuối. |
-| “Công thức tanh trên slide ở đâu trong code?” | [export_demo.py](../../scripts/export_demo.py), hàm `replay_recurrence` | Đầu vào nhân ma trận + trạng thái trước nhân ma trận + hai bias, rồi `torch.tanh`. Đây là hàm đối chiếu lượt thuận với PyTorch, không phải vòng huấn luyện thay thế. |
-| “Các phép nhân của ô 1 trên website từ đâu?” | Cùng file, hàm `trace_first_component`; [RecurrentMechanism.tsx](../../src/components/demo/RecurrentMechanism.tsx) | Script lấy hàng 0 của hai ma trận trọng số thật và trạng thái trước từ PyTorch, xuất từng tích, hai bias, tổng và kết quả tanh. Ô 1 là `h[0]`. Component trình bày các tổng và phép tanh ngay trong sơ đồ; mô hình vẫn tính đủ 32 ô. |
-| “Phép bỏ chuẩn hóa có phải số minh họa?” | [export_demo.py](../../scripts/export_demo.py), hàm `export_dataset`, tìm `output_weights`, `normalization`; [PredictionReadout.tsx](../../src/components/demo/PredictionReadout.tsx) | Xuất đủ trọng số/bias của Linear và trung bình, độ lệch chuẩn mục tiêu từ manifest; đối chiếu đầu ra với PyTorch. Bảng dự đoán dùng các số thật để trình bày từ đầu ra chuẩn hóa đến đơn vị gốc sau khi đã đến pha Dự đoán. |
+| “Mạng RNN nằm ở đâu?” | [models.py](../models/src/models.py), dòng 14–33 | `self.recurrent` khai báo mạng; `nn.Linear(hidden_size, 1)` tạo đầu ra; `forward` đọc chuỗi và lấy trạng thái cuối. |
+| “Công thức tanh trên slide ở đâu trong code?” | [export_demo.py](scripts/export_demo.py), hàm `replay_recurrence` | Đầu vào nhân ma trận + trạng thái trước nhân ma trận + hai bias, rồi `torch.tanh`. Đây là hàm đối chiếu lượt thuận với PyTorch, không phải vòng huấn luyện thay thế. |
+| “Các phép nhân của ô 1 trên website từ đâu?” | Cùng file, hàm `trace_first_component`; [RNNCalculation.tsx](src/components/demo/RNNCalculation.tsx) | Script lấy hàng 0 của hai ma trận trọng số thật và trạng thái trước từ PyTorch, xuất từng tích, hai bias, tổng và kết quả tanh. Ô 1 là `h[0]`. Component trình bày các tổng và phép tanh trong hộp thoại; mô hình vẫn tính đủ 32 ô. |
+| “Phép bỏ chuẩn hóa có phải số minh họa?” | [export_demo.py](scripts/export_demo.py), hàm `export_dataset`, tìm `output_weights`, `normalization`; [PredictionReadout.tsx](src/components/demo/PredictionReadout.tsx) | Xuất đủ trọng số/bias của Linear và trung bình, độ lệch chuẩn mục tiêu từ manifest; đối chiếu đầu ra với PyTorch. Hộp thoại phép tính dùng các số thật để trình bày từ đầu ra chuẩn hóa đến đơn vị gốc sau khi đã đến pha Dự đoán. |
 | “Tại sao hai bias trong code mà slide chỉ có một?” | Cùng hàm `replay_recurrence`, tìm `bias_ih_l0` | PyTorch lưu `bias_ih_l0` và `bias_hh_l0`; trong công thức gộp có thể viết tổng của chúng thành `b`. |
-| “24 giờ hoặc 30 phiên được cắt ở đâu?” | [preprocessing.py](../../../models/src/preprocessing.py), dòng 206–209 | `scaled_x[t-lookback:t]` lấy quá khứ, bỏ cận phải `t`; `y` lấy tại `t`. |
+| “24 giờ hoặc 30 phiên được cắt ở đâu?” | [preprocessing.py](../models/src/preprocessing.py), dòng 206–209 | `scaled_x[t-lookback:t]` lấy quá khứ, bỏ cận phải `t`; `y` lấy tại `t`. |
 | “Đầu vào Retailrocket thật sự có gì?” | Cùng file, dòng 45–64 | Ba số đếm qua `log1p`, bốn đặc trưng thời gian sin/cos; thứ tự bảy cột được ghi rõ trong `features`. |
 | “Amazon có nhận trực tiếp giá không?” | Cùng file, dòng 132–136; tìm `return frame, ["log_return"]` | `np.log(frame.target / frame.target.shift(1))` tạo lợi suất log; danh sách đầu vào chỉ có `log_return`. |
 | “Chia dữ liệu và chuẩn hóa có nhìn tương lai không?” | Cùng file, dòng 182–209 | Chia theo thời điểm mục tiêu; thống kê x/y chỉ lấy từ train. Sau đó dùng lại cho validation/test; từng cửa sổ vẫn kết thúc trước nhãn. |
-| “Học trọng số ở dòng nào?” | [training.py](../../../models/src/training.py), dòng 59–68 | `zero_grad` xóa gradient cũ; `loss_fn(model(x), y)` tính dự đoán và loss; `backward` tính gradient; clipping giới hạn norm; `optimizer.step` mới cập nhật trọng số. |
+| “Học trọng số ở dòng nào?” | [training.py](../models/src/training.py), dòng 59–68 | `zero_grad` xóa gradient cũ; `loss_fn(model(x), y)` tính dự đoán và loss; `backward` tính gradient; clipping giới hạn norm; `optimizer.step` mới cập nhật trọng số. |
 | “Chọn mô hình bằng test à?” | Cùng file, dòng 71–91 | Dùng validation MSE để lưu `best_state`, dừng sớm và khôi phục checkpoint tốt nhất. Test không tham gia chọn epoch. |
-| “Đầu ra Linear đổi thành giá/số sự kiện ở đâu?” | [evaluation.py](../../../models/src/evaluation.py), dòng 23–37 | `original_units`: bỏ chuẩn hóa; Retail dùng `expm1` và chặn âm; Amazon dùng giá cuối × `exp(return)`. |
-| “Sai số này tính như thế nào?” | [evaluation.py](../../../models/src/evaluation.py), dòng 40–48 | Hiệu dự báo − thực tế; MAE lấy trung bình trị tuyệt đối sau khi đổi về đơn vị gốc. Baseline giữ nguyên được tạo ở dòng 97–108. |
-| “Website có thực sự chạy mô hình không?” | [useDemoData.ts](../../src/hooks/useDemoData.ts), tìm `fetch`; [export_demo.py](../../scripts/export_demo.py), hàm `load_checkpoint` và `predict_saved_windows` | Browser đọc `demo.json`. Script Python nạp checkpoint và suy luận trước khi xuất; browser phát lại dữ liệu đó. |
-| “Làm sao biết các ô màu không phải số tự đặt?” | [export_demo.py](../../scripts/export_demo.py), hàm `export_dataset` | Kiểm tra hash checkpoint, khớp đầu vào chuẩn hóa, chạy lại mô hình, đối chiếu từng trạng thái và dự báo. Kiểm tra số liệu mới chứng minh nguồn của hình; màu chỉ là cách hiển thị. |
+| “Đầu ra Linear đổi thành giá/số sự kiện ở đâu?” | [evaluation.py](../models/src/evaluation.py), dòng 23–37 | `original_units`: bỏ chuẩn hóa; Retail dùng `expm1` và chặn âm; Amazon dùng giá cuối × `exp(return)`. |
+| “Sai số này tính như thế nào?” | [evaluation.py](../models/src/evaluation.py), dòng 40–48 | Hiệu dự báo − thực tế; MAE lấy trung bình trị tuyệt đối sau khi đổi về đơn vị gốc. Baseline giữ nguyên được tạo ở dòng 97–108. |
+| “Website có thực sự chạy mô hình không?” | [useDemoData.ts](src/hooks/useDemoData.ts), tìm `fetch`; [export_demo.py](scripts/export_demo.py), hàm `load_checkpoint` và `predict_saved_windows` | Browser đọc `demo.json`. Script Python nạp checkpoint và suy luận trước khi xuất; browser phát lại dữ liệu đó. |
+| “Làm sao biết các ô màu không phải số tự đặt?” | [export_demo.py](scripts/export_demo.py), hàm `export_dataset` | Kiểm tra hash checkpoint, khớp đầu vào chuẩn hóa, chạy lại mô hình, đối chiếu từng trạng thái và dự báo. Kiểm tra số liệu mới chứng minh nguồn của hình; màu chỉ là cách hiển thị. |
 
 ## 5. Hai đoạn code phải tự giải thích được
 
@@ -232,7 +234,7 @@ Không nhất thiết sai về cài đặt. Nó cho thấy cấu hình/thực ng
 3. Chỉ giải thích đoạn liên quan, thường 2–10 dòng. Chỉ rõ tensor vào, phép xử lý và tensor ra nếu được hỏi về mô hình.
 4. Quay lại website và bấm **Tiếp tục**. Không chạy lại cả hai tập chỉ vì vừa mở code.
 
-Nếu được yêu cầu chỉ nơi BPTT xảy ra, mở `loss.backward()` trước. Nếu được hỏi công thức truy hồi cho cả vector, mở `replay_recurrence`; nếu hỏi nguồn từng phép nhân của ô 1 trên website, mở `trace_first_component`. `RecurrentMechanism.tsx` trình bày phép tính trạng thái; `PredictionReadout.tsx` trình bày phép đổi đầu ra về đơn vị gốc; `useDemoPlayback.ts` điều khiển việc phát. Chọn đúng tầng mã giúp tránh giải thích giao diện khi câu hỏi đang hỏi thuật toán học.
+Nếu được yêu cầu chỉ nơi BPTT xảy ra, mở `loss.backward()` trước. Nếu được hỏi công thức truy hồi cho cả vector, mở `replay_recurrence`; nếu hỏi nguồn từng phép nhân của ô 1 trên website, mở `trace_first_component`. `RNNCalculation.tsx` trình bày phép tính trạng thái trong `DemoDialog.tsx`; `PredictionReadout.tsx` trình bày phép đổi đầu ra về đơn vị gốc; `useDemoPlayback.ts` điều khiển việc phát. Chọn đúng tầng mã giúp tránh giải thích giao diện khi câu hỏi đang hỏi thuật toán học.
 
 Nếu chưa có bằng chứng cho một câu hỏi, trả lời giới hạn cụ thể:
 
@@ -247,4 +249,4 @@ Nếu chưa có bằng chứng cho một câu hỏi, trả lời giới hạn c�
 - Tập chứng minh `x[t-lookback:t]` không chứa nhãn tại `t`.
 - Tập câu kết luận Amazon: mẫu đang xem tốt hơn, nhưng toàn test chưa tốt hơn baseline.
 
-Tra cứu đầy đủ hơn: [bản đồ code](../../../models/CODE_MAP_VI.md) và [hướng dẫn điều khiển demo](../../PRESENTATION_GUIDE.md). Không cần chạy lại huấn luyện trong buổi nói để chứng minh mô hình có thật; có thể mở checkpoint, script xuất và các phép đối chiếu đã lưu.
+Tra cứu đầy đủ hơn: [bản đồ code](../models/CODE_MAP_VI.md) và [hướng dẫn điều khiển demo](PRESENTATION_GUIDE.md). Không cần chạy lại huấn luyện trong buổi nói để chứng minh mô hình có thật; có thể mở checkpoint, script xuất và các phép đối chiếu đã lưu.
