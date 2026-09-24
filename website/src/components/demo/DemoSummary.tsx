@@ -18,7 +18,10 @@ export default function DemoSummary({
     <section className="stage-summary" aria-labelledby="summary-title">
       <div>
         <h1 id="summary-title">Cùng là RNN, hiệu quả khác nhau.</h1>
-        <p>MAE trên toàn tập kiểm tra: sai số tuyệt đối trung bình, càng thấp càng tốt.</p>
+        <p>
+          Mỗi dự đoán lệch thực tế bao nhiêu? Các số dưới đây là độ lệch trung bình (MAE), càng nhỏ
+          càng tốt.
+        </p>
       </div>
       <div className="stage-summary-cards">
         {datasets.map((data, index) => (
@@ -27,7 +30,7 @@ export default function DemoSummary({
             <span>{formatNumber(data.metrics.testCount, 0)} dự đoán</span>
             <dl>
               <div>
-                <dt>Giữ nguyên</dt>
+                <dt>{DATASET_COPY[data.id].baselineLabel}</dt>
                 <dd>{formatNumber(data.metrics.baselineMae, data.id === 'amazon' ? 4 : 2)}</dd>
               </div>
               <div>

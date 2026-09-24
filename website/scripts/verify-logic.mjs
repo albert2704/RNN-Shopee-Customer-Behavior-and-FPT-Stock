@@ -42,42 +42,45 @@ for (const lookback of [24, 30]) {
   });
 }
 
-test('Chạy cả bộ đi qua đúng 24/30 bước rồi dừng ở tổng kết', () => {
-  const lengths = [24, 30];
-  let state = { index: 0, frame: 0, mode: 'all', playing: true, summary: false };
-  const visits = [];
-  for (let transitions = 0; state.playing && transitions < 100; transitions++) {
-    visits.push([state.index, state.frame]);
-    state = { ...state, ...advanceReplay(state, lengths[state.index], lengths.length) };
-  }
-  for (const [index, length] of lengths.entries()) {
+for (const [index, lookback] of [24, 30].entries()) {
+  test(`Tập ${index}: tự chạy đến dự đoán rồi dừng, giữ nguyên tập đang chọn`, () => {
+    let state = { index, frame: 0, playing: true, summary: false };
+    const visited = [];
+    while (state.playing) {
+      visited.push(state.frame);
+      state = advanceReplay(state, lookback);
+    }
     assert.deepEqual(
-      visits.filter(([i]) => i === index).map(([, f]) => f),
-      Array.from({ length: length + 4 }, (_, frame) => frame),
+      visited,
+      Array.from({ length: lookback + 1 }, (_, i) => i),
     );
-  }
-  assert.equal(state.summary, true);
-  assert.equal(state.playing, false);
-  assert.equal(state.index, 1);
-});
-
-test('Chạy riêng một tập dừng tại kết quả, không tự chuyển tập', () => {
-  assert.deepEqual(advanceReplay({ index: 1, frame: 33, mode: 'single' }, 30, 2), {
-    index: 1,
-    frame: 33,
-    playing: false,
-    summary: false,
+    assert.deepEqual(state, { index, frame: lookback + 1, playing: false, summary: false });
+    for (let tick = 0; tick < 20; tick++) state = advanceReplay(state, lookback);
+    assert.equal(state.frame, lookback + 1);
+    assert.equal(getReplayPhase(state.frame, lookback).revealed, false);
   });
-});
 
-test('Nhịp phát giữ hai bước đầu và dành thời gian đọc kết quả', () => {
+  test(`Tập ${index}: mỗi lần bấm chỉ mở một pha, thực tế và toàn tập không tự chuyển`, () => {
+    const prediction = { index, frame: lookback + 1 };
+    const actual = advanceReplay(prediction, lookback, true);
+    assert.deepEqual(actual, { index, frame: lookback + 2, playing: false, summary: false });
+    assert.deepEqual(advanceReplay(actual, lookback), actual);
+    const evaluation = advanceReplay(actual, lookback, true);
+    assert.deepEqual(evaluation, { index, frame: lookback + 3, playing: false, summary: false });
+    assert.deepEqual(advanceReplay(evaluation, lookback), evaluation);
+    assert.deepEqual(advanceReplay(evaluation, lookback, true), evaluation);
+  });
+}
+
+test('Hai bước đầu giữ nhịp giải thích; mọi bước từ 3 đọc nhanh, kết quả không dùng đồng hồ', () => {
   for (const length of [24, 30]) {
-    assert.deepEqual(
-      [0, 1, 2, 3, length - 1, length, length + 1, length + 2, length + 3].map((frame) =>
-        getFrameDuration(frame, length),
-      ),
-      [1200, 4400, 4400, 700, 700, 1500, 2600, 5000, 7000],
-    );
+    assert.equal(getFrameDuration(0, length), 1200);
+    assert.equal(getFrameDuration(1, length), 4400);
+    assert.equal(getFrameDuration(2, length), 4400);
+    for (let frame = 3; frame <= length; frame++)
+      assert.equal(getFrameDuration(frame, length), 250);
+    for (let frame = length + 1; frame <= length + 3; frame++)
+      assert.equal(getFrameDuration(frame, length), 0);
   }
 });
 

@@ -1,6 +1,6 @@
 # Hướng dẫn demo sau phần thuyết trình
 
-Hoàn thành phần slide rồi mở [website](http://127.0.0.1:4173/#demo). Bấm **Chạy cả 2 demo**. Website tự chạy Retailrocket → Amazon → tổng kết. Không cần cuộn hoặc chuyển sang trang khác trong lượt demo chính.
+Hoàn thành phần slide rồi mở [website](http://127.0.0.1:4173/#demo). Bấm **Chạy tập này** để chạy tập đang chọn đến Dự đoán. Bấm **Xem thực tế**, rồi **Xem toàn tập** khi sẵn sàng. Chọn tab Amazon để chạy tập thứ hai; mở **Tổng kết** bằng tay.
 
 ## Chuẩn bị
 
@@ -12,9 +12,9 @@ Dữ liệu, font và tài liệu có sẵn trên máy. Các liên kết nguồn
 
 > Phần vừa rồi đã giải thích cách RNN hoạt động. Bây giờ nhóm sẽ cho mô hình đọc dữ liệu thật trên hai bài toán. Mọi người chú ý hai việc: trạng thái thay đổi khi đọc chuỗi, và kết quả có tốt hơn cách đoán đơn giản hay không.
 
-Bấm **Chạy cả 2 demo**. Biểu đồ giữ nguyên vị trí, còn bảng bên cạnh lần lượt giải thích bước đang đọc, dự đoán, thực tế kèm nhận xét ví dụ, rồi MAE trên toàn tập kiểm tra. Có thể để toàn bộ lượt chạy tự động, hoặc tạm dừng bằng **Space** khi cần nói thêm.
+Bấm **Chạy tập này** để chạy tập đang chọn đến Dự đoán. Bấm **Xem thực tế**, rồi **Xem toàn tập** khi sẵn sàng. Chọn tab Amazon để chạy tập thứ hai; mở **Tổng kết** bằng tay.
 
-Ở tốc độ 1×, mỗi tập mở đầu trong 1,2 giây. Hai bước đầu dừng 4,4 giây mỗi bước để chỉ rõ **trạng thái trước + đầu vào hiện tại → RNN → trạng thái mới**; mũi tên vòng cho thấy trạng thái mới được đưa sang bước sau. Từ bước 3, bỏ chuyển động truyền vector và đổi pha nhấn sáng; biểu đồ và giá trị tiếp tục cập nhật mỗi 0,7 giây. Đầu vào cuối giữ 1,5 giây trước khi hiện dự đoán. Sau đó có 2,6 giây cho dự đoán, 5 giây cho thực tế và nhận xét, 7 giây cho MAE trước khi tự chuyển tiếp. Có thể tạm dừng nếu cần nói dài hơn.
+Ở tốc độ 1×, mỗi tập mở đầu 1,2 giây. Hai bước đầu giữ 4,4 giây mỗi bước để giải thích cơ chế. Từ bước 3 đến hết cửa sổ, mỗi bước chỉ 0,25 giây. Hoạt ảnh tự dừng ở Dự đoán; bấm **Xem thực tế**, rồi **Xem toàn tập** để mở từng phần khi sẵn sàng. Không có bộ đếm thời gian ở các pha kết quả.
 
 ## 1. Retailrocket
 
@@ -42,7 +42,7 @@ Không gọi sự kiện giao dịch là số đơn hàng. Đây là dữ liệu
 
 ## 2. Amazon
 
-Website tự chuyển sang Amazon. Giữ cách quan sát giống tập trước.
+Chọn tab **Amazon**, rồi bấm **Chạy tập này**. Giữ cách quan sát giống tập trước.
 
 > Với Amazon, một bước là một phiên giao dịch. Mô hình đọc 30 phiên thay đổi giá, được biểu diễn bằng lợi suất log. Sau khi dự đoán lợi suất phiên tới, nhóm đổi kết quả về giá đóng cửa điều chỉnh để dễ đối chiếu.
 >
@@ -58,7 +58,7 @@ Không dùng demo này để khẳng định khả năng kiếm lời. Thí nghi
 
 ## 3. Tổng kết
 
-Lượt chạy dừng ở tổng kết để nhóm kết luận.
+Bấm **Tổng kết** khi đã trình bày xong hai tập.
 
 > Cả hai bài toán dùng cùng nguyên tắc: đọc dữ liệu theo thứ tự, cập nhật trạng thái, rồi dự đoán từ trạng thái cuối. Nhưng hiệu quả khác nhau theo dữ liệu. Trong thí nghiệm này, RNN cải thiện MAE trên Retailrocket; với Amazon thì chưa tốt hơn cách giữ nguyên giá.
 >
@@ -68,12 +68,12 @@ Không so trực tiếp các con số MAE giữa hai tập: đơn vị khác nha
 
 ## Điều khiển khi bị hỏi ngắt
 
-- **Tạm dừng / Tiếp tục** hoặc **Space:** dừng cả hoạt ảnh và việc tự chuyển tập. Khi đang chọn một nút, thanh trượt hoặc ô nhập, dùng đúng thao tác bàn phím của điều khiển đó.
+- **Tạm dừng / Tiếp tục** hoặc **Space:** dừng hoạt ảnh trong pha đọc. Ở pha kết quả, Space mở bước tiếp theo giống nút chính. Khi đang chọn một nút, thanh trượt hoặc ô nhập, dùng đúng thao tác bàn phím của điều khiển đó.
 - **Thanh thời gian:** chọn một bước để giải thích; thao tác này tạm dừng. Kéo về trước đầu ra sẽ ẩn lại dự đoán và đáp án.
 - **Tab dữ liệu:** chọn một tập cụ thể, trở về đầu tập đó và tạm dừng. Bấm **Chạy tập này** để chạy riêng tập đã chọn.
-- **Tốc độ:** chọn 0,5×, 1× hoặc 2×. **Chạy lại tập này** xuất hiện khi một lượt chạy riêng đã kết thúc; nút biểu tượng **Chạy lại cả 2 từ đầu** luôn bắt đầu lại cả chuỗi. **Tổng kết** cho phép mở kết quả chung ngay khi cần.
+- **Tốc độ:** chọn 0,5×, 1× hoặc 2×. **Chạy lại tập này từ đầu** chỉ chạy lại tập đang chọn. Chọn tab để đổi dữ liệu; bấm **Tổng kết** để mở kết quả chung.
 - **Giải thích nhanh:** chọn **Trạng thái, Trọng số, Huấn luyện** hoặc **Đầu vào** để trả lời đúng chủ đề đang hỏi. Mỗi chủ đề có một lời giải thích ngắn kèm hình. Phần đầu vào dùng đúng tập đang xem. **Đọc giải thích đầy đủ** mở tài liệu tham khảo dài hơn nếu cần.
-- Phép tính RNN nằm ngay trong sơ đồ; phép đổi đơn vị nằm ngay bảng dự đoán. Số của dự báo cuối chỉ hiện khi đến pha **Dự đoán** và ẩn lại nếu tua lùi. Không cần bấm mở trợ giúp để giải thích hai phần này.
+- **Xem phép tính** mở chi tiết trạng thái và phép đổi đơn vị. Số của dự báo cuối chỉ hiện khi đến pha Dự đoán và ẩn lại nếu tua lùi.
 - Mở hộp thoại sẽ tạm dừng. Đóng hộp thoại quay về đúng tập và bước cũ, vẫn đang dừng; bấm **Tiếp tục** khi sẵn sàng.
 - **Xem phép tính:** xem các phép nhân của bước hiện tại; **Code mô hình / Code huấn luyện / Code đánh giá** mở Python trên GitHub và tạm dừng.
 - **Dữ liệu & phép tính:** xem dữ liệu đầu vào, trạng thái hoặc công thức. Phân tích chi tiết và mã nguồn là phụ lục tùy chọn, không phải bước tiếp theo bắt buộc của demo.

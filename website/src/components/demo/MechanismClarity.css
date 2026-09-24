@@ -1,15 +1,15 @@
 /* Main demo follows the forecast. Arithmetic is available in a paused dialog. */
 .demo-stage-shell {
   --demo-accent: #294dcd;
-  --demo-muted: #506546;
-  --demo-border: #dce5d7;
-  --demo-surface: #f3f5f0;
+  --demo-muted: #475569;
+  --demo-border: #e2e8f0;
+  --demo-surface: #ffffff;
   --demo-blue-surface: #edf1ff;
-  --demo-actual: #244f38;
+  --demo-actual: #475569;
   --demo-baseline: #805a34;
 }
 .stage-workspace {
-  grid-template-rows: minmax(0, 1fr) 190px;
+  grid-template-rows: minmax(0, 1fr) 214px;
 }
 .stage-observation {
   grid-template-columns: minmax(0, 1fr) minmax(350px, 38%);
@@ -19,6 +19,8 @@
   padding-bottom: 6px;
 }
 .stage-mechanism-grid {
+  position: relative;
+  padding-bottom: 24px;
   grid-template-columns: 1.1fr 20px 1fr 18px 1.1fr 18px 1fr;
   gap: 10px;
 }
@@ -188,7 +190,7 @@
 }
 /* Bảng đầu vào: đại lượng trước biến đổi, không lẫn với vector chuẩn hóa. */
 .stage-current-inputs {
-  border-top: 1px solid #dce5d7;
+  border-top: 1px solid #e2e8f0;
   margin-top: 12px;
   padding-top: 10px;
   min-width: 0;
@@ -203,7 +205,7 @@
 }
 .stage-current-inputs-head small {
   font-size: 12px;
-  color: #506546;
+  color: #475569;
   white-space: nowrap;
 }
 .stage-current-inputs-head h3 {
@@ -223,7 +225,7 @@
 }
 .stage-current-input-values dt {
   font-size: 12px;
-  color: #506546;
+  color: #475569;
   line-height: 1.4;
 }
 .stage-current-input-values dd {
@@ -241,7 +243,7 @@
   margin: 0;
   font-size: 12px;
   line-height: 1.5;
-  color: #506546;
+  color: #475569;
 }
 .stage-focus-content .stage-current-inputs-note p {
   font-size: inherit;
@@ -249,7 +251,7 @@
   margin: 0;
 }
 .stage-prediction-readout {
-  border-top: 1px solid #dce5d7;
+  border-top: 1px solid #e2e8f0;
   margin-top: 12px;
   padding-top: 10px;
 }
@@ -270,13 +272,13 @@
   font-size: 13px;
   line-height: 1.5;
   margin: 3px 0 0;
-  color: #506546;
+  color: #475569;
 }
 .stage-focus-content .stage-prediction-date {
   font-size: 12px;
   line-height: 1.4;
   margin: 5px 0 0;
-  color: #506546;
+  color: #475569;
 }
 .stage-conversion-step {
   margin-top: 10px;
@@ -378,7 +380,7 @@
 }
 @media (min-width: 701px) and (max-width: 1100px) {
   .stage-workspace {
-    grid-template-rows: minmax(0, 1fr) 224px;
+    grid-template-rows: minmax(0, 1fr) 248px;
   }
   .stage-mechanism .stage-feedback {
     display: grid;
@@ -417,7 +419,7 @@
 }
 @media (min-width: 701px) and (max-height: 760px) {
   .stage-workspace {
-    grid-template-rows: minmax(0, 1fr) 166px;
+    grid-template-rows: minmax(0, 1fr) 190px;
   }
   .stage-mechanism .stage-input-block > small {
     display: none;
@@ -447,7 +449,7 @@
     gap: 6px;
   }
   .stage-workspace {
-    grid-template-rows: minmax(0, 1fr) 166px;
+    grid-template-rows: minmax(0, 1fr) 190px;
   }
   .stage-mechanism {
     padding-top: 4px;
@@ -518,4 +520,56 @@
   .stage-rnn-calculation header {
     flex-wrap: wrap;
   }
+}
+
+/* Numbered stages keep the reading direction clear without another animation clock. */
+.stage-flow-number {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 3px;
+  border: 1px solid #cbd5e1;
+  border-radius: 50%;
+  color: #64748b;
+  background: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+.stage-mechanism[data-handover='input'] .stage-input-block .stage-flow-number,
+.stage-mechanism[data-handover='update'] .stage-cell .stage-flow-number,
+.stage-mechanism[data-handover='state'] .stage-memory .stage-flow-number,
+.stage-mechanism[data-handover='transfer'] .stage-memory .stage-flow-number {
+  background: #365eeb;
+  border-color: #365eeb;
+  color: white;
+}
+.stage-mechanism[data-handover='transfer'] .stage-previous {
+  box-shadow:
+    0 0 0 2px #90a8f3,
+    0 0 0 5px #edf1ff;
+}
+.stage-mechanism .stage-cell small {
+  display: block;
+  color: #475569;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.stage-mechanism[data-handover='input'] .stage-inputs,
+.stage-mechanism[data-handover='update'] .stage-cell,
+.stage-mechanism[data-handover='state'] .stage-memory,
+.stage-mechanism[data-handover='transfer'] .stage-previous {
+  background: #edf1ff;
+}
+
+.stage-focus-content .stage-baseline-explanation {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--demo-muted);
+}
+.stage-test-values dd {
+  white-space: nowrap;
 }

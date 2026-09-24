@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
 
 // Run against an already-built local site. This exercises the actual replay
-// timers at 2×; the complete two-dataset tour takes about 43 seconds.
+// timers at 2×; each dataset stops at its prediction for manual reveals.
 const url = (process.env.SITE_URL || 'http://127.0.0.1:4173').replace(/\/$/, '');
 const output = new URL('../qa/flow/', import.meta.url);
 await mkdir(output, {recursive: true});
@@ -45,7 +45,7 @@ async function fitsProjector() {
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollHeight <= innerHeight), {
     message: 'The entire main demo fits the 1280×720 projector viewport without scrolling',
   }).toBe(true);
-  const player = page.getByRole('button', {name: /^(Chạy cả 2 demo|Chạy tập này|Tiếp tục|Chạy lại tập này|Chạy lại cả 2|Tạm dừng)$/});
+  const player = page.getByRole('button', {name: /^(Chạy tập này|Tiếp tục|Chạy lại tập này|Về demo|Xem thực tế|Xem toàn tập|Tạm dừng)$/});
   await expect(player).toBeInViewport({ratio: 1});
 }
 
@@ -95,7 +95,7 @@ try {
   await expect(page).toHaveURL(/#demo$/);
   await expect(workspace(data[0])).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
-  await expect(page.getByRole('button', {name: 'Chạy cả 2 demo', exact: true})).toBeVisible();
+  await expect(page.getByRole('button', {name: 'Chạy tập này', exact: true})).toBeVisible();
   await expect(page.getByRole('spinbutton')).toHaveCount(0);
   await expect(page.getByLabel('Dự đoán của bạn', {exact: true})).toHaveCount(0);
   await expect(page.getByRole('button', {name: /^(Tiếp theo|Quay lại)$/})).toHaveCount(0);
@@ -126,7 +126,7 @@ try {
     assert.deepEqual(await previousStates.locator('[title]').evaluateAll(nodes => nodes.map(node => node.title)),
       item.context[3].hiddenState.map((value, unit) => `h trước[${unit}]: ${number(value, 4)}`));
     await expect(focusPanel(item, 'Đọc chuỗi')).toBeVisible();
-    await expect(workspace(item)).toContainText('trọng số đã học giữ nguyên.');
+    await expect(workspace(item)).toContainText('Trọng số giữ nguyên.');
     await expect(workspace(item).locator('.stage-rnn-calculation')).toHaveCount(0);
     await page.getByRole('button', {name: 'Xem phép tính', exact: true}).click();
     const calculationDialog = page.getByRole('dialog');
@@ -246,17 +246,32 @@ try {
     pass(`${item.title}: phase panel separates prediction, example error and full-test MAE; status announces values; rewinding restores initial state and hides future outputs`);
   }
 
-  // One action must carry the audience through both datasets and finish at
-  // the summary. Do not scrub, click tabs, or scroll during this entire block.
-  await page.getByRole('button', {name: 'Chạy lại cả 2 từ đầu', exact: true}).click();
+  // Playback stops at prediction. Each reveal requires an explicit action,
+  // and neither completion nor restart can select the other dataset.
   for (const [index, item] of data.entries()) {
-    await expect(datasetButton(fixtures[index].name)).toHaveAttribute('aria-pressed', 'true', {timeout: 30000});
-    await expect(chart(item)).toHaveAccessibleName(/RNN dự đoán.*Thực tế/, {timeout: 30000});
-    await expect(focusPanel(item, 'Toàn tập')).toContainText(metricAmount(item, item.metrics.rnnMae), {timeout: 30000});
+    await datasetButton(fixtures[index].name).click();
+    await page.getByRole('button', {name: 'Chạy tập này', exact: true}).click();
+    await expect(page.getByRole('button', {name: 'Xem thực tế', exact: true})).toBeVisible({timeout: 30000});
+    await expect(progress()).toHaveValue(String(item.lookback + 1));
+    await page.waitForTimeout(3000);
+    await expect(progress()).toHaveValue(String(item.lookback + 1));
+    await expect(chart(item)).not.toHaveAccessibleName(/Thực tế/);
+    await page.getByRole('button', {name: 'Xem thực tế', exact: true}).click();
+    await expect(progress()).toHaveValue(String(item.lookback + 2));
+    await page.waitForTimeout(3000);
+    await expect(progress()).toHaveValue(String(item.lookback + 2));
+    await page.getByRole('button', {name: 'Xem toàn tập', exact: true}).click();
+    await expect(progress()).toHaveValue(String(item.lookback + 3));
+    await expect(datasetButton(fixtures[index].name)).toHaveAttribute('aria-pressed', 'true');
+    await page.getByRole('button', {name: 'Chạy lại tập này từ đầu', exact: true}).click();
+    await expect(progress()).toHaveValue('0');
+    await expect(datasetButton(fixtures[index].name)).toHaveAttribute('aria-pressed', 'true');
+    await page.getByRole('button', {name: 'Tạm dừng', exact: true}).click();
     await fitsProjector();
   }
-  await expect(page.getByRole('heading', {name: 'Cùng là RNN, hiệu quả khác nhau.', exact: true})).toBeVisible({timeout: 30000});
-  await expect(page.getByRole('button', {name: 'Chạy lại cả 2', exact: true})).toBeVisible();
+  await page.getByRole('button', {name: 'Tổng kết', exact: true}).click();
+  await expect(page.getByRole('heading', {name: 'Cùng là RNN, hiệu quả khác nhau.', exact: true})).toBeVisible();
+  await expect(page.getByRole('button', {name: 'Về demo', exact: true})).toBeVisible();
   await expect(page.getByRole('article')).toHaveCount(2);
   const amazonSummary = page.getByRole('article').filter({has: page.getByRole('heading', {name: 'Amazon', exact: true})});
   await expect(amazonSummary).toContainText('2,2687');
@@ -264,7 +279,7 @@ try {
   await expect(amazonSummary).toContainText('RNN chưa tốt hơn');
   await fitsProjector();
   await screenshot('desktop-summary');
-  pass('One uninterrupted action runs Retailrocket → Amazon → summary with automatic forecasts, truth and evaluation');
+  pass('Each dataset stops at prediction; truth and evaluation need separate clicks; restart preserves the selected dataset');
 
   // Mobile may stack vertically; it must not clip or require sideways scrolling.
   for (const [width, height] of [[768, 1024], [390, 844], [320, 740]]) {

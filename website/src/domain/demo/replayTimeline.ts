@@ -5,7 +5,6 @@
  * Tách các quy tắc thuần này khỏi React để dễ giải thích và kiểm tra biên.
  */
 export type DemoPhase = 0 | 1 | 2 | 3;
-export type PlaybackMode = 'all' | 'single';
 
 export function getReplayPhase(frame: number, lookback: number) {
   return {
@@ -22,29 +21,23 @@ export function getReplayPhase(frame: number, lookback: number) {
 export function getFrameDuration(frame: number, lookback: number): number {
   if (frame === 0) return 1200;
   if (frame <= 2) return 4400; // Hai bước đầu: đọc -> cập nhật -> thấy cả vector quay lại.
-  if (frame < lookback) return 700;
-  if (frame === lookback) return 1500;
-  if (frame === lookback + 1) return 2600;
-  if (frame === lookback + 2) return 5000;
-  return 7000;
+  if (frame <= lookback) return 250; // Từ bước 3, đọc nhanh cả phần lịch sử còn lại.
+  return 0; // Các pha kết quả không dùng đồng hồ.
 }
 
 export interface ReplayPosition {
   index: number;
   frame: number;
-  mode: PlaybackMode;
 }
 
-/** Kết thúc tập đang xem: chạy riêng thì dừng; chạy cả bộ thì chuyển tập/tổng kết. */
-export function advanceReplay(position: ReplayPosition, lookback: number, datasetCount: number) {
-  if (position.frame < lookback + 3) {
-    return { index: position.index, frame: position.frame + 1, playing: true, summary: false };
-  }
-  if (position.mode === 'single') {
-    return { index: position.index, frame: position.frame, playing: false, summary: false };
-  }
-  if (position.index + 1 < datasetCount) {
-    return { index: position.index + 1, frame: 0, playing: true, summary: false };
-  }
-  return { index: position.index, frame: position.frame, playing: false, summary: true };
+/** Tự chạy đến dự đoán rồi dừng. Mỗi thao tác thủ công chỉ mở thêm một pha. */
+export function advanceReplay(position: ReplayPosition, lookback: number, manual = false) {
+  const limit = manual ? lookback + 3 : lookback + 1;
+  const frame = position.frame < limit ? position.frame + 1 : position.frame;
+  return {
+    index: position.index,
+    frame,
+    playing: !manual && frame < lookback + 1,
+    summary: false,
+  };
 }

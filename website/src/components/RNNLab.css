@@ -1,6 +1,6 @@
 .rnn-lab {
-  color: var(--ink, #172921);
-  border: 1px solid var(--line, #dde3dc);
+  color: var(--ink, #1e293b);
+  border: 1px solid var(--line, #e2e8f0);
   border-radius: 22px;
   background: var(--surface, #fff);
   overflow: hidden;
@@ -32,7 +32,7 @@
   justify-content: space-between;
   gap: 20px;
   padding: 20px 28px;
-  border-bottom: 1px solid var(--line, #dde3dc);
+  border-bottom: 1px solid var(--line, #e2e8f0);
 }
 .rnn-eyebrow {
   display: inline-flex;
@@ -40,7 +40,7 @@
   align-items: center;
   font-size: 12px;
   font-weight: 550;
-  color: var(--muted, #6a746f);
+  color: var(--muted, #475569);
 }
 .rnn-status-dot {
   width: 6px;
@@ -57,7 +57,7 @@
   padding: 7px 0;
   border: 0;
   background: transparent;
-  color: var(--muted, #6a746f);
+  color: var(--muted, #475569);
   font-size: 12px !important;
   font-weight: 550 !important;
   white-space: nowrap;
@@ -71,7 +71,7 @@
 }
 .rnn-step-rail {
   padding: 30px 17px;
-  border-right: 1px solid var(--line, #dde3dc);
+  border-right: 1px solid var(--line, #e2e8f0);
   background: #fbfcfa;
 }
 .rnn-rail-caption {
@@ -81,7 +81,7 @@
   line-height: 1.7;
   letter-spacing: 0.075em;
   font-weight: 650;
-  color: var(--muted, #6a746f);
+  color: var(--muted, #475569);
 }
 .rnn-step-rail ol {
   display: flex;
@@ -99,7 +99,7 @@
   padding: 13px 11px;
   border: 1px solid transparent;
   border-radius: 9px;
-  color: var(--muted, #6a746f);
+  color: var(--muted, #475569);
   background: transparent;
   text-align: left;
   font-size: 12px !important;
@@ -109,7 +109,7 @@
     color 140ms ease;
 }
 .rnn-step-button:hover {
-  background: #eff2ed;
+  background: #f8fafc;
 }
 .rnn-step-button.rnn-step-current {
   border-color: #dce4fd;
@@ -128,7 +128,7 @@
   letter-spacing: 0.035em;
 }
 .rnn-step-past .rnn-step-number {
-  color: #75997f;
+  color: #94a3b8;
 }
 .rnn-step-arrow {
   margin-left: auto;
@@ -138,7 +138,7 @@
   margin: 39px 12px 0;
   font-size: 11px;
   line-height: 1.9;
-  color: #606d65;
+  color: #475569;
 }
 .rnn-main {
   padding: 32px 34px 23px;
@@ -157,7 +157,7 @@
   color: var(--accent, #365eeb);
 }
 .rnn-step-counter span {
-  color: #a1aaa3;
+  color: #94a3b8;
   margin-left: 5px;
 }
 .rnn-step-intro h3 {
@@ -166,18 +166,18 @@
   letter-spacing: -0.065em;
   line-height: 1.35;
   font-weight: 600;
-  color: var(--ink, #172921);
+  color: var(--ink, #1e293b);
 }
 .rnn-step-intro p {
   margin: 0 0 24px;
   max-width: 660px;
-  color: var(--muted, #6a746f);
+  color: var(--muted, #475569);
   font-size: 12px;
   line-height: 1.85;
 }
 .rnn-diagram-panel {
   padding: 17px 18px 10px;
-  border: 1px solid var(--line, #dde3dc);
+  border: 1px solid var(--line, #e2e8f0);
   border-radius: 12px;
   background: var(--paper, #f5f7f4);
 }
@@ -186,13 +186,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  color: #606d65;
+  color: #475569;
   font-size: 11px;
   letter-spacing: 0.065em;
   font-weight: 650;
 }
 .rnn-shared-badge {
-  border: 1px solid #dce2da;
+  border: 1px solid #e2e8f0;
   border-radius: 5px;
   padding: 5px 7px;
   font-size: 11px;
@@ -220,9 +220,9 @@
 .rnn-memory-edge,
 .rnn-input-edge,
 .rnn-output-edge {
-  stroke: #c1cbc1;
+  stroke: #cbd5e1;
   stroke-width: 1.5;
-  color: #a5b3a7;
+  color: #cbd5e1;
   fill: none;
 }
 .rnn-node-seen .rnn-memory-edge,
@@ -231,7 +231,7 @@
 }
 .rnn-input-box {
   fill: var(--surface, #fff);
-  stroke: #dce3d9;
+  stroke: #e2e8f0;
 }
 .rnn-node-ring {
   fill: transparent;
@@ -243,8 +243,8 @@
   stroke-dasharray: 3 4;
 }
 .rnn-node-core {
-  fill: #e7ece5;
-  stroke: #d5dfd2;
+  fill: #f8fafc;
+  stroke: #e2e8f0;
 }
 .rnn-node-seen .rnn-node-core {
   fill: var(--accent-soft, #eaf0ff);
@@ -255,11 +255,11 @@
 }
 .rnn-svg-small {
   font-size: 13px;
-  fill: #69796b;
+  fill: #475569;
 }
 .rnn-svg-tiny {
   font-size: 11px;
-  fill: #606d65;
+  fill: #475569;
 }
 .rnn-svg-mono,
 .rnn-svg-input,
@@ -268,29 +268,29 @@
 }
 .rnn-svg-input {
   font-size: 12px;
-  fill: #4b5e4e;
+  fill: #475569;
 }
 .rnn-svg-node-label {
   font-size: 11px;
-  fill: #606d65;
+  fill: #475569;
 }
 .rnn-svg-node-value {
   font-size: 15px;
-  fill: #8d9b8e;
+  fill: #94a3b8;
   font-weight: 600;
 }
 .rnn-svg-time {
   font-size: 13px;
-  fill: #516253;
+  fill: #475569;
   font-weight: 550;
 }
 .rnn-output-box {
-  fill: #f0f3ee;
-  stroke: #d5ded1;
+  fill: #ffffff;
+  stroke: #e2e8f0;
 }
 .rnn-output-box.rnn-output-active {
-  fill: #e7eee1;
-  stroke: #b2c4a7;
+  fill: #f8fafc;
+  stroke: #cbd5e1;
 }
 .rnn-gradient-edge {
   stroke: var(--accent, #365eeb);
@@ -317,7 +317,7 @@
   align-items: center;
   gap: 12px;
   padding-top: 7px;
-  border-top: 1px solid #e2e7df;
+  border-top: 1px solid #e2e8f0;
   margin: 2px 2px 0;
 }
 .rnn-time-select {
@@ -330,11 +330,11 @@
   background: transparent;
   padding: 7px 11px;
   font-size: 11px;
-  color: var(--muted, #6a746f);
+  color: var(--muted, #475569);
 }
 .rnn-time-select button.rnn-time-current {
   background: white;
-  border-color: var(--line, #dde3dc);
+  border-color: var(--line, #e2e8f0);
   color: var(--accent, #365eeb);
 }
 .rnn-time-select button:hover {
@@ -346,13 +346,13 @@
   min-height: 130px;
 }
 .rnn-insight-tag {
-  color: var(--muted, #6a746f);
+  color: var(--muted, #475569);
   font-size: 11px;
   letter-spacing: 0.07em;
   font-weight: 650;
 }
 .rnn-start-insight {
-  border-left: 2px solid #c8d6bc;
+  border-left: 2px solid #e2e8f0;
   padding-left: 17px;
 }
 .rnn-start-insight p {
@@ -364,7 +364,7 @@
   font-weight: 600;
 }
 .rnn-small-note {
-  color: var(--muted, #6a746f);
+  color: var(--muted, #475569);
   font-size: 11px;
   line-height: 1.85;
 }
@@ -379,7 +379,7 @@ p.rnn-small-note {
   margin-bottom: 15px;
 }
 .rnn-equation-head > span {
-  color: var(--muted, #6a746f);
+  color: var(--muted, #475569);
   font-size: 11px;
   letter-spacing: 0.045em;
   font-weight: 650;
@@ -398,7 +398,7 @@ p.rnn-small-note {
 }
 .rnn-contribution-grid > div,
 .rnn-gradient-grid > div {
-  border: 1px solid var(--line, #dde3dc);
+  border: 1px solid var(--line, #e2e8f0);
   border-radius: 9px;
   padding: 13px 12px;
 }
@@ -407,7 +407,7 @@ p.rnn-small-note {
 .rnn-gradient-grid span {
   display: block;
   font-size: 11px;
-  color: var(--muted, #6a746f);
+  color: var(--muted, #475569);
   line-height: 1.5;
 }
 .rnn-contribution-grid strong,
@@ -425,7 +425,7 @@ p.rnn-small-note {
 .rnn-gradient-grid small {
   display: block;
   font-size: 11px;
-  color: #606d65;
+  color: #475569;
   line-height: 1.6;
 }
 .rnn-memory-insight {
@@ -451,19 +451,19 @@ p.rnn-small-note {
 }
 .rnn-metric-grid > div {
   padding: 12px 15px;
-  border-left: 1px solid var(--line, #dde3dc);
+  border-left: 1px solid var(--line, #e2e8f0);
 }
 .rnn-metric-grid > div:first-child {
   border-left: 0;
   padding-left: 0;
 }
 .rnn-metric-grid .rnn-loss-metric {
-  background: #f2f5ed;
+  background: #ffffff;
   border: 0;
   border-radius: 9px;
 }
 .rnn-metric-grid .rnn-loss-metric strong {
-  color: #5b744c;
+  color: #475569;
 }
 .rnn-gradient-grid > div:first-child {
   border-color: #bdccf5;
@@ -483,10 +483,10 @@ p.rnn-small-note {
   font-size: 12px;
 }
 .rnn-update-count {
-  color: var(--muted, #6a746f);
+  color: var(--muted, #475569);
   font-size: 11px;
   white-space: nowrap;
-  border: 1px solid var(--line, #dde3dc);
+  border: 1px solid var(--line, #e2e8f0);
   border-radius: 5px;
   padding: 6px 8px;
 }
@@ -500,14 +500,14 @@ p.rnn-small-note {
 }
 .rnn-update-table caption {
   text-align: left;
-  color: var(--muted, #6a746f);
+  color: var(--muted, #475569);
   font-size: 11px;
   margin-bottom: 8px;
 }
 .rnn-update-table th,
 .rnn-update-table td {
   text-align: right;
-  border-bottom: 1px solid #e9ece6;
+  border-bottom: 1px solid #f8fafc;
   padding: 9px 5px;
   font-weight: 400;
 }
@@ -515,7 +515,7 @@ p.rnn-small-note {
   text-align: left;
 }
 .rnn-update-table thead th {
-  color: var(--muted, #6a746f);
+  color: var(--muted, #475569);
   font-size: 11px;
   font-weight: 500;
 }
@@ -535,12 +535,12 @@ p.rnn-small-note {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  color: #567d49;
+  color: #475569;
   font-size: 11px;
   line-height: 1.8;
   padding: 10px 12px;
   border-radius: 6px;
-  background: #f0f6eb;
+  background: #ffffff;
   margin: 15px 0 0;
 }
 .rnn-update-feedback > svg {
@@ -552,7 +552,7 @@ p.rnn-small-note {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  border-top: 1px solid var(--line, #dde3dc);
+  border-top: 1px solid var(--line, #e2e8f0);
   padding-top: 21px;
   margin: 26px 0;
 }
@@ -583,21 +583,21 @@ p.rnn-small-note {
 }
 .rnn-secondary-button {
   background: var(--surface, #fff);
-  border: 1px solid var(--line, #dde3dc);
-  color: var(--ink, #172921);
+  border: 1px solid var(--line, #e2e8f0);
+  color: var(--ink, #1e293b);
 }
 .rnn-secondary-button:hover {
   background: var(--paper, #f5f7f4);
-  border-color: #c3ccc1;
+  border-color: #cbd5e1;
 }
 .rnn-secondary-button:disabled {
-  color: #aab1aa;
+  color: #cbd5e1;
   cursor: default;
   background: #fafbf9;
-  border-color: #e8ece5;
+  border-color: #f8fafc;
 }
 .rnn-navigation-hint {
-  color: #606d65;
+  color: #475569;
   font-size: 11px;
   font-variant-numeric: tabular-nums;
 }
@@ -607,7 +607,7 @@ p.rnn-small-note {
   gap: 9px;
 }
 .rnn-disclosure {
-  border: 1px solid var(--line, #dde3dc);
+  border: 1px solid var(--line, #e2e8f0);
   border-radius: 9px;
 }
 .rnn-disclosure > summary {
@@ -618,7 +618,7 @@ p.rnn-small-note {
   padding: 14px 15px;
   list-style: none;
   cursor: pointer;
-  color: #516456;
+  color: #475569;
   font-size: 11px;
   font-weight: 500;
 }
@@ -631,14 +631,14 @@ p.rnn-small-note {
   gap: 9px;
 }
 .rnn-disclosure > summary > svg {
-  color: #91a08f;
+  color: #94a3b8;
   transition: transform 160ms ease;
 }
 .rnn-disclosure[open] > summary > svg {
   transform: rotate(180deg);
 }
 .rnn-disclosure[open] > summary {
-  border-bottom: 1px solid #e7ece3;
+  border-bottom: 1px solid #f8fafc;
 }
 .rnn-playground,
 .rnn-detail-content {
@@ -649,7 +649,7 @@ p.rnn-small-note {
 }
 .rnn-slider-section + .rnn-slider-section {
   margin-top: 22px;
-  border-top: 1px solid #edf0e9;
+  border-top: 1px solid #f8fafc;
   padding-top: 17px;
 }
 .rnn-slider-section h4 {
@@ -667,12 +667,12 @@ p.rnn-small-note {
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  color: #708072;
+  color: #94a3b8;
   font-size: 11px;
   line-height: 1.5;
 }
 .rnn-slider output {
-  color: #405b47;
+  color: #475569;
   font-variant-numeric: tabular-nums;
 }
 .rnn-slider input {
@@ -696,12 +696,12 @@ p.rnn-small-note {
   border-radius: 4px;
   font-size: 11px;
   background: transparent;
-  color: var(--muted, #6a746f);
+  color: var(--muted, #475569);
 }
 .rnn-detail-tabs button.rnn-tab-current {
   background: white;
-  border-color: #dde5d7;
-  color: var(--ink, #172921);
+  border-color: #e2e8f0;
+  color: var(--ink, #1e293b);
 }
 .rnn-math-sheet {
   margin-top: 20px;
@@ -710,7 +710,7 @@ p.rnn-small-note {
   gap: 22px;
 }
 .rnn-math-sheet > div > span {
-  color: #73806f;
+  color: #94a3b8;
   font-size: 11px;
   font-weight: 600;
 }
@@ -731,8 +731,8 @@ p.rnn-small-note {
   margin: 15px 0 0;
   padding: 17px;
   border-radius: 8px;
-  background: #182a23;
-  color: #d8e6d7;
+  background: #1e293b;
+  color: #e2e8f0;
   overflow-x: auto;
   line-height: 1.85;
   font-size: 11px;
@@ -743,7 +743,7 @@ p.rnn-small-note {
 }
 .rnn-model-note {
   margin: 19px 0 0;
-  color: #606d65;
+  color: #475569;
   font-size: 11px;
   line-height: 1.9;
 }
@@ -796,7 +796,7 @@ p.rnn-small-note {
   .rnn-step-rail {
     padding: 14px 15px;
     border-right: 0;
-    border-bottom: 1px solid var(--line, #dde3dc);
+    border-bottom: 1px solid var(--line, #e2e8f0);
   }
   .rnn-rail-caption,
   .rnn-rail-note,

@@ -48,7 +48,7 @@ export default function StateHandover({
       setGeometry({
         from: sourceBox,
         to: destinationBox,
-        railY: parent.height - 14,
+        railY: parent.height - 12,
         stacked: sourceBox.y > destinationBox.y + 60,
       });
     }

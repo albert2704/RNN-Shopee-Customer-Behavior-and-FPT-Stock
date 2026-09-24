@@ -4,13 +4,13 @@
 .dataset-comparison-intro {
   font-size: 15px;
   line-height: 1.8;
-  color: #4c6442;
+  color: #475569;
   max-width: 870px;
   margin: 0 0 25px;
 }
 .dataset-comparison-intro strong {
   font-weight: 600;
-  color: #243d2b;
+  color: #1e293b;
 }
 .flow-datasets.dataset-summary-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -20,7 +20,7 @@
 .dataset-summary {
   min-width: 0;
   padding: 23px;
-  border: 1px solid #d3dfcc;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   background: #fff;
 }
@@ -32,12 +32,12 @@
 }
 .dataset-summary-heading > svg {
   flex: none;
-  color: #517345;
+  color: #475569;
 }
 .dataset-summary-heading p {
   font-size: 11px;
   line-height: 1.6;
-  color: #627454;
+  color: #475569;
   margin: 0 0 3px;
 }
 .dataset-summary-heading h3 {
@@ -59,7 +59,7 @@
 .dataset-summary-result h4 {
   font-size: 12px;
   font-weight: 600;
-  color: #556a49;
+  color: #475569;
   line-height: 1.5;
   margin: 0 0 5px;
 }
@@ -67,17 +67,17 @@
   margin: 0;
   font-size: 15px;
   line-height: 1.75;
-  color: #253d2c;
+  color: #1e293b;
 }
 .dataset-summary-result {
-  border-top: 1px solid #e0e7db;
+  border-top: 1px solid #e2e8f0;
   margin-top: 22px;
   padding-top: 19px;
 }
 .dataset-summary-metric-label {
   font-size: 11px;
   line-height: 1.7;
-  color: #68795d;
+  color: #475569;
   margin: 0 0 12px;
 }
 .dataset-summary-metrics {
@@ -90,7 +90,7 @@
 .dataset-summary-metrics dt {
   font-size: 11px;
   line-height: 1.6;
-  color: #617451;
+  color: #475569;
   margin-bottom: 5px;
 }
 .dataset-summary-metrics dd {
@@ -108,17 +108,17 @@
 .dataset-summary-finding {
   font-size: 13px;
   line-height: 1.8;
-  color: #536949;
+  color: #475569;
   margin: 0;
 }
 .dataset-lessons .dataset-summary-details {
   margin: 19px 0 18px;
-  border-top: 1px solid #e0e7db;
+  border-top: 1px solid #e2e8f0;
   padding-top: 14px;
 }
 .dataset-lessons .dataset-summary-details summary {
   font-size: 12px;
-  color: #556b47;
+  color: #475569;
   min-height: 24px;
 }
 .dataset-summary-details summary > svg {
@@ -137,13 +137,13 @@
   font-size: 12px;
   font-weight: 600;
   line-height: 1.65;
-  color: #344e32;
+  color: #475569;
   margin: 0 0 3px;
 }
 .dataset-summary-details dd {
   font-size: 12px;
   line-height: 1.85;
-  color: #5b704e;
+  color: #475569;
   margin: 0;
   overflow-wrap: anywhere;
 }
@@ -182,7 +182,7 @@
 .dataset-comparison-note {
   font-size: 12px;
   line-height: 1.85;
-  color: #657953;
+  color: #475569;
   margin: 19px 0 0;
   max-width: 980px;
 }

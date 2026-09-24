@@ -4,7 +4,7 @@
     'Be Vietnam Pro',
     system-ui,
     sans-serif;
-  color: #20372b;
+  color: #1e293b;
   min-width: 0;
 }
 .quick-answers p,
@@ -19,11 +19,11 @@
   margin-bottom: 18px;
 }
 .quick-topics button {
-  border: 1px solid #d4dfcd;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   background: #fff;
   padding: 10px 14px;
-  color: #506946;
+  color: #475569;
   font: inherit;
   cursor: pointer;
 }
@@ -51,18 +51,18 @@
 .quick-answer-panel .quick-lead {
   font-size: 18px;
   line-height: 1.55;
-  color: #36503e;
+  color: #475569;
 }
 .quick-answer-panel .quick-note {
   font-size: 16px;
   line-height: 1.5;
-  color: #607454;
+  color: #475569;
   margin-top: 14px;
 }
 .quick-flow-arrow {
   width: 22px;
   height: 22px;
-  color: #678959;
+  color: #94a3b8;
   justify-self: center;
   flex-shrink: 0;
 }
@@ -74,7 +74,7 @@
   margin-top: 18px;
 }
 .quick-state-card {
-  border: 1px solid #d5e0ce;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 12px 15px;
   background: white;
@@ -85,7 +85,7 @@
   font-weight: 500;
 }
 .quick-state-card p {
-  color: #657959;
+  color: #475569;
   font-size: 16px;
 }
 .quick-state-values {
@@ -104,15 +104,15 @@
   background: #f6f8ff;
 }
 .quick-state-cell {
-  border: 1px solid #d6e0ce;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
-  background: #edf2e8;
+  background: #f8fafc;
   padding: 17px 9px;
   text-align: center;
 }
 .quick-state-cell span {
   display: block;
-  color: #587249;
+  color: #475569;
   font-size: 16px;
 }
 .quick-state-cell strong {
@@ -142,7 +142,7 @@
   margin-top: 18px;
 }
 .quick-weight-cards article {
-  border: 1px solid #d7e2cf;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
   background: white;
   padding: 16px;
@@ -154,7 +154,7 @@
 .quick-card-label {
   display: block;
   font-size: 16px;
-  color: #536b46;
+  color: #475569;
 }
 .quick-weight-cards h4 {
   font-size: 21px;
@@ -174,7 +174,7 @@
 .quick-small-flow svg {
   width: 18px;
   flex-shrink: 0;
-  color: #78956a;
+  color: #94a3b8;
 }
 .quick-small-flow b {
   color: #365eeb;
@@ -183,7 +183,7 @@
 .quick-weight-cards p {
   font-size: 16px;
   line-height: 1.5;
-  color: #5f7553;
+  color: #475569;
 }
 .quick-input-features {
   display: flex;
@@ -192,12 +192,12 @@
   margin-top: 16px;
 }
 .quick-input-features > span {
-  background: #edf2e8;
-  border: 1px solid #d5e2cb;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 16px;
-  color: #4d6c3f;
+  color: #475569;
 }
 .quick-input-flow {
   display: grid;
@@ -206,7 +206,7 @@
   align-items: center;
   margin-top: 16px;
   padding: 16px 14px;
-  border: 1px solid #d7e2ce;
+  border: 1px solid #e2e8f0;
   background: #fff;
   border-radius: 10px;
   text-align: center;
@@ -224,7 +224,7 @@
 .quick-input-flow span {
   display: block;
   font-size: 16px;
-  color: #667c59;
+  color: #475569;
   margin-top: 3px;
 }
 .quick-input-rnn strong {
@@ -233,7 +233,7 @@
 .quick-answer-panel .quick-source-note {
   font-size: 16px;
   line-height: 1.5;
-  color: #607454;
+  color: #475569;
   margin-top: 8px;
 }
 .quick-training-flow {
@@ -248,7 +248,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  border: 1px solid #d7e2cf;
+  border: 1px solid #e2e8f0;
   background: white;
   border-radius: 9px;
   padding: 12px 15px;
@@ -262,7 +262,7 @@
 }
 .quick-training-flow article > span {
   font-size: 16px;
-  color: #617b53;
+  color: #475569;
 }
 .quick-training-flow strong {
   font-size: 27px;
@@ -279,7 +279,7 @@
 .quick-training-flow article > p {
   font-size: 16px;
   font-variant-numeric: tabular-nums;
-  color: #536e47;
+  color: #475569;
 }
 .quick-training-action {
   display: grid;
@@ -311,7 +311,7 @@
 }
 .quick-training-action > p {
   font-size: 16px;
-  color: #4e6941;
+  color: #475569;
   line-height: 1.5;
   min-height: 72px;
   display: flex;
@@ -320,7 +320,7 @@
 .quick-answer-footer {
   display: flex;
   justify-content: flex-end;
-  border-top: 1px solid #dbe4d4;
+  border-top: 1px solid #e2e8f0;
   padding-top: 12px;
   margin-top: 18px;
 }

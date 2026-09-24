@@ -37,7 +37,7 @@ Không gọi hàm `tanh` là phép lấy trung bình. “Zero-centered” nói v
 
 ### 3.1. Trước khi bấm phát
 
-Mở [website demo](http://127.0.0.1:4173/#demo), để ở Retailrocket và tốc độ 1×. Tải lại trang trước lượt chính để nút bắt đầu là **Chạy cả 2 demo**. Mở sẵn các file ở mục 4 trong editor, nhưng giữ website trên màn hình trình chiếu.
+Mở [website demo](http://127.0.0.1:4173/#demo), chọn Retailrocket và tốc độ 1×. Bấm **Chạy tập này** để bắt đầu. Mở sẵn các file ở mục 4 trong editor, nhưng giữ website trên màn hình trình chiếu.
 
 Người trình bày trước có thể nói:
 
@@ -49,7 +49,7 @@ Bạn nói:
 >
 > Mọi người chú ý hai phần: trạng thái thay đổi khi mô hình đọc dữ liệu, và dự đoán có tốt hơn cách giữ nguyên giá trị gần nhất hay không.
 
-Bấm **Chạy cả 2 demo**. Toàn bộ lượt chính đi theo Retailrocket → Amazon → tổng kết. Nếu cần nói kỹ cơ chế, chỉ dừng ngắn ở bước 2 của Retailrocket, sau đó tiếp tục. Không cần mở các hộp thoại trong lượt giải thích chính.
+Bấm **Chạy tập này** để chạy tập đang chọn đến Dự đoán. Bấm **Xem thực tế**, rồi **Xem toàn tập** khi sẵn sàng. Chọn tab Amazon để chạy tập thứ hai; mở **Tổng kết** bằng tay.
 
 Sơ đồ chính chỉ giữ dữ liệu mới, RNN và 32 giá trị trạng thái. Khi đến pha dự đoán, tập trung vào kết quả, rồi đối chiếu với thực tế và cách giữ nguyên giá trị cuối. Nếu được hỏi cách tính, mở **Xem phép tính**: hộp thoại giữ phép tính ô trạng thái đầu tiên và bước đổi đơn vị bằng số thật từ checkpoint. Phần đổi đơn vị chỉ hiện sau khi đã đến pha dự đoán.
 

@@ -77,7 +77,7 @@ export default function ReplayChart({
                 x2={right + 25}
                 y1={y(v)}
                 y2={y(v)}
-                stroke="#e1e6e0"
+                stroke="#e2e8f0"
                 strokeDasharray="3 5"
               />
               <text x={left - 12} y={y(v) + 4} textAnchor="end">
@@ -100,7 +100,7 @@ export default function ReplayChart({
         <path
           d={path(data.lookback)}
           fill="none"
-          stroke="#b8c6bc"
+          stroke="#cbd5e1"
           strokeWidth="2.5"
           strokeLinejoin="round"
         />
@@ -110,7 +110,7 @@ export default function ReplayChart({
               d={path(read)}
               className="stage-read-path"
               fill="none"
-              stroke="#315b48"
+              stroke="#475569"
               strokeWidth="3"
               strokeLinejoin="round"
             />
@@ -119,7 +119,7 @@ export default function ReplayChart({
               x2={x(index)}
               y1={top}
               y2={bottom}
-              stroke="#638575"
+              stroke="#94a3b8"
               strokeDasharray="4 5"
             />
             <circle
@@ -127,7 +127,7 @@ export default function ReplayChart({
               cx={x(index)}
               cy={y(data.context[index].value)}
               r="6"
-              fill="#315b48"
+              fill="#475569"
               stroke="white"
               strokeWidth="2"
             />
@@ -146,8 +146,8 @@ export default function ReplayChart({
               d={`M${x(data.lookback - 1)},${y(data.context[data.lookback - 1].value)} L${x(data.lookback)},${y(data.target.prediction)}`}
               fill="none"
               stroke="#365eeb"
-              strokeWidth="2"
-              strokeDasharray="4 4"
+              strokeWidth="3"
+              strokeLinecap="round"
             />
             <circle
               cx={x(data.lookback)}
@@ -160,12 +160,21 @@ export default function ReplayChart({
           </>
         )}
         {revealed && (
-          <path
-            d={`M${x(data.lookback)} ${y(data.target.value) - 8}l8 8-8 8-8-8Z`}
-            fill="#254f3b"
-            stroke="white"
-            strokeWidth="2"
-          />
+          <>
+            <path
+              d={`M${x(data.lookback - 1)},${y(data.context[data.lookback - 1].value)} L${x(data.lookback)},${y(data.target.value)}`}
+              fill="none"
+              stroke="#1e293b"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+            <path
+              d={`M${x(data.lookback)} ${y(data.target.value) - 8}l8 8-8 8-8-8Z`}
+              fill="#1e293b"
+              stroke="white"
+              strokeWidth="2"
+            />
+          </>
         )}
         {[
           0,

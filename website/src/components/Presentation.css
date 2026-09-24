@@ -1,6 +1,6 @@
 .rnn-flow {
-  background: #f5f7f3;
-  color: #1e3428;
+  background: #ffffff;
+  color: #1e293b;
   min-height: 100svh;
 }
 .rnn-flow section {
@@ -13,8 +13,8 @@
   gap: 25px;
   height: 70px;
   padding: 0 38px;
-  border-bottom: 1px solid #dbe3d7;
-  background: #f5f7f3f7;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fffffff7;
   position: sticky;
   top: 0;
   z-index: 30;
@@ -60,7 +60,7 @@
   font-size: 13px;
 }
 .flow-header button:hover {
-  background: #e8efdf;
+  background: #f8fafc;
 }
 .flow-main {
   max-width: 1356px;
@@ -82,7 +82,7 @@
 }
 .flow-title p {
   font-size: 18px;
-  color: #5c7054;
+  color: #475569;
   margin-top: 8px;
 }
 .flow-text-button {
@@ -92,7 +92,7 @@
   background: none;
   border: 0;
   padding: 7px 0;
-  color: #536c46;
+  color: #475569;
   font-size: 13px;
   white-space: nowrap;
 }
@@ -130,19 +130,19 @@
   height: 41px;
   display: grid;
   place-items: center;
-  border: 1px solid #cbd8c3;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   background: white;
   color: #365eeb;
   flex-shrink: 0;
 }
 .flow-icon-button:hover {
-  background: #eef3e8;
+  background: #f8fafc;
 }
 .forecast-workspace {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 296px;
-  border: 1px solid #d3dfcc;
+  border: 1px solid #e2e8f0;
   border-radius: 14px;
   background: white;
   overflow: hidden;
@@ -155,7 +155,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 13px;
-  color: #5e7553;
+  color: #475569;
   margin-bottom: 5px;
 }
 .flow-chart svg {
@@ -167,7 +167,7 @@
   font:
     17px Vietnam,
     system-ui;
-  fill: #5f7354;
+  fill: #475569;
 }
 .flow-chart .future-label {
   fill: #365eeb;
@@ -185,7 +185,7 @@
   flex-wrap: wrap;
   gap: 17px;
   font-size: 12px;
-  color: #5a704f;
+  color: #475569;
   margin-top: 13px;
 }
 .flow-legend > span {
@@ -200,7 +200,7 @@
   border-radius: 50%;
 }
 .flow-legend .observed {
-  background: #345a48;
+  background: #475569;
 }
 .flow-legend .user {
   background: #91689e;
@@ -215,7 +215,7 @@
   display: flex;
   align-items: center;
   gap: 17px;
-  border-top: 1px solid #e1e8dc;
+  border-top: 1px solid #e2e8f0;
   padding-top: 15px;
   margin-top: 17px;
 }
@@ -228,7 +228,7 @@
   justify-content: space-between;
   gap: 10px;
   font-size: 12px;
-  color: #5b714f;
+  color: #475569;
   margin-bottom: 8px;
 }
 .flow-timeline label b {
@@ -253,16 +253,16 @@
   font-size: 11px;
   letter-spacing: 0;
   font-weight: 400;
-  color: #62795a;
+  color: #475569;
 }
 .forecast-controls {
   padding: 23px 24px;
-  border-left: 1px solid #dce5d6;
-  background: #fafcf8;
+  border-left: 1px solid #e2e8f0;
+  background: #ffffff;
 }
 .forecast-controls > label {
   font-size: 15px;
-  color: #4f6843;
+  color: #475569;
 }
 .guess-value {
   display: block;
@@ -288,12 +288,12 @@
   display: flex;
   justify-content: space-between;
   font-size: 11px;
-  color: #6c805f;
+  color: #94a3b8;
   margin-top: 4px;
 }
 .baseline-hint {
   font-size: 12px;
-  color: #647857;
+  color: #475569;
   line-height: 1.7;
   margin: 18px 0;
 }
@@ -307,12 +307,12 @@
 }
 .run-explanation {
   font-size: 14px;
-  color: #5b714e;
+  color: #475569;
   line-height: 1.8;
   margin-top: 17px;
 }
 .forecast-result {
-  border-top: 1px solid #d9e3d1;
+  border-top: 1px solid #e2e8f0;
   margin-top: 20px;
   padding-top: 18px;
 }
@@ -357,7 +357,7 @@
 }
 .actual-result > div > span {
   font-size: 12px;
-  color: #4c693e;
+  color: #475569;
 }
 .actual-result > div > strong {
   font-size: 24px;
@@ -372,7 +372,7 @@
   font-size: 12px;
   letter-spacing: 0;
   font-weight: 400;
-  color: #607a50;
+  color: #475569;
   margin: 16px 0 5px;
 }
 .actual-result > p {
@@ -403,11 +403,11 @@
 .memory-copy p {
   font-size: 14px;
   line-height: 1.7;
-  color: #546e46;
+  color: #475569;
 }
 .memory-copy > span {
   display: block;
-  color: #6d815f;
+  color: #94a3b8;
   font-size: 12px;
   margin-top: 8px;
 }
@@ -424,7 +424,7 @@
   transition: background 0.15s;
 }
 .flow-state-grid button[aria-pressed='true'] {
-  outline: 2px solid #23452b;
+  outline: 2px solid #1e293b;
   outline-offset: 2px;
 }
 .state-detail {
@@ -436,7 +436,7 @@
   justify-content: space-between;
   gap: 10px;
   font-size: 13px;
-  color: #5c794c;
+  color: #475569;
 }
 .state-detail strong {
   color: #365eeb;
@@ -451,19 +451,19 @@
 }
 .state-detail small {
   font-size: 11px;
-  color: #607b50;
+  color: #475569;
 }
 .demo-explanation {
   font-size: 13px;
-  color: #5c744e;
-  border-bottom: 1px solid #d5e0cc;
+  color: #475569;
+  border-bottom: 1px solid #e2e8f0;
   padding: 19px 0 26px;
   margin: 0;
   line-height: 1.7;
 }
 .flow-section {
   padding: 62px 0;
-  border-bottom: 1px solid #d5e0cc;
+  border-bottom: 1px solid #e2e8f0;
 }
 .flow-section-heading {
   display: flex;
@@ -480,12 +480,12 @@
 }
 .flow-section-heading p {
   font-size: 16px;
-  color: #5a734c;
+  color: #475569;
   margin-top: 10px;
 }
 .flow-section-heading > span {
   font-size: 12px;
-  color: #708663;
+  color: #94a3b8;
   margin-bottom: 3px;
   white-space: nowrap;
 }
@@ -498,7 +498,7 @@
 .training-explainer > p {
   font-size: 17px;
   line-height: 1.85;
-  color: #445e39;
+  color: #475569;
   max-width: 460px;
 }
 .training-explainer dl {
@@ -506,12 +506,12 @@
 }
 .training-explainer dl > div {
   padding-left: 16px;
-  border-left: 3px solid #b8cdaa;
+  border-left: 3px solid #cbd5e1;
   margin-top: 22px;
 }
 .training-explainer dt {
   font-size: 13px;
-  color: #6a825a;
+  color: #94a3b8;
   margin-bottom: 5px;
 }
 .training-explainer dd {
@@ -521,7 +521,7 @@
   line-height: 1.7;
 }
 .rnn-flow details {
-  border-top: 1px solid #d6e1cc;
+  border-top: 1px solid #e2e8f0;
   padding-top: 15px;
   margin-top: 23px;
 }
@@ -532,12 +532,12 @@
   gap: 10px;
   cursor: pointer;
   font-size: 14px;
-  color: #567249;
+  color: #475569;
   list-style: none;
 }
 .rnn-flow details p {
   font-size: 14px;
-  color: #5b764c;
+  color: #475569;
   line-height: 1.9;
   margin-top: 12px;
 }
@@ -547,7 +547,7 @@
 }
 .training-player {
   padding: 23px 24px;
-  border: 1px solid #d4e0ca;
+  border: 1px solid #e2e8f0;
   background: white;
   border-radius: 13px;
   min-width: 0;
@@ -565,7 +565,7 @@
 }
 .training-readout span {
   font-size: 12px;
-  color: #5e7c4d;
+  color: #475569;
 }
 .training-readout strong {
   font-size: 24px;
@@ -576,7 +576,7 @@
 }
 .training-readout small {
   font-size: 13px;
-  color: #668357;
+  color: #94a3b8;
   letter-spacing: 0;
 }
 .training-readout > div:last-child strong {
@@ -592,7 +592,7 @@
   font:
     17px Vietnam,
     system-ui;
-  fill: #668254;
+  fill: #94a3b8;
 }
 .training-controls {
   display: flex;
@@ -611,13 +611,13 @@
 }
 .training-controls > span {
   font-size: 12px;
-  color: #607d4e;
+  color: #475569;
   min-width: 41px;
 }
 .flow-fineprint {
   font-size: 12px;
   line-height: 1.8;
-  color: #668254;
+  color: #94a3b8;
   margin-top: 17px;
 }
 .evaluation-layout {
@@ -643,12 +643,12 @@
 .flow-split-bar > span {
   padding: 10px 0;
   flex: 15;
-  background: #c4d6b8;
-  color: #38522c;
+  background: #e2e8f0;
+  color: #475569;
 }
 .flow-split-bar > span:first-child {
   flex: 70;
-  background: #517346;
+  background: #475569;
   color: white;
 }
 .flow-split-bar > span:last-child {
@@ -660,14 +660,14 @@
   justify-content: space-between;
   gap: 10px;
   font-size: 12px;
-  color: #527142;
+  color: #475569;
   margin-top: 10px;
 }
 .evaluation-split > p {
   font-size: 16px;
   line-height: 1.8;
   margin-top: 23px;
-  color: #4f6c40;
+  color: #475569;
 }
 .evaluation-split a {
   display: flex;
@@ -707,7 +707,7 @@
 }
 .flow-score-track {
   height: 18px;
-  background: #e5edde;
+  background: #f8fafc;
   border-radius: 4px;
   margin-top: 11px;
   overflow: hidden;
@@ -730,7 +730,7 @@
   gap: 17px;
 }
 .flow-datasets button {
-  border: 1px solid #d0dfc5;
+  border: 1px solid #e2e8f0;
   background: white;
   border-radius: 11px;
   display: flex;
@@ -745,11 +745,11 @@
   background: #f0f4ff;
 }
 .flow-datasets button > svg:first-child {
-  color: #668954;
+  color: #94a3b8;
 }
 .flow-datasets button > svg:last-child {
   margin-left: auto;
-  color: #769866;
+  color: #94a3b8;
 }
 .flow-datasets strong {
   display: block;
@@ -760,7 +760,7 @@
 .flow-datasets span {
   display: block;
   font-size: 12px;
-  color: #61824e;
+  color: #475569;
   margin-top: 7px;
   line-height: 1.65;
 }
@@ -786,12 +786,12 @@
   max-width: 1280px;
   margin: auto;
   padding: 22px 0;
-  border-top: 1px solid #d5e0cc;
+  border-top: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   gap: 20px;
   font-size: 12px;
-  color: #698755;
+  color: #94a3b8;
 }
 .flow-notice {
   position: fixed;
@@ -829,7 +829,7 @@
 }
 .flow-speaker .speaker-hint {
   font-size: 12px;
-  color: #658454;
+  color: #94a3b8;
   margin: 12px 0 27px;
 }
 .flow-speaker h1 {
@@ -856,11 +856,11 @@
   font-size: 13px;
   margin: 30px 0 20px;
   padding-top: 20px;
-  border-top: 1px solid #d1dfc5;
+  border-top: 1px solid #e2e8f0;
 }
 .flow-speaker select {
   padding: 8px;
-  border: 1px solid #c4d6b6;
+  border: 1px solid #e2e8f0;
   border-radius: 6px;
   max-width: 67%;
   background: white;
@@ -873,7 +873,7 @@
   color: #365eeb;
 }
 .explorer-return {
-  background: #233c2c;
+  background: #1e293b;
   color: white;
   display: flex;
   align-items: center;
@@ -1088,7 +1088,7 @@
   }
   .forecast-controls {
     border-left: 0;
-    border-top: 1px solid #dce5d6;
+    border-top: 1px solid #e2e8f0;
     padding: 22px 20px;
   }
   .forecast-controls > label {
@@ -1377,7 +1377,7 @@
 .forecast-canvas .flow-memory {
   grid-template-columns: 170px minmax(0, 1fr) 150px;
   gap: 20px;
-  border-top: 1px solid #e1e8dc;
+  border-top: 1px solid #e2e8f0;
   margin-top: 17px;
   padding-top: 17px;
 }
@@ -1486,7 +1486,7 @@
     order: 4;
     margin: 0;
     padding: 22px 16px;
-    border-top: 1px solid #dce5d6;
+    border-top: 1px solid #e2e8f0;
   }
 }
 /* Presentation content: visible mechanisms first, optional numeric details below. */
@@ -1504,7 +1504,7 @@
 }
 .flow-chart text {
   font-size: 19px;
-  fill: #485e42;
+  fill: #475569;
 }
 .flow-chart .small-chart text {
   font-size: 23px;
@@ -1512,16 +1512,16 @@
 .canvas-topline,
 .flow-legend {
   font-size: 14px;
-  color: #475f40;
+  color: #475569;
 }
 .flow-timeline label > span {
   font-size: 14px;
 }
 .flow-timeline label b {
-  color: #345a48;
+  color: #475569;
 }
 .flow-timeline > output {
-  color: #345a48;
+  color: #475569;
 }
 .baseline-hint {
   font-size: 14px;
@@ -1538,7 +1538,7 @@
   align-items: center;
   gap: 25px;
   margin: 15px 0 0;
-  color: #40583a;
+  color: #475569;
   font-size: 15px;
   line-height: 1.7;
 }
@@ -1550,11 +1550,11 @@
   font-size: 13px;
 }
 .playback-caption select {
-  border: 1px solid #bdcdb1;
+  border: 1px solid #cbd5e1;
   border-radius: 6px;
   background: white;
   padding: 7px 9px;
-  color: #2b432b;
+  color: #1e293b;
   font: inherit;
 }
 .rnn-flow .state-inspector {
@@ -1562,7 +1562,7 @@
 }
 .state-inspector > summary {
   font-size: 14px;
-  color: #3c5836;
+  color: #475569;
 }
 .state-inspector .flow-memory {
   padding-bottom: 15px;
@@ -1582,7 +1582,7 @@
   font-size: 18px;
   line-height: 1.6;
   font-weight: 500;
-  color: #2b482e;
+  color: #1e293b;
 }
 .recorded-training .learning-layout {
   margin-top: 28px;
@@ -1787,7 +1787,7 @@
 
 /* The site is a practical demo opened after the separate slide presentation. */
 .flow-header .reference-toggle {
-  border: 1px solid #c5d4bb;
+  border: 1px solid #e2e8f0;
   color: #365eeb;
   padding: 8px 12px;
   white-space: nowrap;

@@ -35,6 +35,7 @@
 }
 
 .stage-mechanism .stage-inputs {
+  border-radius: 5px;
   gap: 3px;
 }
 
@@ -54,8 +55,7 @@
 }
 
 /* Đổi box-shadow thay cho border để khối không nhảy vị trí giữa các pha. */
-.stage-mechanism[data-handover='input'] .stage-input-block,
-.stage-mechanism[data-handover='input'] .stage-previous,
+.stage-mechanism[data-handover='input'] .stage-inputs,
 .stage-mechanism[data-handover='update'] .stage-cell,
 .stage-mechanism[data-handover='state'] .stage-memory,
 .stage-mechanism[data-handover='output'] .stage-output-block {
@@ -115,7 +115,7 @@
 
 .stage-transfer-route {
   fill: none;
-  stroke: #90a185;
+  stroke: #94a3b8;
   stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -129,7 +129,7 @@
 }
 
 .stage-transfer-packet {
-  filter: drop-shadow(0 2px 2px #20372b20);
+  filter: drop-shadow(0 2px 2px #1e293b20);
 }
 
 .stage-transfer-packet .stage-transfer-outline {

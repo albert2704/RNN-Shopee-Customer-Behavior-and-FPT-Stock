@@ -1,12 +1,12 @@
 .rnn-introduction {
   padding: 24px 0 54px;
-  border-bottom: 1px solid #d5e0cc;
+  border-bottom: 1px solid #e2e8f0;
   margin-bottom: 42px;
 }
 .intro-eyebrow {
   font-size: 14px;
   font-weight: 500;
-  color: #54674e;
+  color: #475569;
   margin-bottom: 15px;
 }
 .rnn-introduction h1 {
@@ -20,10 +20,10 @@
   line-height: 1.75;
   max-width: 970px;
   margin: 22px 0 35px;
-  color: #40563e;
+  color: #475569;
 }
 .intro-definition strong {
-  color: #203b2b;
+  color: #1e293b;
   font-weight: 600;
 }
 .intro-explanation {
@@ -40,7 +40,7 @@
 .intro-explanation p {
   font-size: 17px;
   line-height: 1.8;
-  color: #4f6447;
+  color: #475569;
   margin-top: 13px;
 }
 .order-comparison {
@@ -48,13 +48,13 @@
   grid-template-columns: 1fr 1fr;
   gap: 18px;
   padding: 24px;
-  border: 1px solid #d0ddc9;
+  border: 1px solid #e2e8f0;
   background: #fff;
   border-radius: 12px;
 }
 .order-comparison > div > span {
   font-size: 15px;
-  color: #5d7056;
+  color: #475569;
 }
 .order-comparison > div > p {
   display: flex;
@@ -62,7 +62,7 @@
   justify-content: space-between;
   gap: 7px;
   margin: 15px 0 5px;
-  color: #234632;
+  color: #1e293b;
   font-variant-numeric: tabular-nums;
 }
 .order-comparison p svg {
@@ -77,16 +77,16 @@
 }
 .order-comparison path {
   fill: none;
-  stroke: #3d6250;
+  stroke: #475569;
   stroke-width: 3;
   stroke-linejoin: round;
 }
 .order-comparison circle {
-  fill: #3d6250;
+  fill: #475569;
 }
 .order-comparison small {
   grid-column: 1/-1;
-  color: #56694e;
+  color: #475569;
   font-size: 13px;
   line-height: 1.6;
 }
@@ -97,13 +97,13 @@
   align-items: center;
   margin-top: 32px;
   padding-top: 26px;
-  border-top: 1px solid #d5e0cc;
+  border-top: 1px solid #e2e8f0;
 }
 .intro-task p {
   font-size: 17px;
   line-height: 1.7;
   max-width: 760px;
-  color: #40563e;
+  color: #475569;
 }
 .intro-task .flow-button {
   flex-shrink: 0;
@@ -112,7 +112,7 @@
   margin-top: 20px;
   padding: 24px;
   background: white;
-  border: 1px solid #d0ddc9;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
 }
 .mechanism-caption {
@@ -130,7 +130,7 @@
 }
 .mechanism-caption > span {
   font-size: 14px;
-  color: #54674e;
+  color: #475569;
 }
 .mechanism-network {
   display: grid;
@@ -145,14 +145,14 @@
 .mechanism-node {
   min-width: 0;
   padding: 17px;
-  border: 1px solid #c7d5c0;
+  border: 1px solid #e2e8f0;
   border-radius: 9px;
-  background: #f7faf4;
+  background: #ffffff;
 }
 .mechanism-node > span {
   font-size: 14px;
   font-weight: 500;
-  color: #53674b;
+  color: #475569;
   display: block;
 }
 .mechanism-node strong {
@@ -167,7 +167,7 @@
   display: block;
   font-size: 13px;
   line-height: 1.6;
-  color: #586d50;
+  color: #475569;
 }
 .mechanism-inputs .mechanism-node {
   padding: 12px 16px;
@@ -180,20 +180,20 @@
   font-size: 12px;
 }
 .update-node {
-  background: #eef3eb;
-  border-color: #9bb590;
+  background: #f8fafc;
+  border-color: #cbd5e1;
 }
 .update-node > span {
-  color: #2d5136;
+  color: #475569;
 }
 .new-state-node {
-  border-color: #94b29f;
-  background: #f3f8f3;
+  border-color: #cbd5e1;
+  background: #ffffff;
 }
 .output-node {
   background: #f9fafc;
   border-style: dashed;
-  color: #52604f;
+  color: #475569;
 }
 .output-node.ready {
   border-style: solid;
@@ -204,11 +204,11 @@
   color: #365eeb;
 }
 .mechanism-arrow {
-  color: #678162;
+  color: #94a3b8;
   width: 24px;
 }
 .mechanism-arrow.pending {
-  color: #c0cabc;
+  color: #cbd5e1;
 }
 .state-carry {
   display: flex;
@@ -217,11 +217,11 @@
   margin-top: 18px;
   font-size: 15px;
   line-height: 1.7;
-  color: #47613e;
+  color: #475569;
 }
 .state-carry svg {
   flex-shrink: 0;
-  color: #527149;
+  color: #475569;
 }
 .rnn-flow .mechanism-math {
   margin-top: 15px;
@@ -238,7 +238,7 @@
 }
 .mechanism-math dt {
   font-size: 13px;
-  color: #56714c;
+  color: #475569;
   margin-bottom: 7px;
 }
 .mechanism-math dd {
@@ -257,7 +257,7 @@
 }
 @keyframes read-node {
   from {
-    box-shadow: 0 0 0 3px #d5e5cd;
+    box-shadow: 0 0 0 3px #e2e8f0;
   }
   to {
     box-shadow: 0 0 0 0 transparent;
@@ -266,7 +266,7 @@
 @keyframes flow-arrow {
   to {
     transform: translateX(3px);
-    color: #234932;
+    color: #1e293b;
   }
 }
 @media (max-width: 1000px) {
@@ -430,7 +430,7 @@
     grid-template-columns: minmax(0, 1fr);
   }
   .order-comparison > div + div {
-    border-top: 1px solid #e0e7da;
+    border-top: 1px solid #e2e8f0;
     padding-top: 17px;
   }
   .order-comparison > div > p {

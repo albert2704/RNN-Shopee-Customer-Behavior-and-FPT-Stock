@@ -41,5 +41,5 @@ export function useReplayClock({ position, duration, speed, running, onComplete 
     };
   }, [position, duration, speed, running, onComplete]);
 
-  return display.position === position ? display.elapsed / duration : 0;
+  return duration > 0 && display.position === position ? display.elapsed / duration : 0;
 }

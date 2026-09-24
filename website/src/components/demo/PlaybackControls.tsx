@@ -1,4 +1,4 @@
-import { Pause, Play, RotateCcw } from 'lucide-react';
+import { ArrowRight, Pause, Play, RotateCcw } from 'lucide-react';
 import type { DemoDataset } from '../../demoTypes';
 import { DATASET_COPY } from '../../domain/demo/demoCopy';
 import type { DemoPlayback } from '../../hooks/useDemoPlayback';
@@ -12,7 +12,7 @@ interface Props {
 
 /** Nút và thanh tua chỉ gọi bộ điều khiển; không can thiệp vào số liệu mô hình. */
 export default function PlaybackControls({ data, playback, caption, announcement }: Props) {
-  const { playing, begun, summary, playLabel, read, length, frame, speed, mode } = playback;
+  const { playing, begun, summary, playLabel, read, length, frame, speed } = playback;
   return (
     <footer className="stage-player">
       {/* Thông báo kết quả theo pha cho người dùng trình đọc màn hình. */}
@@ -27,15 +27,21 @@ export default function PlaybackControls({ data, playback, caption, announcement
       )}
       <div className="stage-controls">
         <button className="stage-primary" onClick={playback.toggle} aria-label={playLabel}>
-          {playing ? <Pause size={19} /> : <Play size={19} />}
+          {playing ? (
+            <Pause size={19} />
+          ) : playback.predicted && !playback.evaluated ? (
+            <ArrowRight size={19} />
+          ) : (
+            <Play size={19} />
+          )}
           <span>{playLabel}</span>
         </button>
         {begun && !summary && (
           <button
             className="stage-restart"
-            title={`Chạy lại cả ${playback.datasetCount} từ đầu`}
-            aria-label={`Chạy lại cả ${playback.datasetCount} từ đầu`}
-            onClick={playback.startAll}
+            title="Chạy lại tập này từ đầu"
+            aria-label="Chạy lại tập này từ đầu"
+            onClick={playback.restartCurrent}
           >
             <RotateCcw size={18} />
           </button>
@@ -71,12 +77,11 @@ export default function PlaybackControls({ data, playback, caption, announcement
           </select>
         </label>
         <span className="stage-key-hint">
-          <kbd>Space</kbd> phát / dừng
+          <kbd>Space</kbd> {playback.predicted ? 'bước tiếp' : 'phát / dừng'}
         </span>
       </div>
       <p className="stage-provenance">
-        Phát lại mô hình đã huấn luyện · mẫu đầu tiên của tập kiểm tra ·{' '}
-        {mode === 'all' ? `tự chuyển cả ${playback.datasetCount} tập` : 'đang xem một tập'}
+        Phát lại mô hình đã huấn luyện · mẫu đầu tiên của tập kiểm tra · chạy riêng từng tập
       </p>
     </footer>
   );

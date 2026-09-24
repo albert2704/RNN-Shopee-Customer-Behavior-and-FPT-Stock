@@ -46,17 +46,29 @@ export default function RecurrentMechanism({
     read > 1 ? data.context[read - 2].hiddenState : Array<number>(data.hiddenSize).fill(0);
   // Tên nhóm đầu vào; số liệu trước biến đổi nằm trong CurrentInputs bên cạnh.
   const input = data.id === 'amazon' ? 'Lợi suất log' : 'Hành vi + thời gian';
+  const phaseMessage = predicted
+    ? `Đã đọc đủ ${data.lookback} ${data.stepUnit}. Dự báo dùng trọng số RNN đã học.`
+    : read === 0
+      ? 'Bắt đầu: nhận dữ liệu đầu tiên cùng trạng thái bằng 0.'
+      : transferring
+        ? `Dùng lại ${data.hiddenSize} số vừa tạo làm trạng thái trước của bước ${read + 1}.`
+        : pending
+          ? phase === 'input'
+            ? `Bước ${read}: nhận dữ liệu mới và trạng thái từ bước trước.`
+            : `Bước ${read}: RNN kết hợp hai đầu vào để cập nhật trạng thái.`
+          : `Bước ${read}: đã cập nhật ${data.hiddenSize} số trạng thái. Trọng số giữ nguyên.`;
   return (
     <div
-      ref={root}
       className={`stage-mechanism ${evaluated ? 'is-context' : ''} ${predicted ? 'is-result' : ''}`}
       data-handover={phase}
       aria-label="Đầu vào và trạng thái trước đi qua RNN để cập nhật trạng thái; trạng thái mới được dùng ở bước tiếp theo"
     >
-      <div className="stage-mechanism-grid">
+      <div ref={root} className="stage-mechanism-grid">
         <div className="stage-inputs">
           <div className="stage-input-block">
-            <span>Dữ liệu mới · {data.inputSize} số</span>
+            <span>
+              <b className="stage-flow-number">1</b> Dữ liệu mới · {data.inputSize} số
+            </span>
             <strong>{input}</strong>
             <small>Đã chuẩn hóa · xₜ</small>
           </div>
@@ -85,15 +97,20 @@ export default function RecurrentMechanism({
           <path d="M1 24 H10 V50 H28 M1 76 H10 V50 M23 45 L28 50 L23 55" />
         </svg>
         <div className="stage-cell">
-          <strong>RNN</strong>
+          <strong>
+            <b className="stage-flow-number">2</b> RNN
+          </strong>
           <span>Dữ liệu mới + trạng thái trước</span>
-          <small>Cập nhật trạng thái</small>
+          <small>{phase === 'update' ? 'Đang cập nhật…' : 'Cùng trọng số đã học'}</small>
         </div>
         <ArrowRight className="stage-arrow" size={24} aria-hidden="true" />
         <div
           className={`stage-memory ${pending ? 'is-pending' : ''} ${transferring ? 'is-transferring' : ''}`}
         >
-          <span>{read === data.lookback ? 'Trạng thái cuối · hₜ' : 'Trạng thái mới · hₜ'}</span>
+          <span>
+            <b className="stage-flow-number">3</b>{' '}
+            {read === data.lookback ? 'Trạng thái cuối · hₜ' : 'Trạng thái mới · hₜ'}
+          </span>
           <div
             ref={source}
             className="stage-state-grid stage-vector"
@@ -130,7 +147,9 @@ export default function RecurrentMechanism({
           aria-hidden="true"
         />
         <div className={`stage-output-block ${predicted ? 'has-output' : ''}`}>
-          <span>Tạo 1 dự báo</span>
+          <span>
+            <b className="stage-flow-number">4</b> Tạo 1 dự báo
+          </span>
           <small>Trạng thái cuối → Linear</small>
           <small className="stage-output-conversion">{OUTPUT_COPY[data.id].conversion}</small>
           <strong>
@@ -139,15 +158,19 @@ export default function RecurrentMechanism({
               : `Chờ đủ ${data.lookback} ${data.stepUnit}`}
           </strong>
         </div>
+        <StateHandover
+          root={root}
+          source={source}
+          destination={destination}
+          values={hidden}
+          progress={(progress - 0.58) / 0.42}
+          transferring={transferring}
+          visible={read > 0 && read <= 2 && read < data.lookback && !predicted}
+          layoutKey={`${data.id}:${read}`}
+        />
       </div>
       <div className="stage-feedback">
-        <p>
-          {transferring
-            ? `Chuyển cả ${data.hiddenSize} số này sang làm trạng thái trước của bước ${read + 1}.`
-            : predicted
-              ? `Đã đọc đủ ${data.lookback} ${data.stepUnit}. Dự báo dùng trọng số RNN đã học.`
-              : 'Trạng thái thay đổi theo dữ liệu; trọng số đã học giữ nguyên.'}
-        </p>
+        <p>{phaseMessage}</p>
         <div className="stage-mechanism-actions">
           <button
             className="stage-calculation-trigger"
@@ -161,16 +184,6 @@ export default function RecurrentMechanism({
           <CodeLink source="training" onOpen={onCode} />
         </div>
       </div>
-      <StateHandover
-        root={root}
-        source={source}
-        destination={destination}
-        values={hidden}
-        progress={(progress - 0.58) / 0.42}
-        transferring={transferring}
-        visible={read > 0 && read <= 2 && read < data.lookback && !predicted}
-        layoutKey={`${data.id}:${read}`}
-      />
     </div>
   );
 }

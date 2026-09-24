@@ -1,12 +1,10 @@
 import { Check, ChevronRight } from 'lucide-react';
 import type { DemoDataset } from '../../demoTypes';
 import { DATASET_COPY } from '../../domain/demo/demoCopy';
-import type { PlaybackMode } from '../../domain/demo/replayTimeline';
 
 interface Props {
   datasets: DemoDataset[];
   index: number;
-  mode: PlaybackMode;
   summary: boolean;
   evaluated: boolean;
   onChoose: (index: number) => void;
@@ -17,7 +15,6 @@ interface Props {
 export default function DatasetNavigation({
   datasets,
   index,
-  mode,
   summary,
   evaluated,
   onChoose,
@@ -29,11 +26,7 @@ export default function DatasetNavigation({
         {datasets.map((data, i) => (
           <button key={data.id} aria-pressed={!summary && i === index} onClick={() => onChoose(i)}>
             <span className="dataset-number">
-              {mode === 'all' && (i < index || (i === index && evaluated)) ? (
-                <Check size={16} />
-              ) : (
-                i + 1
-              )}
+              {i === index && evaluated ? <Check size={16} /> : i + 1}
             </span>
             <span>
               <strong>{DATASET_COPY[data.id].name}</strong>

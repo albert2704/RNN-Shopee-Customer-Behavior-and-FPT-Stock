@@ -1,6 +1,6 @@
 import type { DemoDataset, DemoDatasetId } from '../../demoTypes';
 import { formatNumber } from '../../types';
-import type { DemoPhase, PlaybackMode } from './replayTimeline';
+import type { DemoPhase } from './replayTimeline';
 
 /** Nội dung dẫn chuyện, tách khỏi phép tính và bộ điều khiển thời gian. */
 export const DATASET_COPY: Record<
@@ -11,10 +11,14 @@ export const DATASET_COPY: Record<
     question: string;
     inputDescription: string;
     caseTakeaway: string;
+    baselineLabel: string;
+    baselineExplanation: string;
   }
 > = {
   retailrocket: {
     name: 'Retailrocket',
+    baselineLabel: 'Đoán như giờ trước',
+    baselineExplanation: 'Lấy số giao dịch giờ trước để đoán giờ tới.',
     subject: 'Hành vi khách hàng',
     question: 'Giờ tới có bao nhiêu sự kiện giao dịch?',
     inputDescription: '24 giờ: lượt xem, thêm vào giỏ, giao dịch và thời gian.',
@@ -22,6 +26,8 @@ export const DATASET_COPY: Record<
   },
   amazon: {
     name: 'Amazon',
+    baselineLabel: 'Đoán như phiên trước',
+    baselineExplanation: 'Lấy giá phiên trước để đoán phiên tới.',
     subject: 'Chứng khoán',
     question: 'Giá điều chỉnh phiên tới là bao nhiêu?',
     inputDescription: '30 phiên: mức thay đổi giá theo log. Biểu đồ hiển thị giá USD.',
@@ -57,14 +63,14 @@ export function timeLabel(data: DemoDataset, timestamp: string) {
 export function compareText(data: DemoDataset) {
   if (data.metrics.rnnMae < data.metrics.baselineMae) {
     const improvement = (1 - data.metrics.rnnMae / data.metrics.baselineMae) * 100;
-    return `RNN giảm ${formatNumber(improvement, 1)}% sai số trung bình.`;
+    return `RNN lệch ít hơn ${formatNumber(improvement, 1)}% so với cách ${DATASET_COPY[data.id].baselineLabel.toLowerCase()}.`;
   }
-  return 'RNN chưa tốt hơn cách giữ nguyên giá phiên trước.';
+  return `RNN chưa tốt hơn cách ${DATASET_COPY[data.id].baselineLabel.toLowerCase()}.`;
 }
 
 /** Màu chỉ mã hóa dấu/độ lớn của h; không gán ý nghĩa “xu hướng” cho một ô. */
 export function stateColor(value: number) {
-  if (value === 0) return '#e5eae4';
+  if (value === 0) return '#e2e8f0';
   const opacity = 0.2 + Math.abs(value) * 0.8;
   return value > 0 ? `rgba(54,94,235,${opacity})` : `rgba(170,114,67,${opacity})`;
 }
@@ -73,7 +79,6 @@ interface CaptionContext {
   summary: boolean;
   begun: boolean;
   evaluated: boolean;
-  mode: PlaybackMode;
   playing: boolean;
   revealed: boolean;
   predicted: boolean;
@@ -81,16 +86,14 @@ interface CaptionContext {
 }
 
 /** Một câu dẫn theo pha; không đọc lại toàn bộ trạng thái 32 chiều ở mỗi nhịp. */
-export function getCaption(state: CaptionContext, nextName?: string) {
+export function getCaption(state: CaptionContext) {
   if (state.summary) return 'Một mô hình cần được đánh giá trên nhiều mốc thời gian.';
-  if (!state.begun) return 'Bấm phát một lần: Retailrocket → Amazon → Tổng kết.';
+  if (!state.begun) return 'Chạy tập đang chọn. Sau dự đoán, bấm để xem thực tế và toàn tập.';
   if (state.evaluated) {
-    return state.mode === 'all' && state.playing
-      ? `Tiếp theo: ${nextName ?? 'tổng kết hai tập dữ liệu'}.`
-      : 'Một ví dụ chưa đủ để kết luận. Hãy xem sai số trên toàn tập.';
+    return 'Một ví dụ chưa đủ để kết luận. Hãy xem sai số trên toàn tập.';
   }
-  if (state.revealed) return 'Sai số ở một mốc = khoảng cách giữa dự đoán và thực tế.';
-  if (state.predicted) return 'Đã đọc hết lịch sử. Bây giờ mới tạo dự đoán cho mốc tiếp theo.';
+  if (state.revealed) return 'Bấm “Xem toàn tập” để đánh giá trên nhiều dự đoán.';
+  if (state.predicted) return 'Đã có dự đoán. Bấm “Xem thực tế” khi sẵn sàng đối chiếu.';
   if (state.read === 1) return 'Bước 1: quan sát đầu tiên + trạng thái ban đầu → trạng thái mới.';
   if (state.read === 2)
     return 'Bước 2: dùng lại trạng thái vừa tính, kết hợp với quan sát thứ hai.';

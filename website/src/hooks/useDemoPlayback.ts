@@ -1,12 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { DemoDataset } from '../demoTypes';
 import { useReplayClock } from './useReplayClock';
-import {
-  advanceReplay,
-  getFrameDuration,
-  getReplayPhase,
-  type PlaybackMode,
-} from '../domain/demo/replayTimeline';
+import { advanceReplay, getFrameDuration, getReplayPhase } from '../domain/demo/replayTimeline';
 
 interface PlaybackOptions {
   datasets: DemoDataset[];
@@ -23,7 +18,6 @@ export function useDemoPlayback({ datasets, active, blocked }: PlaybackOptions) 
   const [index, setIndex] = useState(0);
   const [frame, setFrame] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [mode, setMode] = useState<PlaybackMode>('all');
   const [begun, setBegun] = useState(false);
   const [summary, setSummary] = useState(false);
   const [speed, setSpeed] = useState(1);
@@ -47,26 +41,24 @@ export function useDemoPlayback({ datasets, active, blocked }: PlaybackOptions) 
   }, [pause]);
 
   const advance = useCallback(() => {
-    const next = advanceReplay({ index, frame, mode }, length, datasets.length);
+    const next = advanceReplay({ index, frame }, length);
     setIndex(next.index);
     setFrame(next.frame);
     setPlaying(next.playing);
     setSummary(next.summary);
-  }, [index, frame, mode, length, datasets.length]);
+  }, [index, frame, length]);
   const progress = useReplayClock({
     position: `${index}:${frame}:${restart}`,
     duration: getFrameDuration(frame, length),
     speed,
-    running: playing && !!data && !blocked && active && !summary,
+    running: playing && frame <= length && !!data && !blocked && active && !summary,
     onComplete: advance,
   });
 
-  const startAll = useCallback(() => {
+  const restartCurrent = useCallback(() => {
     setRestart((value) => value + 1);
     setSnapshot(false);
-    setIndex(0);
     setFrame(0);
-    setMode('all');
     setBegun(true);
     setSummary(false);
     setPlaying(true);
@@ -74,11 +66,28 @@ export function useDemoPlayback({ datasets, active, blocked }: PlaybackOptions) 
 
   const toggle = useCallback(() => {
     if (playing) return pause();
-    if (summary || !begun) return startAll();
-    if (mode === 'single' && timeline.evaluated) setFrame(0);
+    if (summary) return setSummary(false);
+    if (!begun || timeline.evaluated) return restartCurrent();
+    if (timeline.predicted) {
+      const next = advanceReplay({ index, frame }, length, true);
+      setFrame(next.frame);
+      setPlaying(false);
+      return;
+    }
     setSnapshot(false);
     setPlaying(true);
-  }, [playing, pause, summary, begun, startAll, mode, timeline.evaluated]);
+  }, [
+    playing,
+    pause,
+    summary,
+    begun,
+    restartCurrent,
+    timeline.evaluated,
+    timeline.predicted,
+    index,
+    frame,
+    length,
+  ]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -99,7 +108,6 @@ export function useDemoPlayback({ datasets, active, blocked }: PlaybackOptions) 
     setSnapshot(false);
     setIndex(datasetIndex);
     setFrame(0);
-    setMode('single');
     setBegun(true);
     setSummary(false);
   }
@@ -124,20 +132,19 @@ export function useDemoPlayback({ datasets, active, blocked }: PlaybackOptions) 
 
   let playLabel = 'Tiếp tục';
   if (playing) playLabel = 'Tạm dừng';
-  else if (summary) playLabel = `Chạy lại cả ${datasets.length}`;
-  else if (!begun) playLabel = `Chạy cả ${datasets.length} demo`;
-  else if (timeline.evaluated && mode === 'single') playLabel = 'Chạy lại tập này';
-  else if (frame === 0 && mode === 'single') playLabel = 'Chạy tập này';
+  else if (summary) playLabel = 'Về demo';
+  else if (timeline.evaluated) playLabel = 'Chạy lại tập này';
+  else if (timeline.revealed) playLabel = 'Xem toàn tập';
+  else if (timeline.predicted) playLabel = 'Xem thực tế';
+  else if (frame === 0) playLabel = 'Chạy tập này';
 
   return {
     ...timeline,
     data,
-    datasetCount: datasets.length,
     index,
     frame,
     length,
     playing,
-    mode,
     begun,
     summary,
     speed,
@@ -145,7 +152,7 @@ export function useDemoPlayback({ datasets, active, blocked }: PlaybackOptions) 
     snapshot,
     playLabel,
     pause,
-    startAll,
+    restartCurrent,
     toggle,
     choose,
     seek,

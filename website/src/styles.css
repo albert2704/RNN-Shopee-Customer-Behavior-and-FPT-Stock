@@ -34,11 +34,11 @@
   background: var(--paper);
   font-synthesis: none;
   font-weight: 400;
-  --ink: #172921;
-  --muted: #606d65;
+  --ink: #1e293b;
+  --muted: #475569;
   --surface: #fff;
   --paper: #f5f7f4;
-  --line: #dce3dc;
+  --line: #e2e8f0;
   --accent: #365eeb;
   --accent-soft: #eaf0ff;
   --radius: 14px;
@@ -99,7 +99,7 @@ summary:focus-visible {
 }
 ::selection {
   background: #cedbff;
-  color: #172921;
+  color: #1e293b;
 }
 input {
   accent-color: var(--accent);
@@ -128,7 +128,7 @@ h2 {
   font-weight: 600;
 }
 h2 span {
-  color: #78857b;
+  color: #94a3b8;
 }
 h3 {
   font-size: 21px;
@@ -313,7 +313,7 @@ sub {
 .context-mark {
   width: 35px;
   height: 35px;
-  border: 1px solid #cbd3cb;
+  border: 1px solid #e2e8f0;
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -346,7 +346,7 @@ sub {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #518262;
+  background: #475569;
   display: inline-block;
   flex-shrink: 0;
 }
@@ -355,7 +355,7 @@ sub {
   letter-spacing: -0.035em;
   text-align: center;
   margin-top: 37px;
-  color: #758078;
+  color: #94a3b8;
 }
 .demo-equation span {
   color: var(--ink);
@@ -388,13 +388,13 @@ sub {
 .demo-input b {
   font-weight: 500;
   color: var(--ink);
-  background: #f1f3ef;
+  background: #ffffff;
   padding: 5px 7px;
   border-radius: 5px;
 }
 .input-stem {
   height: 19px;
-  border-left: 1px solid #c8d0c6;
+  border-left: 1px solid #e2e8f0;
 }
 .state-node {
   display: flex;
@@ -404,10 +404,10 @@ sub {
   gap: 9px;
   height: 80px;
   width: 80px;
-  border: 1px solid #d5dcd3;
+  border: 1px solid #e2e8f0;
   border-radius: 14px;
-  background: #f5f7f2;
-  color: #556050;
+  background: #ffffff;
+  color: #475569;
   transition: all 0.18s;
 }
 .state-node > span {
@@ -434,7 +434,7 @@ sub {
   position: absolute;
   top: 67px;
   right: -30px;
-  color: #a0ada2;
+  color: #94a3b8;
 }
 .demo-time {
   font-size: 11px;
@@ -494,11 +494,11 @@ sub {
 }
 .learning-strip svg {
   width: 14px;
-  color: #a3afa6;
+  color: #cbd5e1;
 }
 .strip-tail {
   font-size: 11px;
-  color: #7a847c;
+  color: #94a3b8;
 }
 .section-heading {
   display: flex;
@@ -548,7 +548,7 @@ sub {
   min-width: 0;
 }
 .dataset-tabs button:hover {
-  background: #edf1eb;
+  background: #f8fafc;
 }
 .dataset-tabs button.selected {
   background: var(--surface);
@@ -556,13 +556,13 @@ sub {
   padding: 17.5px 20.5px;
 }
 .dataset-icon {
-  background: #e8eee5;
+  background: #f8fafc;
   width: 42px;
   height: 42px;
   border-radius: 10px;
   display: grid;
   place-items: center;
-  color: #63745d;
+  color: #475569;
 }
 .selected .dataset-icon {
   background: var(--accent-soft);
@@ -583,7 +583,7 @@ sub {
 }
 .tab-arrow {
   margin-left: auto;
-  color: #859083;
+  color: #94a3b8;
 }
 .selected .tab-arrow {
   color: var(--accent);
@@ -657,7 +657,7 @@ sub {
 }
 .segmented {
   display: inline-flex;
-  background: #eef1ed;
+  background: #f8fafc;
   padding: 4px;
   border-radius: 7px;
   gap: 3px;
@@ -675,7 +675,7 @@ sub {
 }
 .segmented button.active {
   background: white;
-  box-shadow: 0 1px 3px #243a2312;
+  box-shadow: 0 1px 3px #1e293b12;
   color: var(--ink);
 }
 .segmented button:hover {
@@ -728,12 +728,12 @@ sub {
   font-size: 11px;
 }
 .model-toggles button:hover {
-  background: #f0f3ed;
+  background: #f8fafc;
 }
 .legend-box {
   height: 13px;
   width: 13px;
-  border: 1px solid #9da89d;
+  border: 1px solid #94a3b8;
   border-radius: 3px;
   display: grid;
   place-items: center;
@@ -751,7 +751,7 @@ sub {
 .axis-label {
   font-size: 11px;
   font-family: Vietnam, system-ui;
-  fill: #606d65;
+  fill: #475569;
   font-variant-numeric: tabular-nums;
 }
 .chart-readout {
@@ -861,12 +861,12 @@ sub {
 }
 .split-bar .train {
   width: 70%;
-  background: #455f50;
+  background: #475569;
 }
 .split-bar .validation {
   width: 15%;
-  background: #899e77;
-  color: #132313;
+  background: #94a3b8;
+  color: #1e293b;
 }
 .split-bar .test {
   width: 15%;
@@ -893,7 +893,7 @@ sub {
 }
 .split-labels > div > span {
   margin-top: 5px;
-  color: #718073;
+  color: #94a3b8;
   font-size: 11px;
 }
 .data-details {
@@ -915,7 +915,7 @@ summary::-webkit-details-marker {
   font-weight: 500;
 }
 .data-details summary:hover {
-  background: #fafcf8;
+  background: #ffffff;
 }
 details[open] > summary svg:last-child {
   transform: rotate(180deg);
@@ -968,7 +968,7 @@ details[open] > summary svg:last-child {
 }
 .data-table th {
   font-weight: 500;
-  background: #f9fbf7;
+  background: #ffffff;
 }
 .data-placeholder {
   padding: 40px;
@@ -983,7 +983,7 @@ details[open] > summary svg:last-child {
 }
 .skeleton-line,
 .skeleton-chart {
-  background: #edf1eb;
+  background: #f8fafc;
   border-radius: 8px;
 }
 .skeleton-line {
@@ -996,9 +996,9 @@ details[open] > summary svg:last-child {
   margin-bottom: 20px;
 }
 .lab-section-wrap {
-  background: #eaf0e8;
-  border-top: 1px solid #d9e1d5;
-  border-bottom: 1px solid #d9e1d5;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
 }
 .lesson-length {
   display: flex;
@@ -1020,7 +1020,7 @@ details[open] > summary svg:last-child {
   display: flex;
   align-items: center;
   gap: 9px;
-  color: #58725d;
+  color: #475569;
   flex-shrink: 0;
   margin-bottom: 5px;
 }
@@ -1086,15 +1086,15 @@ details[open] > summary svg:last-child {
 .best-label {
   font-size: 11px;
   letter-spacing: 0;
-  background: #edf4e5;
-  color: #456038;
+  background: #f8fafc;
+  color: #475569;
   padding: 4px 6px;
   border-radius: 4px;
   font-weight: 400;
 }
 .metric-track {
   height: 7px;
-  background: #f0f3ed;
+  background: #f8fafc;
   border-radius: 3px;
   overflow: hidden;
 }
@@ -1111,7 +1111,7 @@ details[open] > summary svg:last-child {
 }
 .result-interpretation {
   border-radius: 14px;
-  background: #eaf0e4;
+  background: #f8fafc;
   padding: 28px 30px;
   display: flex;
   flex-direction: column;
@@ -1119,11 +1119,11 @@ details[open] > summary svg:last-child {
 .insight-icon {
   width: 40px;
   height: 40px;
-  background: #dfe8d8;
+  background: #e2e8f0;
   display: grid;
   place-items: center;
   border-radius: 10px;
-  color: #587049;
+  color: #475569;
   margin-bottom: 17px;
 }
 .result-interpretation h3 {
@@ -1135,11 +1135,11 @@ details[open] > summary svg:last-child {
 .result-interpretation > p {
   font-size: 11px;
   line-height: 1.9;
-  color: #52644c;
+  color: #475569;
   margin-top: 14px;
 }
 .metric-explanation {
-  border-top: 1px solid #cbd7c2;
+  border-top: 1px solid #e2e8f0;
   margin-top: 22px;
   padding-top: 17px;
 }
@@ -1151,11 +1151,11 @@ details[open] > summary svg:last-child {
   font-size: 11px;
   line-height: 1.9;
   margin-top: 5px;
-  color: #52644c;
+  color: #475569;
 }
 .result-interpretation > small {
   display: block;
-  color: #63725b;
+  color: #475569;
   line-height: 1.8;
   font-size: 11px;
   margin-top: 19px;
@@ -1225,14 +1225,14 @@ details[open] > summary svg:last-child {
 .loss-table th {
   position: sticky;
   top: 0;
-  background: #f0f3ed;
+  background: #f8fafc;
   font-weight: 500;
 }
 .loss-table td,
 .loss-table th {
   padding: 10px;
   text-align: right;
-  border-bottom: 1px solid #e5eae1;
+  border-bottom: 1px solid #f8fafc;
 }
 .loss-table td:first-child,
 .loss-table th:first-child {

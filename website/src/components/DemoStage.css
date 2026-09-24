@@ -6,8 +6,8 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   min-height: 600px;
   display: grid;
   grid-template-rows: 54px minmax(0, 1fr);
-  background: #f5f7f3;
-  color: #20372b;
+  background: #ffffff;
+  color: #1e293b;
   overflow: hidden;
 }
 .demo-stage-shell button,
@@ -28,7 +28,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   align-items: center;
   gap: 24px;
   padding: 0 28px;
-  border-bottom: 1px solid #dce4d8;
+  border-bottom: 1px solid #e2e8f0;
 }
 .stage-brand {
   display: flex;
@@ -43,7 +43,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 }
 .stage-header-caption {
   font-size: 14px;
-  color: #53644c;
+  color: #475569;
 }
 .stage-header > div {
   display: flex;
@@ -62,7 +62,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   font-size: 14px;
 }
 .stage-header button:hover {
-  background: #e8edde;
+  background: #f8fafc;
 }
 .stage-main {
   width: 100%;
@@ -93,14 +93,14 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   align-items: center;
   gap: 11px;
   padding: 2px 15px;
-  border: 1px solid #dbe3d6;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   background: transparent;
   text-align: left;
   min-width: 0;
 }
 .stage-datasets button:hover {
-  background: #e8edde;
+  background: #f8fafc;
 }
 .stage-datasets button[aria-pressed='true'] {
   border-color: #aabcf5;
@@ -112,8 +112,8 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   display: grid;
   place-items: center;
   font-size: 14px;
-  color: #506547;
-  border: 1px solid #c9d6bf;
+  color: #475569;
+  border: 1px solid #e2e8f0;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -130,7 +130,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 }
 .stage-datasets small {
   display: block;
-  color: #53644c;
+  color: #475569;
   font-size: 12px;
   line-height: 1.5;
 }
@@ -141,7 +141,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   align-items: center;
   gap: 4px;
   font-size: 14px;
-  color: #405d35;
+  color: #475569;
   padding: 5px;
 }
 .stage-summary-toggle[aria-pressed='true'] {
@@ -164,7 +164,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 .stage-heading p {
   grid-column: 1/-1;
   font-size: 16px;
-  color: #4c6342;
+  color: #475569;
   line-height: 1.5;
 }
 .stage-phases {
@@ -175,7 +175,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   margin: 0;
   list-style: none;
   font-size: 13px;
-  color: #52634b;
+  color: #475569;
 }
 .stage-phases li {
   display: flex;
@@ -188,7 +188,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   place-items: center;
   width: 22px;
   height: 22px;
-  border: 1px solid #cbd7c3;
+  border: 1px solid #e2e8f0;
   border-radius: 50%;
   font-size: 12px;
 }
@@ -202,11 +202,11 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   color: white;
 }
 .stage-phases .complete > span {
-  background: #e1ebda;
-  color: #426035;
+  background: #f8fafc;
+  color: #475569;
 }
 .stage-workspace {
-  border: 1px solid #d4dfcf;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   overflow: hidden;
   background: white;
@@ -230,7 +230,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   display: flex;
   justify-content: space-between;
   gap: 15px;
-  color: #48633b;
+  color: #475569;
   font-size: 14px;
   line-height: 1.5;
   margin-bottom: 4px;
@@ -246,7 +246,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   font:
     14px Vietnam,
     system-ui;
-  fill: #506448;
+  fill: #475569;
 }
 .stage-chart .stage-future-label {
   fill: #294dcd;
@@ -260,7 +260,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   gap: 12px;
   margin-top: 4px;
   font-size: 12px;
-  color: #52664a;
+  color: #475569;
 }
 .stage-legend {
   display: flex;
@@ -278,7 +278,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   height: 7px;
   width: 7px;
   border-radius: 50%;
-  background: #315b48;
+  background: #475569;
 }
 .stage-legend .blue {
   background: #365eeb;
@@ -294,7 +294,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   display: flex;
   align-items: center;
   padding: 16px 22px;
-  border-left: 1px solid #dce5d7;
+  border-left: 1px solid #e2e8f0;
   background: #fafbf8;
   min-height: 0;
 }
@@ -317,7 +317,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 }
 .stage-focus-content .stage-focus-note {
   font-size: 15px;
-  color: #506546;
+  color: #475569;
   margin-top: 10px;
 }
 .stage-focus-content .stage-reading-count {
@@ -329,11 +329,11 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 }
 .stage-reading-count span {
   font-size: 18px;
-  color: #4b6042;
+  color: #475569;
 }
 .stage-result-value > span {
   font-size: 15px;
-  color: #506546;
+  color: #475569;
 }
 .stage-result-value strong {
   display: block;
@@ -352,7 +352,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   font-weight: 400;
 }
 .stage-actual strong {
-  color: #244f38;
+  color: #475569;
 }
 .stage-result-pair {
   display: grid;
@@ -404,21 +404,21 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   font-size: 17px;
   font-weight: 500;
   line-height: 1.5;
-  border-top: 1px solid #dce5d7;
+  border-top: 1px solid #e2e8f0;
   margin-top: 12px;
   padding-top: 10px;
 }
 .stage-focus-content .stage-chart-reminder {
   font-size: 14px;
-  color: #506546;
+  color: #475569;
   margin-top: 8px;
 }
 .stage-mechanism {
   display: grid;
   grid-template-rows: minmax(0, 1fr) 36px;
-  border-top: 1px solid #d9e4d1;
+  border-top: 1px solid #e2e8f0;
   padding: 13px 20px 4px;
-  background: #fdfefa;
+  background: #ffffff;
   min-width: 0;
 }
 .stage-mechanism-grid {
@@ -433,7 +433,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 }
 .stage-mechanism span {
   font-size: 15px;
-  color: #435e37;
+  color: #475569;
   display: block;
   line-height: 1.45;
 }
@@ -446,7 +446,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 }
 .stage-mechanism small {
   font-size: 14px;
-  color: #506648;
+  color: #475569;
   display: block;
   line-height: 1.5;
 }
@@ -455,7 +455,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   gap: 5px;
 }
 .stage-previous {
-  border-top: 1px solid #e0e7db;
+  border-top: 1px solid #e2e8f0;
   padding-top: 5px;
 }
 .stage-previous-values {
@@ -471,19 +471,19 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 .stage-join {
   width: 100%;
   height: 92px;
-  stroke: #537644;
+  stroke: #475569;
   stroke-width: 2;
   fill: none;
 }
 .stage-cell {
   text-align: center;
-  background: #edf2e8;
-  border: 1px solid #d6e2cc;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 9px 5px;
 }
 .stage-cell strong {
-  color: #33533f;
+  color: #475569;
   font-size: 29px;
   line-height: 1.25;
 }
@@ -491,7 +491,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   margin: 4px 0;
 }
 .stage-arrow {
-  color: #537644;
+  color: #475569;
   max-width: 100%;
 }
 .stage-arrow.waiting {
@@ -529,7 +529,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   height: 100%;
   overflow: visible;
   fill: none;
-  stroke: #617e54;
+  stroke: #475569;
   stroke-width: 1.7;
 }
 .stage-feedback p {
@@ -539,8 +539,8 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   width: max-content;
   max-width: 68%;
   padding: 0 10px;
-  background: #fdfefa;
-  color: #405d35;
+  background: #ffffff;
+  color: #475569;
   font-size: 15px;
   line-height: 1.5;
 }
@@ -557,13 +557,13 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 .stage-caption p {
   font-size: 18px;
   line-height: 1.45;
-  color: #344e2d;
+  color: #475569;
 }
 .stage-live-dot {
   height: 8px;
   width: 8px;
   border-radius: 50%;
-  background: #8e9f83;
+  background: #94a3b8;
   flex-shrink: 0;
 }
 .stage-live-dot.active {
@@ -596,15 +596,15 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 .stage-restart {
   display: grid;
   place-items: center;
-  border: 1px solid #c5d3bd;
+  border: 1px solid #e2e8f0;
   border-radius: 7px;
   background: white;
   min-width: 38px;
   height: 38px;
-  color: #456438;
+  color: #475569;
 }
 .stage-restart:hover {
-  background: #e8edde;
+  background: #f8fafc;
 }
 .stage-progress {
   flex: 1;
@@ -615,7 +615,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   justify-content: space-between;
   gap: 15px;
   font-size: 13px;
-  color: #49613e;
+  color: #475569;
   margin-bottom: 4px;
 }
 .stage-progress b {
@@ -634,24 +634,24 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: #4b653f;
+  color: #475569;
 }
 .stage-speed select {
   padding: 7px;
-  border: 1px solid #c5d3bd;
+  border: 1px solid #e2e8f0;
   border-radius: 5px;
   background: white;
-  color: #37512b;
+  color: #475569;
   font-size: 15px;
 }
 .stage-key-hint {
-  color: #53674a;
+  color: #475569;
   font-size: 13px;
   white-space: nowrap;
 }
 .stage-key-hint kbd {
   font: 12px Vietnam;
-  border: 1px solid #c8d3c1;
+  border: 1px solid #e2e8f0;
   border-radius: 4px;
   padding: 3px 5px;
   margin-right: 3px;
@@ -659,7 +659,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 .stage-provenance {
   margin: 7px 0 0;
   font-size: 12px;
-  color: #52664a;
+  color: #475569;
   line-height: 1.5;
 }
 .stage-loading {
@@ -670,7 +670,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   font-size: 18px;
 }
 .stage-loading button {
-  border: 1px solid #c5d3bd;
+  border: 1px solid #e2e8f0;
   background: white;
   border-radius: 5px;
   padding: 10px;
@@ -695,7 +695,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 .stage-summary > div > p {
   font-size: 18px;
   line-height: 1.5;
-  color: #49643c;
+  color: #475569;
 }
 .stage-summary-cards {
   display: grid;
@@ -704,14 +704,14 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 }
 .stage-summary-cards article {
   background: white;
-  border: 1px solid #d3e0c9;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 22px;
   min-width: 0;
 }
 .stage-summary-cards article > span {
   font-size: 14px;
-  color: #536b46;
+  color: #475569;
 }
 .stage-summary-cards h2 {
   font-size: 25px;
@@ -729,7 +729,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 }
 .stage-summary-cards dt {
   font-size: 16px;
-  color: #4c663f;
+  color: #475569;
 }
 .stage-summary-cards dd {
   margin: 0;
@@ -748,7 +748,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   font-size: 17px;
   line-height: 1.5;
   min-height: 52px;
-  color: #3f5c31;
+  color: #475569;
 }
 .stage-summary-cards button {
   border: 0;
@@ -768,21 +768,21 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 .stage-summary .stage-summary-limit {
   font-size: 15px;
   line-height: 1.5;
-  color: #506648;
+  color: #475569;
   margin-top: -10px;
 }
 .stage-dialog {
   width: min(1080px, 94vw);
   max-height: 94svh;
   padding: 0;
-  border: 1px solid #ccd9c0;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background: #f5f7f3;
-  color: #243c2c;
-  box-shadow: 0 20px 90px #17291f30;
+  background: #ffffff;
+  color: #1e293b;
+  box-shadow: 0 20px 90px #1e293b30;
 }
 .stage-dialog::backdrop {
-  background: #10261abd;
+  background: #1e293bbd;
 }
 .stage-dialog[open] {
   display: flex;
@@ -794,7 +794,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   justify-content: space-between;
   gap: 20px;
   padding: 16px 24px;
-  border-bottom: 1px solid #d5e0cc;
+  border-bottom: 1px solid #e2e8f0;
   flex-shrink: 0;
 }
 .stage-dialog-header h2 {
@@ -803,13 +803,13 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 }
 .stage-dialog-header p {
   font-size: 14px;
-  color: #506647;
+  color: #475569;
   margin-top: 4px;
 }
 .stage-dialog-header button {
   display: grid;
   place-items: center;
-  border: 1px solid #c5d3bd;
+  border: 1px solid #e2e8f0;
   background: white;
   border-radius: 6px;
   min-width: 40px;
@@ -851,7 +851,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 .stage-details p {
   font-size: 17px;
   line-height: 1.7;
-  color: #405d33;
+  color: #475569;
   margin-top: 10px;
 }
 .stage-details dl {
@@ -862,11 +862,11 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   grid-template-columns: 170px minmax(0, 1fr);
   gap: 25px;
   padding: 12px 0;
-  border-bottom: 1px solid #dce5d3;
+  border-bottom: 1px solid #e2e8f0;
   font-size: 16px;
 }
 .stage-details dt {
-  color: #4e683f;
+  color: #475569;
 }
 .stage-details dd {
   margin: 0;
@@ -886,13 +886,13 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 .stage-details caption {
   text-align: left;
   padding-bottom: 12px;
-  color: #4c663f;
+  color: #475569;
 }
 .stage-details td,
 .stage-details th {
   padding: 12px;
   text-align: right;
-  border-bottom: 1px solid #d5e0cd;
+  border-bottom: 1px solid #e2e8f0;
 }
 .stage-details th:first-child {
   text-align: left;
@@ -1441,7 +1441,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
     min-height: 255px;
     padding: 20px;
     border-left: 0;
-    border-top: 1px solid #dce5d7;
+    border-top: 1px solid #e2e8f0;
   }
   .stage-focus-content h2 {
     font-size: 21px;
@@ -1520,7 +1520,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   }
   .stage-feedback {
     margin-top: 12px;
-    border-top: 1px solid #d9e4d1;
+    border-top: 1px solid #e2e8f0;
     padding-top: 10px;
   }
   .stage-feedback svg {
@@ -1535,7 +1535,7 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
     padding: 0;
   }
   .stage-player {
-    background: #f5f7f3;
+    background: #ffffff;
   }
   .stage-caption p {
     font-size: 17px;

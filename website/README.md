@@ -1,6 +1,6 @@
 # Sequence · Demo RNN
 
-Website tiếng Việt dùng sau khi nhóm hoàn thành bài thuyết trình bằng slide riêng. Cả **Retailrocket và Amazon** có hoạt ảnh dự đoán từ checkpoint thật. Trên desktop, toàn bộ demo nằm trong một khung màn hình: bấm **Chạy cả 2 demo** một lần, theo dõi Retailrocket → Amazon → tổng kết. Không cần cuộn trang hay mở từng mục để hoàn thành demo.
+Website tiếng Việt dùng sau khi nhóm hoàn thành bài thuyết trình bằng slide riêng. Retailrocket và Amazon phát lại dự đoán từ checkpoint thật. Bấm **Chạy tập này** để chạy tập đang chọn đến Dự đoán. Bấm **Xem thực tế**, rồi **Xem toàn tập** khi sẵn sàng. Chọn tab Amazon để chạy tập thứ hai; mở **Tổng kết** bằng tay.
 
 ## Mở code để trả lời giảng viên
 
@@ -34,7 +34,7 @@ Không cần tài khoản hay khóa API. Sau khi cài đặt, dữ liệu, font 
 2. **Amazon:** đọc lợi suất log của 30 phiên, dự đoán phiên tới rồi đổi về giá đóng cửa điều chỉnh.
 3. **Tổng kết:** đối chiếu kết quả của hai thí nghiệm. Có thể mở sớm bằng nút **Tổng kết**; chọn **Xem lại demo** để về đầu một tập.
 
-Ở mỗi tập, biểu đồ giữ nguyên vị trí; bảng bên cạnh đổi nội dung theo bốn giai đoạn: **Đọc chuỗi → Dự đoán → Thực tế và nhận xét ví dụ → MAE toàn tập kiểm tra**. Dự đoán chỉ xuất hiện sau khi đọc đủ cửa sổ. Sai số của một ví dụ và sai số trung bình của toàn tập được trình bày ở hai giai đoạn riêng để dễ phân biệt. Sau khoảng dừng đọc kết quả, website tự chuyển sang tập tiếp theo.
+Ở mỗi tập, biểu đồ giữ nguyên vị trí; bảng bên cạnh đổi nội dung theo bốn giai đoạn: **Đọc chuỗi → Dự đoán → Thực tế và nhận xét ví dụ → MAE toàn tập kiểm tra**. Dự đoán chỉ xuất hiện sau khi đọc đủ cửa sổ. Sai số của một ví dụ và sai số trung bình của toàn tập được trình bày ở hai giai đoạn riêng để dễ phân biệt. Mỗi tập tự dừng ở Dự đoán. Hai pha cuối chỉ mở khi người trình bày bấm nút; website không tự chuyển tập.
 
 Bảng **Đầu vào** hiện đúng quan sát đang đọc. Retailrocket có **7 giá trị**: lượt xem, thêm giỏ, giao dịch và 4 giá trị thời gian sin/cos. Amazon có **1 giá trị**: lợi suất log, hiển thị dưới dạng %. Bảng hiện các phép đo trước chuẩn hóa để dễ đọc; số đếm Retailrocket được khôi phục từ log1p. Trước bước 1, các ô chỉ hiện “—”. Giờ/ngày giữ nguyên đồng hồ nguồn; bảng không lấy nhãn tương lai hoặc sửa vector chuẩn hóa vào mô hình.
 
@@ -42,12 +42,12 @@ Sơ đồ cho thấy **trạng thái trước + đầu vào hiện tại → RNN
 
 Màn hình chính ưu tiên ba câu hỏi: input là gì, dự đoán bao nhiêu, và sai số có tốt hơn baseline không. Pha Dự đoán hiện số lớn theo đơn vị gốc; pha Thực tế đặt **RNN / Thực tế / Giữ nguyên** cạnh nhau. Pha Toàn tập giữ MAE riêng với sai số của một mẫu. Phép nhân, bias, tanh và đổi đơn vị nằm trong **Xem phép tính**, dùng khi có câu hỏi. Các giá trị và checkpoint giữ nguyên.
 
-Ở tốc độ 1×, mỗi tập có nhịp mở đầu 1,2 giây, giữ hai bước đầu 4,4 giây mỗi bước để nhìn rõ quá trình truyền trạng thái, rồi 0,7 giây mỗi bước giữa. Bước đầu vào cuối dài 1,5 giây; tiếp theo là 2,6 giây xem dự đoán, 5 giây xem thực tế và nhận xét, 7 giây xem MAE trước khi chuyển tiếp.
+Ở tốc độ 1×, mỗi tập mở đầu 1,2 giây. Hai bước đầu giữ 4,4 giây mỗi bước để giải thích cơ chế. Từ bước 3 đến hết cửa sổ, mỗi bước chỉ 0,25 giây. Hoạt ảnh tự dừng ở Dự đoán; bấm **Xem thực tế**, rồi **Xem toàn tập** để mở từng phần khi sẵn sàng. Không có bộ đếm thời gian ở các pha kết quả.
 
-- **Chạy cả 2 demo** bắt đầu toàn bộ lượt trình diễn.
+- **Chạy tập này** chỉ chạy tập đang chọn. **Xem thực tế** và **Xem toàn tập** mở từng pha bằng tay.
 - **Tạm dừng / Tiếp tục** hoặc **Space** giữ cả vị trí đang chạy bên trong bước hiện tại; tiếp tục không bắt đầu lại toàn bộ thời lượng của bước. Space không thay thế thao tác bàn phím của ô nhập hay các điều khiển đang có focus.
 - Thanh thời gian cho phép xem lại bước đã chọn; thay đổi thanh sẽ tạm dừng và hiện trạng thái hoàn tất tại bước đó. Bấm phát sẽ tiếp tục từ bước được chọn; chỉ bước 1 và 2 có chuyển động truyền trạng thái. Kéo lùi trước đầu ra sẽ ẩn lại kết quả tương lai.
-- Đổi tốc độ giữ nguyên phần đã chạy, chỉ thay nhịp của phần tiếp theo. Chọn một tab đưa tập đó về đầu và dừng; bấm **Chạy tập này** để chạy riêng tập vừa chọn. Khi tập đó kết thúc, nút chính đổi thành **Chạy lại tập này**. Nút biểu tượng chạy lại có nhãn **Chạy lại cả 2 từ đầu** bắt đầu lại toàn bộ lượt trình diễn.
+- Đổi tốc độ giữ nguyên phần đã chạy. Chọn tab đưa tập đó về đầu và dừng. **Chạy lại tập này** hoặc nút biểu tượng **Chạy lại tập này từ đầu** chỉ chạy lại tập đang chọn.
 - **Giải thích nhanh** mở bốn chủ đề: **Trạng thái, Trọng số, Huấn luyện, Đầu vào**. Mỗi chủ đề có một lời giải thích và hình minh họa ngắn; **Đọc giải thích đầy đủ** mở phần tham khảo có sẵn. Ví dụ học một trạng thái với chuỗi ba bước dùng phép tính riêng, không cập nhật hai mô hình thực.
 - **Xem phép tính** và **Xem cách đổi đơn vị** mở chi tiết tại bước đang xem, đồng thời tạm dừng. Các số của dự báo cuối chỉ hiện sau khi đến pha **Dự đoán**, và ẩn lại khi tua lùi.
 - **Giải thích nhanh** và **Dữ liệu & phép tính** tạm dừng hoạt ảnh. Đóng hộp thoại để về đúng tập và bước đang xem, vẫn ở trạng thái dừng; chỉ tiếp tục khi chủ động bấm phát.
@@ -85,6 +85,10 @@ Các thí nghiệm dự báo từng bước với lịch sử đã quan sát, kh
 Nguồn: [Retailrocket](https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset) — CC BY-NC-SA 4.0; [Amazon](https://www.kaggle.com/datasets/henryshan/amazon-com-inc-amzn) — Apache 2.0. JSON và ZIP giữ chi tiết nguồn/giấy phép; ZIP không chứa bản ghi khách hàng cá nhân hay thông tin sinh viên. ZIP, website và kịch bản trình bày dùng Retailrocket và Amazon.
 
 ## Kiểm tra và thiết kế
+
+Bản điều khiển ngày 02/10/2026: 34/34 kiểm tra logic đạt, gồm dừng tại dự đoán, mở từng pha bằng tay, không tự chuyển tập và nhịp nhanh từ bước 3. Build và định dạng đạt. Kịch bản `verify-flow.mjs` đã cập nhật cho luồng mới và kiểm tra cú pháp; các ghi nhận tự chạy cả hai tập bên dưới thuộc bản cũ.
+
+Giao diện dùng nền trắng, chữ xám và điểm nhấn xanh dương. Sơ đồ có bốn vị trí đánh số (dữ liệu → RNN → trạng thái → dự báo); nhấn sáng và lời dẫn thay đổi theo pha đang phát. Khi truyền trạng thái, vị trí nhận ở bước kế tiếp được nhấn sáng. Đường truyền nằm trong vùng sơ đồ riêng để không đi qua nút mã nguồn. Màu sắc và lời dẫn không thay đổi dữ liệu, checkpoint hoặc nhịp phát.
 
 **Bản tập trung vào trình diễn, 01/10/2026.** 32/32 kiểm tra logic đạt. Kiểm tra trực tiếp trên trình duyệt: tự chạy 2× qua Retailrocket → Amazon → tổng kết; tua lùi; hộp thoại phép tính giữ đúng bước, không hiện dự báo sớm và đóng bằng Escape; kết quả RNN/thực tế/giữ nguyên; khung hiệu dụng 1280×720, 1024×600 và điện thoại 390×844. Không có cuộn ngang hoặc lỗi console. Các liên kết mã nguồn trỏ tới file Python hiện có trên GitHub. `verify-flow.mjs` đã cập nhật và kiểm tra cú pháp; bộ Playwright độc lập chưa chạy.
 

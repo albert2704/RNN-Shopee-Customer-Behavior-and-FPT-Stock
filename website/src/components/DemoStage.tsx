@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { X } from 'lucide-react';
 import type { DatasetId } from '../types';
-import { DATASET_COPY, getAnnouncement, getCaption } from '../domain/demo/demoCopy';
+import { getAnnouncement, getCaption } from '../domain/demo/demoCopy';
 import { useDemoData } from '../hooks/useDemoData';
 import { useDemoPlayback } from '../hooks/useDemoPlayback';
 import DemoHeader from './demo/DemoHeader';
@@ -42,8 +42,7 @@ export default function DemoStage({ referenceContent, onExplore, active }: Props
     blocked: modal !== null,
   });
   const { data, index, read, phase, predicted, revealed, summary } = playback;
-  const nextDataset = bundle?.datasets[index + 1];
-  const caption = getCaption(playback, nextDataset ? DATASET_COPY[nextDataset.id].name : undefined);
+  const caption = getCaption(playback);
 
   function closeModal() {
     setModal(null);
@@ -84,7 +83,6 @@ export default function DemoStage({ referenceContent, onExplore, active }: Props
           <DatasetNavigation
             datasets={bundle.datasets}
             index={index}
-            mode={playback.mode}
             summary={summary}
             evaluated={playback.evaluated}
             onChoose={playback.choose}

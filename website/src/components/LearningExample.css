@@ -15,12 +15,12 @@
 .learning-example-intro > p {
   font-size: 15px;
   line-height: 1.85;
-  color: #52694a;
+  color: #475569;
   margin-top: 9px;
 }
 .learning-input-panel,
 .learning-update-panel {
-  border: 1px solid #d2dfca;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   background: white;
   padding: 24px;
@@ -44,12 +44,12 @@
 .learning-input-heading p {
   font-size: 14px;
   line-height: 1.8;
-  color: #536c48;
+  color: #475569;
   margin-top: 7px;
 }
 .learning-input-heading > span {
-  background: #eff3e9;
-  color: #47613b;
+  background: #f8fafc;
+  color: #475569;
   border-radius: 5px;
   padding: 6px 9px;
   font-size: 11px;
@@ -96,7 +96,7 @@
   cursor: pointer;
 }
 .learning-quiet-button:disabled {
-  color: #7c8976;
+  color: #94a3b8;
   cursor: default;
 }
 .learning-state-flow {
@@ -114,14 +114,14 @@
 }
 .learning-state-cell > svg {
   flex-shrink: 0;
-  color: #749061;
+  color: #94a3b8;
 }
 .learning-state-cell > div {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  background: #f4f7ef;
-  border: 1px solid #dae4d2;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 14px;
   width: 100%;
@@ -130,7 +130,7 @@
 .learning-state-cell span,
 .learning-initial-state span {
   font-size: 12px;
-  color: #59754b;
+  color: #475569;
 }
 .learning-state-cell strong,
 .learning-initial-state strong {
@@ -141,7 +141,7 @@
 }
 .learning-state-cell small {
   font-size: 10px;
-  color: #648254;
+  color: #94a3b8;
   line-height: 1.65;
 }
 .learning-initial-state {
@@ -165,7 +165,7 @@
 }
 .learning-example .learning-caption {
   font-size: 12px;
-  color: #5f7951;
+  color: #475569;
   line-height: 1.85;
   margin-top: 17px;
 }
@@ -176,8 +176,8 @@
   margin-top: 24px;
 }
 .learning-update-step {
-  background: #f6f8f2;
-  border: 1px solid #dce5d4;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 16px;
   min-width: 0;
@@ -190,7 +190,7 @@
 }
 .learning-update-step > span {
   font-size: 12px;
-  color: #547148;
+  color: #475569;
 }
 .learning-update-step strong {
   font-size: 27px;
@@ -206,7 +206,7 @@
 .learning-update-step small {
   font-size: 11px;
   line-height: 1.85;
-  color: #607a51;
+  color: #475569;
 }
 .learning-update-step.is-active {
   background: #edf2ff;
@@ -216,7 +216,7 @@
   color: #365eeb;
 }
 .learning-after:not(.is-active) strong {
-  color: #70816a;
+  color: #94a3b8;
 }
 .learning-action-row {
   display: flex;
@@ -241,7 +241,7 @@
 .learning-action-row > p {
   font-size: 13px;
   line-height: 1.85;
-  color: #536c48;
+  color: #475569;
   max-width: 660px;
 }
 .learning-example details.learning-math {
@@ -260,7 +260,7 @@
 }
 .learning-example .learning-math-body > p {
   font-size: 13px;
-  color: #536c48;
+  color: #475569;
   line-height: 1.95;
   margin-top: 12px;
 }
@@ -268,7 +268,7 @@
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 12px;
   line-height: 1.8;
-  color: #294b35;
+  color: #475569;
   white-space: normal;
   overflow-wrap: anywhere;
 }
@@ -286,13 +286,13 @@
 .learning-parameter-table caption {
   text-align: left;
   font-size: 12px;
-  color: #526c45;
+  color: #475569;
   padding-bottom: 10px;
 }
 .learning-parameter-table th,
 .learning-parameter-table td {
   padding: 10px 14px;
-  border-bottom: 1px solid #d9e2d3;
+  border-bottom: 1px solid #e2e8f0;
   text-align: right;
   white-space: nowrap;
 }
@@ -300,7 +300,7 @@
   font-weight: 500;
 }
 .learning-parameter-table thead {
-  background: #edf2e7;
+  background: #f8fafc;
 }
 .learning-parameter-table th:first-child {
   text-align: left;

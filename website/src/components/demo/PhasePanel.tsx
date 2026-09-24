@@ -91,14 +91,17 @@ export default function PhasePanel({
           </>
         ) : (
           <>
-            <h2>Còn trên toàn tập kiểm tra?</h2>
+            <h2>Trung bình dự đoán lệch bao nhiêu?</h2>
             <p className="stage-focus-note">
-              MAE: sai số tuyệt đối trung bình của {n(data.metrics.testCount, 0)} dự đoán. Càng thấp
-              càng tốt.
+              Với {n(data.metrics.testCount, 0)} dự đoán trong tập kiểm tra, lấy độ lệch so với thực
+              tế rồi tính trung bình (MAE). Càng nhỏ, càng gần thực tế.
+            </p>
+            <p className="stage-baseline-explanation">
+              Cách đoán đơn giản: {DATASET_COPY[data.id].baselineExplanation.toLowerCase()}
             </p>
             <dl className="stage-test-values">
               <div>
-                <dt>Giữ giá trị cuối</dt>
+                <dt>{DATASET_COPY[data.id].baselineLabel}</dt>
                 <dd>
                   {n(data.metrics.baselineMae, metricDigits)} <small>{data.unit}</small>
                 </dd>
