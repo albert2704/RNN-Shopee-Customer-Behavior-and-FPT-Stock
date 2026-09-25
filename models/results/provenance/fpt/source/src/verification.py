@@ -80,7 +80,7 @@ def verify_saved_outputs(summary, *, root, write_output=True):
                     np.testing.assert_array_equal(part.predicted, part.previous)
                 if kind == "seasonal":
                     np.testing.assert_allclose(
-                        part.predicted, frame.target.iloc[ids - 7]
+                        part.predicted, frame.target.iloc[ids - 168]
                     )
             columns = p[["split", "timestamp", "actual", "target_index"]]
             if reference is not None:

@@ -1,0 +1,198 @@
+{
+  "name": "fpt",
+  "audit": {
+    "source_file": "data/raw/FPT.csv",
+    "source_sha256": "d37b285ba68dc25e9020558e968aac3b2a1db1b0412ca31066269c483382d1bc",
+    "source_url": "https://www.kaggle.com/datasets/thangtranquang/stock-vn30-vietnam",
+    "raw_rows": 2706,
+    "missing_by_column": {
+      "Symbol": 0,
+      "Value": 0,
+      "TradingDate": 0,
+      "Time": 2706,
+      "Open": 0,
+      "High": 0,
+      "Low": 0,
+      "Close": 0,
+      "Volume": 0
+    },
+    "duplicate_rows": 87,
+    "duplicate_decision": "Remove exact full-row duplicates, then identical Symbol/date/OHLCV rows differing only in unused Value/Time. Reject conflicting daily prices/volumes.",
+    "redundant_daily_rows": 1,
+    "zero_volume_rows": 2,
+    "inconsistent_ohlc_rows": 6,
+    "auxiliary_field_decision": "Retain positive Close for all recorded dates. Six rows have inconsistent unused OHLC fields, including one zero-volume row with zero Open/High/Low. These fields are not model inputs and are not repaired.",
+    "clean_rows": 2618,
+    "raw_first_timestamp": "2013-01-02T00:00:00+00:00",
+    "raw_last_timestamp": "2023-06-30T00:00:00+00:00",
+    "first_timestamp": "2013-01-03T00:00:00+00:00",
+    "last_timestamp": "2023-06-30T00:00:00+00:00",
+    "series_rows": 2617,
+    "interval": "Next recorded trading session; weekends and exchange holidays are not interpolated",
+    "first_return_row_removed": 1,
+    "target_mean": 57439.72105464272,
+    "target_std": 17702.384215623966,
+    "target_min": 35700.0,
+    "target_max": 116600.0,
+    "target_quantiles": {
+      "0.0": 35700.0,
+      "0.25": 45500.0,
+      "0.5": 48900.0,
+      "0.75": 63300.0,
+      "0.95": 94500.0,
+      "1.0": 116600.0
+    },
+    "log_return_mean": 0.00032853592724906754,
+    "log_return_std": 0.0187343955317861,
+    "missing_decision": "Time is empty in every daily record and is not used. Required date/OHLCV fields must be complete. No interpolation or future filling.",
+    "outlier_decision": "Retain all recorded sessions and large returns; no clipping or corporate-action correction invented.",
+    "adjustment_caveat": "Source provides Close only, not Adj Close, and does not document adjustment methodology. Retain Close as supplied; jumps may include corporate actions. This is a historical educational benchmark.",
+    "price_column": "Close",
+    "price_unit": "VND per share, source Close as supplied"
+  },
+  "features": [
+    "log_return"
+  ],
+  "lookback": 30,
+  "splits": {
+    "train": {
+      "n": 1810,
+      "first_timestamp": "2013-02-21T00:00:00+00:00",
+      "last_timestamp": "2020-05-25T00:00:00+00:00",
+      "first_target_index": 30,
+      "last_target_index": 1839
+    },
+    "validation": {
+      "n": 388,
+      "first_timestamp": "2020-05-26T00:00:00+00:00",
+      "last_timestamp": "2021-12-06T00:00:00+00:00",
+      "first_target_index": 1840,
+      "last_target_index": 2227
+    },
+    "test": {
+      "n": 389,
+      "first_timestamp": "2021-12-07T00:00:00+00:00",
+      "last_timestamp": "2023-06-30T00:00:00+00:00",
+      "first_target_index": 2228,
+      "last_target_index": 2616
+    }
+  },
+  "normalization": {
+    "x_mean": [
+      0.00015541498026852232
+    ],
+    "x_scale": [
+      0.01823084729179194
+    ],
+    "y_mean": 0.00011283517482303871,
+    "y_scale": 0.018241317150700615,
+    "fit_first_timestamp": "2013-01-03T00:00:00+00:00",
+    "fit_last_timestamp": "2020-05-25T00:00:00+00:00",
+    "feature_fit_rows": 1840,
+    "target_fit_rows": 1810,
+    "x_method": "Per-feature population mean/std fitted to training timestamps only, including available lookback context.",
+    "y_method": "Population mean/std of transformed training targets only."
+  },
+  "prediction_task": "Next-recorded-trading-session FPT closing price",
+  "target_transform": "log(Close_t / Close_t-1)",
+  "inverse_transform": "Close_t-1 * exp(predicted log return)",
+  "target_unit": "VND per share, source Close as supplied",
+  "evaluation_policy": "Chronological 70/15/15 split of eligible target indices. One-step rolling forecasts use observed history, including earlier validation/test observations. Hidden state is reset for each independent window. This is not recursive or multi-step forecasting.",
+  "transform_caveat": "MSE on log returns differs from VND-price MSE; return errors are amplified when reconstructed at high price levels.",
+  "prepared_series_file": "data/processed/fpt.csv",
+  "prepared_windows_file": "data/processed/fpt_windows.npz",
+  "models": {
+    "rnn": {
+      "best_epoch": 1,
+      "epochs_run": 9,
+      "best_validation_loss": 0.9895641803741455,
+      "parameters": 1153,
+      "seconds": 0.6565173750277609,
+      "history_file": "results/fpt/rnn_history.csv",
+      "checkpoint_file": "checkpoints/fpt_rnn.pt",
+      "checkpoint_sha256": "c49d68e1359911c3758fb1f22f3dd7e1c0245edea3a25f70ad62d63b6cecd53e",
+      "selection": "Minimum validation transformed-space MSE; test is not read during optimization/selection.",
+      "metrics": {
+        "validation": {
+          "MAE": 881.2694500755301,
+          "RMSE": 1369.4914078593638
+        },
+        "test": {
+          "MAE": 1059.9226713126889,
+          "RMSE": 2014.8084858063758
+        }
+      },
+      "transformed_MSE": {
+        "validation": 0.9895641803741455,
+        "test": 1.395447850227356
+      },
+      "predictions_file": "results/fpt/rnn_predictions.csv"
+    },
+    "gru": {
+      "best_epoch": 1,
+      "epochs_run": 9,
+      "best_validation_loss": 0.9944800734519958,
+      "parameters": 3393,
+      "seconds": 1.0160513329319656,
+      "history_file": "results/fpt/gru_history.csv",
+      "checkpoint_file": "checkpoints/fpt_gru.pt",
+      "checkpoint_sha256": "9ac5619f545040423c847d7181e64b4e6662e30bc3e9052b5a25811e9f029df2",
+      "selection": "Minimum validation transformed-space MSE; test is not read during optimization/selection.",
+      "metrics": {
+        "validation": {
+          "MAE": 882.0618832346721,
+          "RMSE": 1370.7849658161053
+        },
+        "test": {
+          "MAE": 1058.9405220790504,
+          "RMSE": 2002.0458460606942
+        }
+      },
+      "transformed_MSE": {
+        "validation": 0.9944800734519958,
+        "test": 1.3812763690948486
+      },
+      "predictions_file": "results/fpt/gru_predictions.csv"
+    },
+    "persistence": {
+      "metrics": {
+        "validation": {
+          "MAE": 881.0567010309278,
+          "RMSE": 1371.0110837453421
+        },
+        "test": {
+          "MAE": 1053.7275064267353,
+          "RMSE": 2000.7260892782815
+        }
+      },
+      "predictions_file": "results/fpt/persistence_predictions.csv",
+      "definition": "Previous observed target value"
+    },
+    "train_mean": {
+      "metrics": {
+        "validation": {
+          "MAE": 881.0889975595942,
+          "RMSE": 1370.4156560683728
+        },
+        "test": {
+          "MAE": 1054.212057866335,
+          "RMSE": 2000.9743376472366
+        }
+      },
+      "predictions_file": "results/fpt/train_mean_predictions.csv",
+      "definition": "Previous source Close multiplied by exp(mean training log return)"
+    }
+  },
+  "source_files": {
+    "src/config.py": "322183d25a69c79ea000375829e0e54b46d9409be3ebd854e5926f12a050e56f",
+    "src/evaluation.py": "f44f6fb81d48b4afa411aa566efc62c62583ec70a881dcac32aea479f3b9484d",
+    "src/experiments.py": "308b5b53c8a4c1dbfbe02336932f928894cb811a1341d1b4552408b847699dae",
+    "src/io_utils.py": "e2de0a6049940a3ca05e18ab87f096e3cd92cff9e7393860bd1fc28954f52508",
+    "src/models.py": "854e2005515c3339ebda6e9c49d27d2408b84a4d1b1e291769a9cfb3c447b984",
+    "src/plots.py": "47c7aa5ea53b6afee23fd4b4e4c1c6e5a8a72de8ae8ca5c350cbeb7778a653a1",
+    "src/preprocessing.py": "ae3d6559023a1049e8930e15e50ddac060d2aee1536c1ed401fb6a8c97652695",
+    "src/toy_rnn.py": "22d5f03c3721013809a59e2ad821ce3480472e450e258a75a926d15180c3704d",
+    "src/training.py": "38c7c70250d613df6ab012baf834da88da221031faf009949cebf13d68d6e7ce",
+    "src/verification.py": "f595b05fd79320b7536d36e2f0a6b7f8f7b12412919a3e47c6b6e6a491093eff"
+  }
+}

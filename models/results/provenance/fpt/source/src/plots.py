@@ -50,15 +50,25 @@ def plot_dataset(name, frame, meta, *, root):
             )
 
     fig, axes = plt.subplots(2, 1, figsize=(11, 7.3), layout="constrained")
-    if name == "shopee":
-        for col in ["sessions", "product_visits", "cart_visits", "checkout_visits", "orders"]:
-            axes[0].plot(frame.index, frame[col], label=col, lw=1)
-        axes[0].set(yscale="symlog", ylabel="Observed counts per source day", title="Shopee Thailand: simulated customer activity")
+    if name == "retailrocket":
+        daily = frame[["view", "addtocart", "transaction"]].resample("D").sum()
+        for col in daily:
+            axes[0].plot(daily.index, daily[col], label=col, lw=1.3)
+        axes[0].set(
+            yscale="log",
+            ylabel="Observed events per day (log scale)",
+            title="Retailrocket: recorded customer actions over time",
+        )
         shade(axes[0])
-        axes[0].legend(ncol=4, fontsize=8)
-        weekday = frame.groupby(frame.index.dayofweek).orders.mean()
-        axes[1].bar(weekday.index, weekday.values, color="#2864BA")
-        axes[1].set(xlabel="Weekday (Monday=0)", ylabel="Mean orders / day", title="Full-series weekday profile (descriptive only)", xticks=np.arange(7))
+        axes[0].legend(ncol=5, fontsize=8)
+        hourly = frame.groupby(frame.index.hour).transaction.mean()
+        axes[1].bar(hourly.index, hourly.values, color="#2864BA")
+        axes[1].set(
+            xlabel="Hour of day (UTC)",
+            ylabel="Mean transaction events / hour",
+            title="Descriptive hourly profile across the full series (EDA only)",
+            xticks=np.arange(0, 24, 2),
+        )
     else:
         axes[0].plot(frame.index, frame.target, color="#243A57", lw=1)
         shade(axes[0])
@@ -119,8 +129,8 @@ def plot_dataset(name, frame, meta, *, root):
         (axes[0], slice(None), "Entire held-out test period"),
         (
             axes[1],
-            slice(-90, None),
-            "Final 90 days" if name == "shopee" else "Final 90 trading sessions",
+            slice(-168 if name == "retailrocket" else -90, None),
+            "Final 7 days" if name == "retailrocket" else "Final 90 trading sessions",
         ),
     ]:
         part = primary.iloc[subset]

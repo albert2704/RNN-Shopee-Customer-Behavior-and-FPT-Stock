@@ -15,3 +15,9 @@ website/dist/
 website/.vite/
 website/qa/
 *.tsbuildinfo
+
+# Daily market snapshots, model runs and forecast ledger stay local.
+models/daily/runtime/
+.env
+.env.*
+!.env.example

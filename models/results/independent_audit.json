@@ -1,29 +1,29 @@
 {
   "status": "passed",
-  "checked_at_utc": "2026-09-26T15:21:36.582146+00:00",
+  "checked_at_utc": "2026-10-02T04:00:58.644081+00:00",
   "audit_script": "scripts/independent_audit.py",
-  "audit_script_sha256": "35220c70e7e1be36ac2782ab957be84749e84f501cd7bfc85da2c1bcfc44593d",
+  "audit_script_sha256": "ff95895db8ec590467ee30c3362c41a61eb87c0a5d35b6b3e384f9ecd14e43cf",
   "independence": "Does not import experiments.py; separately defines model and recomputes data transformations and metrics.",
   "datasets": [
     {
-      "dataset": "retailrocket",
+      "dataset": "fpt",
       "status": "passed",
       "windows_checked": {
-        "train": 2284,
-        "validation": 489,
-        "test": 491
+        "train": 1810,
+        "validation": 388,
+        "test": 389
       },
       "models_checked": [
         "rnn",
         "gru",
         "persistence",
-        "seasonal"
+        "train_mean"
       ],
       "independently_reloaded_models": [
         "rnn",
         "gru"
       ],
-      "test_predictions_per_reloaded_model": 491,
+      "test_predictions_per_reloaded_model": 389,
       "checks": [
         "sorted unique processed timestamps",
         "training-only feature and target normalization",
@@ -38,24 +38,24 @@
       ]
     },
     {
-      "dataset": "amazon",
+      "dataset": "shopee",
       "status": "passed",
       "windows_checked": {
-        "train": 4657,
-        "validation": 997,
-        "test": 999
+        "train": 1001,
+        "validation": 214,
+        "test": 216
       },
       "models_checked": [
         "rnn",
         "gru",
         "persistence",
-        "train_mean"
+        "seasonal"
       ],
       "independently_reloaded_models": [
         "rnn",
         "gru"
       ],
-      "test_predictions_per_reloaded_model": 999,
+      "test_predictions_per_reloaded_model": 216,
       "checks": [
         "sorted unique processed timestamps",
         "training-only feature and target normalization",
@@ -71,8 +71,16 @@
     }
   ],
   "raw_to_processed_transformations": "passed",
-  "executed_source_matches_current_source": "passed",
-  "source_sha256": "190d1159a507e4442eabebb0e5c8c81ab5d1026f54c92f3a1f4c3c1c6f4dd240",
+  "source_provenance": {
+    "historical_snapshot": "results/provenance/executed_experiments.py",
+    "historical_snapshot_matches_recorded_hash": "passed",
+    "recorded_source_sha256": "b11ffe8c606217cf831b36895b62fc19d8ea5745cfb1c7f5a72ddb4523c73c90",
+    "current_source": "src/experiments.py",
+    "current_source_sha256": "b11ffe8c606217cf831b36895b62fc19d8ea5745cfb1c7f5a72ddb4523c73c90",
+    "current_source_matches_historical": true,
+    "archived_module_hashes_checked": 10,
+    "scope": "Historical source hash is checked against its archived snapshot. Current refactored code is distinct; numerical parity is checked separately."
+  },
   "prediction_tolerance": {
     "rtol": 1e-09,
     "atol": 1e-09

@@ -1,92 +1,127 @@
 {
   "assignment": "A6 - Recurrent Neural Networks",
-  "downloaded_at_utc": "2026-09-26T15:13:59.256694+00:00",
-  "download_method": "Public Kaggle API HTTPS GET without authentication; AMZN dataset ZIP and Retailrocket individual events.csv ZIP. ZIP contents extracted byte-for-byte.",
+  "downloaded_at_utc": "2026-10-02",
+  "download_method": "Public Kaggle API HTTPS GET; Shopee Thailand version 1 and FPT version 1, raw bytes preserved and SHA-256 checked.",
   "datasets": [
     {
-      "title": "Amazon Stock Price",
-      "slug": "henryshan/amazon-com-inc-amzn",
-      "canonical_url": "https://www.kaggle.com/datasets/henryshan/amazon-com-inc-amzn",
-      "metadata_url": "https://www.kaggle.com/api/v1/datasets/view/henryshan/amazon-com-inc-amzn",
-      "download_url": "https://www.kaggle.com/api/v1/datasets/download/henryshan/amazon-com-inc-amzn",
+      "title": "Shopee TH: Customer Journey & Operations Dataset (Synthetic)",
+      "slug": "hninshwezinhlaing/shopee-th-customer-journey-and-operations-dataset",
+      "canonical_url": "https://www.kaggle.com/datasets/hninshwezinhlaing/shopee-th-customer-journey-and-operations-dataset",
       "version": 1,
-      "publisher": "Henry Shan",
-      "last_updated_utc": "2023-12-06T11:18:11.720Z",
-      "license_as_listed": "Apache 2.0",
-      "local_file": "data/raw/AMZN.csv",
-      "bytes": 457455,
-      "sha256": "0baf98d114fcf60cfea96f90b99f51b5ef7df19258536fa56f7c883d50af1050",
-      "rows": 6684,
+      "publisher": "Hnin Shwe Zin Hlaing",
+      "license_as_listed": "CC BY-SA 4.0",
+      "synthetic": true,
+      "market_simulated": "Thailand, not Vietnam",
+      "files": [
+        {
+          "local_file": "data/raw/shopee_orders_thailand.csv",
+          "filename": "shopee_orders_thailand.csv",
+          "rows": 300000,
+          "bytes": 24475363,
+          "sha256": "78c96592defc22244c90fd5a290e5320c35d0c6fd97b34b26edf3dea9f32a9e2",
+          "download_url": "https://www.kaggle.com/api/v1/datasets/download/hninshwezinhlaing/shopee-th-customer-journey-and-operations-dataset/shopee_orders_thailand.csv?datasetVersionNumber=1",
+          "columns": [
+            "order_id",
+            "order_date",
+            "customer_id",
+            "order_day",
+            "year_month",
+            "subtotal_amount",
+            "shipping_fee_total",
+            "commission_total",
+            "maintenance_total",
+            "total_amount",
+            "campaign_id"
+          ]
+        },
+        {
+          "local_file": "data/raw/shopee_website_sessions_thailand.csv",
+          "filename": "shopee_website_sessions_thailand.csv",
+          "rows": 500000,
+          "bytes": 40960849,
+          "sha256": "bd38474aa4fd81896ff3007d4f54395633015336b120329585337cd1425fd76d",
+          "download_url": "https://www.kaggle.com/api/v1/datasets/download/hninshwezinhlaing/shopee-th-customer-journey-and-operations-dataset/shopee_website_sessions_thailand.csv?datasetVersionNumber=1",
+          "columns": [
+            "session_id",
+            "user_id",
+            "session_date",
+            "session_start_time",
+            "session_end_time",
+            "utm_source",
+            "campaign_id",
+            "device_type",
+            "order_id"
+          ]
+        },
+        {
+          "local_file": "data/raw/shopee_session_activities_thailand.csv",
+          "filename": "shopee_session_activities_thailand.csv",
+          "rows": 2696481,
+          "bytes": 177406747,
+          "sha256": "6a79c6bb47a5dffc4120fa3ac7c2cdeb5e25be7f093caded6f8ccafd9435bece",
+          "download_url": "https://www.kaggle.com/api/v1/datasets/download/hninshwezinhlaing/shopee-th-customer-journey-and-operations-dataset/shopee_session_activities_thailand.csv?datasetVersionNumber=1",
+          "columns": [
+            "activity_id",
+            "session_id",
+            "page_url",
+            "session_start_time",
+            "session_end_time"
+          ]
+        }
+      ],
+      "selected_use": "Aggregate source-day session starts, product/cart/checkout page visits and orders. Use previous 30 days to forecast unique order count next day.",
+      "caveats": [
+        "100% synthetic independent simulation. Not official Shopee records or Vietnamese customer data.",
+        "Page visits are not add-to-cart action logs.",
+        "Source timestamps contain no timezone; preserve their calendar dates. UTC in processed CSV is a storage label only.",
+        "Some late sessions extend into 2026-01-01. Exclude those page starts because the source has no full target day there.",
+        "Blank order links and marketing fields are expected on some sessions; do not drop sessions.",
+        "Do not use target-day browsing counts, future order links or thank-you pages as predictors for that day.",
+        "Metrics describe this generated sample, not actual Shopee performance."
+      ]
+    },
+    {
+      "title": "Stock Prices & Volume VN30 Index Vietnam",
+      "selected_company": "FPT Corporation (FPT)",
+      "slug": "thangtranquang/stock-vn30-vietnam",
+      "canonical_url": "https://www.kaggle.com/datasets/thangtranquang/stock-vn30-vietnam",
+      "metadata_url": "https://www.kaggle.com/api/v1/datasets/view/thangtranquang/stock-vn30-vietnam",
+      "download_url": "https://www.kaggle.com/api/v1/datasets/download/thangtranquang/stock-vn30-vietnam/FPT.csv?datasetVersionNumber=1",
+      "version": 1,
+      "publisher": "Thang Tran",
+      "last_updated_utc": "2023-07-02T15:58:38.277Z",
+      "license_as_listed": "CC0: Public Domain",
+      "local_file": "data/raw/FPT.csv",
+      "bytes": 163462,
+      "sha256": "d37b285ba68dc25e9020558e968aac3b2a1db1b0412ca31066269c483382d1bc",
+      "rows": 2706,
       "columns": [
-        "Date",
+        "Symbol",
+        "Value",
+        "TradingDate",
+        "Time",
         "Open",
         "High",
         "Low",
         "Close",
-        "Adj Close",
         "Volume"
       ],
       "date_range_inclusive": [
-        "1997-05-15",
-        "2023-12-05"
+        "2013-01-02",
+        "2023-06-30"
       ],
-      "granularity": "One row per trading date",
-      "missing_values": {},
-      "selected_use": "Stock-market time series: predict next trading-day adjusted close from a rolling historical window.",
-      "caveats": [
-        "Despite the publisher subtitle Real Time Price, the downloaded snapshot ends on 2023-12-05.",
-        "Trading dates are irregular in calendar time: weekends and holidays must not be invented as observed stock prices.",
-        "The publisher lists USD prices but provides no detailed upstream market-data provenance.",
-        "This is an academic forecasting exercise; compare the RNN with a last-observation baseline and make no claim of profitable investment performance."
-      ]
-    },
-    {
-      "title": "Retailrocket recommender system dataset",
-      "slug": "retailrocket/ecommerce-dataset",
-      "canonical_url": "https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset",
-      "metadata_url": "https://www.kaggle.com/api/v1/datasets/view/retailrocket/ecommerce-dataset",
-      "download_url": "https://www.kaggle.com/api/v1/datasets/download/retailrocket/ecommerce-dataset/events.csv",
-      "version": 2,
-      "publisher": "Retailrocket / Roman Zykov",
-      "last_updated_utc": "2022-11-08T16:03:10.607Z",
-      "license_as_listed": "CC BY-NC-SA 4.0",
-      "local_file": "data/raw/events.csv",
-      "bytes": 94237913,
-      "sha256": "3745aa83238b1e6d44d8fda209807899f420084398f94ddf745f3cbcfecbf9e7",
-      "rows": 2756101,
-      "columns": [
-        "timestamp",
-        "visitorid",
-        "event",
-        "itemid",
-        "transactionid"
-      ],
-      "date_range_inclusive_utc": [
-        "2015-05-03T03:00:04.384Z",
-        "2015-09-18T02:59:47.788Z"
-      ],
-      "timestamp_encoding": "Unix epoch milliseconds; converted to UTC for reproducibility, not inferred store local time.",
-      "granularity": "One timestamped visitor-item event per row",
-      "event_counts": {
-        "view": 2664312,
-        "addtocart": 69332,
-        "transaction": 22457
-      },
-      "unique_visitors": 1407580,
+      "granularity": "One observation per trading date after removing 87 exact duplicates and 1 identical date/OHLCV record differing only in unused Value",
       "missing_values": {
-        "transactionid": 2733644
+        "Time": 2706
       },
-      "out_of_order_adjacent_timestamps": 1377377,
-      "selected_use": "Customer behavior over time: aggregate observed view/addtocart/transaction events hourly, then forecast next-hour transaction-event count from historical hourly behavior.",
+      "selected_use": "Forecast next recorded FPT closing price in VND from 30 historical log returns.",
       "caveats": [
-        "Raw rows are not chronologically sorted; sort or resample on timestamp before making sequences.",
-        "Missing transactionid on nonpurchase events is expected and must not cause those rows to be dropped.",
-        "Transaction event counts refer to purchase events/line items, not necessarily unique orders or unique purchasers.",
-        "Hourly aggregation describes population-level behavior; it does not predict an individual customer journey.",
-        "The dataset covers only about 4.5 months and may contain abnormal traffic.",
-        "The first and last observed clock periods are partial and should be excluded or clearly flagged.",
-        "Only events.csv was downloaded. Item properties and category tree are unnecessary for the selected aggregate forecast.",
-        "The source identifies this as real ecommerce data with anonymized/hashed values; retain source attribution and the listed noncommercial/share-alike license."
+        "TradingDate uses day/month/year; do not parse month/day/year.",
+        "Time is empty and unused for daily observations.",
+        "2016-09-23 appears twice with identical OHLCV and slightly different unused Value. Collapse to one daily price observation; reject actual OHLCV conflicts.",
+        "Close is used as supplied. No Adj Close or adjustment methodology is provided; corporate-action effects are not corrected or inferred.",
+        "No weekend/holiday interpolation; large returns are retained.",
+        "Historical snapshot is not a live price feed."
       ]
     }
   ],
@@ -94,8 +129,8 @@
     "Split chronologically by target timestamp, for example 70 percent train / 15 percent validation / 15 percent test; never randomly split time windows.",
     "Fit feature and target transformations on training observations only. Use validation for model choice and keep test targets untouched until final evaluation.",
     "Inputs for each target must end before the target time. Validation/test windows may use earlier known observations, but no future values.",
-    "Hourly customer behavior forecast: include previous day and previous week seasonal baselines when enough history exists.",
+    "Daily behavior forecast: compare against previous day and same weekday 7 days earlier.",
     "Report MAE/RMSE in original units, plots of actual versus predicted targets, train/validation loss, and temporal train/validation/test boundaries."
   ],
-  "selection_rationale": "The brief requires one customer-behavior-over-time dataset and one stock dataset. Retailrocket directly records customer actions over time, and Amazon provides the stock dataset."
+  "selection_rationale": "Shopee Thailand synthetic customer journey replaces Retailrocket for next-day order forecasting; FPT remains the Vietnamese stock example."
 }

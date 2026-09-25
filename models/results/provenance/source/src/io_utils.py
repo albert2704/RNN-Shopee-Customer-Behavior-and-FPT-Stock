@@ -36,17 +36,6 @@ def archive_sources(root, source_dir, source_files):
         snapshot = provenance / "source" / relative_path
         snapshot.parent.mkdir(parents=True, exist_ok=True)
         snapshot.write_bytes(source.read_bytes())
-    # Each dataset retains its executed modules when another dataset is retrained.
-    # Only snapshot datasets whose manifest names these exact current hashes.
-    summary = json.loads((root / "results/summary.json").read_text())
-    for name, meta in summary["datasets"].items():
-        if meta.get("source_files") != source_files:
-            continue
-        for relative_path in source_files:
-            snapshot = provenance / name / "source" / relative_path
-            snapshot.parent.mkdir(parents=True, exist_ok=True)
-            snapshot.write_bytes((root / relative_path).read_bytes())
-        (provenance / name / "executed_experiments.py").write_bytes((source_dir / "experiments.py").read_bytes())
     (provenance / "executed_experiments.py").write_bytes(
         (source_dir / "experiments.py").read_bytes()
     )

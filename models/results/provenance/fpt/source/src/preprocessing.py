@@ -8,101 +8,104 @@ import pandas as pd
 from io_utils import sha256
 
 
-def prepare_shopee(*, root):
-    """Gom hành vi mô phỏng theo ngày nguồn rồi dự báo số đơn ngày sau.
+def prepare_retailrocket(*, root):
+    """Gom số hành vi của toàn hệ thống theo giờ, không phân loại từng khách.
 
-    Page URL là lượt thăm trang, không phải sự kiện thêm sản phẩm vào giỏ.
-    Mỗi đầu vào chỉ dùng các quan sát của ngày đã kết thúc trước ngày đích.
+    Đếm dòng sự kiện transaction; không mặc định đó là doanh thu/đơn hàng.
+    Ba cột đếm dùng log1p để giảm độ lệch và vẫn nhận giá trị 0.
     """
-    filenames = {
-        "orders": "shopee_orders_thailand.csv",
-        "sessions": "shopee_website_sessions_thailand.csv",
-        "activities": "shopee_session_activities_thailand.csv",
+    source = root / "data/raw/events.csv"
+    events = pd.read_csv(source)
+    raw_rows = len(events)
+    duplicates = int(events.duplicated().sum())
+    missing = {str(k): int(v) for k, v in events.isna().sum().items()}
+    descending = int((events.timestamp.diff() < 0).sum())
+    original_event_counts = {
+        str(k): int(v) for k, v in events.event.value_counts().items()
     }
-    sources = {key: root / "data/raw" / name for key, name in filenames.items()}
-    orders = pd.read_csv(sources["orders"])
-    sessions = pd.read_csv(sources["sessions"])
-    activities = pd.read_csv(sources["activities"])
-    tables = {"orders": orders, "sessions": sessions, "activities": activities}
-    required = {
-        "orders": ["order_id", "order_date"],
-        "sessions": ["session_id", "session_date", "session_start_time", "session_end_time"],
-        "activities": ["activity_id", "session_id", "page_url", "session_start_time", "session_end_time"],
-    }
-    for key, table in tables.items():
-        assert set(required[key]).issubset(table.columns)
-        assert not table[required[key]].isna().any().any()
-        assert not table[required[key][0]].duplicated().any(), f"Repeated {key} IDs require resolution"
-    orders["time"] = pd.to_datetime(orders.order_date, utc=True, errors="raise")
-    sessions["time"] = pd.to_datetime(sessions.session_start_time, utc=True, errors="raise")
-    activities["time"] = pd.to_datetime(activities.session_start_time, utc=True, errors="raise")
-    session_end = pd.to_datetime(sessions.session_end_time, utc=True, errors="raise")
-    activity_end = pd.to_datetime(activities.session_end_time, utc=True, errors="raise")
-    assert (session_end >= sessions.time).all()
-    assert (activity_end >= activities.time).all()
-    assert sessions.time.dt.normalize().eq(pd.to_datetime(sessions.session_date, utc=True)).all()
-    assert activities.session_id.isin(sessions.session_id).all()
-    linked = sessions[sessions.order_id.notna()].merge(
-        orders[["order_id", "order_date"]], on="order_id", how="left", validate="many_to_one"
+    # Chỉ bỏ dòng trùng mọi cột; vẫn giữ hành vi lặp khác bản ghi.
+    events = events.drop_duplicates().copy()
+    assert not events.timestamp.isna().any()
+    assert set(events.event.unique()) == {"view", "addtocart", "transaction"}
+    events["time"] = pd.to_datetime(events.timestamp, unit="ms", utc=True)
+    first, last = events.time.min(), events.time.max()
+    start = first.normalize() + pd.Timedelta(days=1)
+    stop = last.normalize()  # cận phải loại trừ; bỏ ngày UTC cuối chưa đủ
+    events = events[(events.time >= start) & (events.time < stop)]
+    hours = pd.date_range(start, stop, freq="h", inclusive="left")
+    observed = (
+        events.groupby([events.time.dt.floor("h"), "event"])
+        .size()
+        .unstack(fill_value=0)
     )
-    assert linked.order_date.notna().all()
-    assert linked.order_date.eq(linked.session_date).all()
-    assert linked.order_id.is_unique
-    bounds = activities[["session_id", "time"]].merge(
-        pd.DataFrame({"session_id": sessions.session_id, "start": sessions.time, "end": session_end}),
-        on="session_id", validate="many_to_one"
-    )
-    assert bounds.time.ge(bounds.start).all() and bounds.time.le(bounds.end).all()
-    # Full source calendar days 2022–2025. Activity starts on 2026-01-01
-    # belong to a session crossing midnight, but there is no complete target day.
-    start, stop = pd.Timestamp("2022-01-01", tz="UTC"), pd.Timestamp("2026-01-01", tz="UTC")
-    days = pd.date_range(start, stop, freq="D", inclusive="left")
-    frame = pd.DataFrame(index=days)
-    def daily_count(table, mask=None):
-        times = table.time if mask is None else table.loc[mask, "time"]
-        times = times[(times >= start) & (times < stop)]
-        return times.dt.normalize().value_counts().reindex(days, fill_value=0).sort_index().astype(int)
-    frame["sessions"] = daily_count(sessions)
-    for column, page in [("product_visits", "/products"), ("cart_visits", "/cart"), ("checkout_visits", "/checkout")]:
-        frame[column] = daily_count(activities, activities.page_url.eq(page))
-    frame["orders"] = daily_count(orders)
+    frame = observed.reindex(hours, fill_value=0)[
+        ["view", "addtocart", "transaction"]
+    ].copy()
     frame.index.name = "timestamp"
-    frame["target"] = frame.orders.astype(float)
-    columns = ["sessions", "product_visits", "cart_visits", "checkout_visits", "orders"]
-    for column in columns:
+    frame["target"] = frame.transaction.astype(float)
+    for column in ["view", "addtocart", "transaction"]:
         frame["log_" + column] = np.log1p(frame[column].astype(float))
-    frame["model_target"] = frame.log_orders
+    # Cặp sin/cos nối 23h với 0h và Chủ nhật với thứ Hai theo chu kỳ.
+    for prefix, values, period in [
+        ("hour", frame.index.hour, 24),
+        ("weekday", frame.index.dayofweek, 7),
+    ]:
+        frame[prefix + "_sin"] = np.sin(2 * np.pi * values / period)
+        frame[prefix + "_cos"] = np.cos(2 * np.pi * values / period)
+    frame["model_target"] = frame.log_transaction
+    features = [
+        "log_view",
+        "log_addtocart",
+        "log_transaction",
+        "hour_sin",
+        "hour_cos",
+        "weekday_sin",
+        "weekday_cos",
+    ]
     audit = dict(
-        source_file="data/raw/" + filenames["orders"],
-        source_sha256=sha256(sources["orders"]),
-        source_files={"data/raw/" + filenames[key]: sha256(path) for key, path in sources.items()},
-        source_url="https://www.kaggle.com/datasets/hninshwezinhlaing/shopee-th-customer-journey-and-operations-dataset",
-        synthetic=True, source_version=1, license="CC BY-SA 4.0",
-        raw_rows=len(orders), raw_session_rows=len(sessions), raw_activity_rows=len(activities),
-        raw_rows_by_table={key: len(table) for key, table in tables.items()},
-        missing_by_table={key: {str(k): int(v) for k, v in table.isna().sum().items() if k != "time"} for key, table in tables.items()},
-        duplicate_rows_by_table={key: int(table.duplicated().sum()) for key, table in tables.items()},
-        unique_order_ids=int(orders.order_id.nunique()), unique_session_ids=int(sessions.session_id.nunique()),
-        activity_page_counts={str(k): int(v) for k, v in activities.page_url.value_counts().items()},
-        linked_order_sessions=len(linked), orphan_activity_rows=0, orphan_linked_orders=0,
-        linked_order_session_date_conflicts=0,
-        excluded_activity_rows=int(((activities.time < start) | (activities.time >= stop)).sum()),
-        first_timestamp=frame.index[0].isoformat(), last_timestamp=frame.index[-1].isoformat(),
-        raw_first_timestamp=orders.time.min().isoformat(), raw_last_timestamp=orders.time.max().isoformat(),
-        series_rows=len(frame), interval="1 source calendar day; timezone not specified by publisher",
-        zero_target_days=int(frame.orders.eq(0).sum()),
-        aggregate_counts={column: int(frame[column].sum()) for column in columns},
-        target_mean=float(frame.target.mean()), target_std=float(frame.target.std()),
-        target_min=float(frame.target.min()), target_max=float(frame.target.max()),
-        target_quantiles={str(k): float(v) for k, v in frame.target.quantile([0, .25, .5, .75, .95, 1]).items()},
-        boundary_policy="Use complete declared 2022–2025 source calendar days. Discard page starts on 2026-01-01 because there is no complete corresponding target day. Preserve source clock labels; UTC is a storage convention, not an inferred timezone.",
-        zero_assumption="Missing order days mean zero observed generated orders, not proven zero real demand. Sessions cover every retained day.",
-        missing_decision="Required identifiers and timestamps must be complete. Blank marketing/campaign/order links on nonpurchasing sessions are expected and not model inputs. No interpolation or future filling.",
-        outlier_decision="Retain all generated daily counts; log1p reduces skew without clipping targets.",
-        behavior_meaning="Population-level daily session starts and page visits plus unique order count. Cart-page visits do not prove add-to-cart actions. Not individual purchase prediction.",
-        synthetic_caveat="100% synthetic Shopee Thailand simulation from an independent publisher, not official Shopee records and not Vietnamese customer data. Evaluation only describes generated patterns.",
+        source_file="data/raw/events.csv",
+        source_sha256=sha256(source),
+        source_url="https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset",
+        raw_rows=raw_rows,
+        missing_by_column=missing,
+        duplicate_rows=duplicates,
+        duplicate_decision="Remove exact full-row duplicates only. Simultaneous genuine identical actions cannot be distinguished; this is an explicit cleaning assumption.",
+        raw_event_counts=original_event_counts,
+        raw_distinct_visitors=int(
+            pd.read_csv(source, usecols=["visitorid"]).visitorid.nunique()
+        ),
+        descending_adjacent_timestamp_pairs=descending,
+        raw_first_timestamp=first.isoformat(),
+        raw_last_timestamp=last.isoformat(),
+        first_timestamp=frame.index[0].isoformat(),
+        last_timestamp=frame.index[-1].isoformat(),
+        clean_event_rows=len(events),
+        excluded_boundary_event_rows=raw_rows - duplicates - len(events),
+        series_rows=len(frame),
+        interval="1 hour, UTC",
+        source_was_sorted=descending == 0,
+        empty_observation_hours=int(
+            (frame[["view", "addtocart", "transaction"]].sum(axis=1) == 0).sum()
+        ),
+        zero_target_hours=int((frame.target == 0).sum()),
+        event_counts_after_cleaning={
+            k: int(frame[k].sum()) for k in ["view", "addtocart", "transaction"]
+        },
+        target_mean=float(frame.target.mean()),
+        target_std=float(frame.target.std()),
+        target_min=float(frame.target.min()),
+        target_max=float(frame.target.max()),
+        target_quantiles={
+            str(k): float(v)
+            for k, v in frame.target.quantile([0, 0.25, 0.5, 0.75, 0.95, 1]).items()
+        },
+        boundary_policy="Discard first and last partial UTC calendar days; aggregate retained events by hour and sort the hourly index.",
+        zero_assumption="An hour/event type absent from the log is encoded as zero observed events. Logging outages cannot be separated from genuine inactivity; zero does not prove zero latent customer demand.",
+        missing_decision="Missing transactionid on non-transaction events is structurally expected; transactionid is not an input. No numeric interpolation or future filling.",
+        outlier_decision="Retain all observed counts; log1p reduces skew without clipping observed targets.",
+        behavior_meaning="Aggregate view/add-to-cart/transaction activity over time; not individual-user classification. Transactions are event rows, not guaranteed unique orders or revenue.",
     )
-    return frame, ["log_" + column for column in columns], 30, audit
+    return frame, features, 24, audit
 
 
 def prepare_fpt(*, root):
@@ -183,13 +186,13 @@ def prepare_data(name, *, root):
     """Chia theo thời điểm đích; cửa sổ dự báo t chỉ chứa [t-L, t).
 
     X có dạng (N, L, F), y có dạng (N, 1). Đích t không nằm trong X.
-    L=30/F=5 với Shopee Thailand; L=30/F=1 với FPT.
+    L=24/F=7 với Retailrocket; L=30/F=1 với FPT.
     """
-    if name not in {"shopee", "fpt"}:
+    if name not in {"retailrocket", "fpt"}:
         raise ValueError(f"Unsupported dataset: {name}")
     frame, features, lookback, audit = (
-        prepare_shopee(root=root)
-        if name == "shopee"
+        prepare_retailrocket(root=root)
+        if name == "retailrocket"
         else prepare_fpt(root=root)
     )
     targets = np.arange(lookback, len(frame), dtype=np.int64)
@@ -251,29 +254,29 @@ def prepare_data(name, *, root):
             y_method="Population mean/std of transformed training targets only.",
         ),
         prediction_task=(
-            "Next-day observed unique order count in a synthetic Shopee Thailand simulation"
-            if name == "shopee"
+            "Next-hour observed transaction-event count"
+            if name == "retailrocket"
             else "Next-recorded-trading-session FPT closing price"
         ),
         target_transform=(
             "log1p(count)"
-            if name == "shopee"
+            if name == "retailrocket"
             else "log(Close_t / Close_t-1)"
         ),
         inverse_transform=(
             "max(0, expm1(predicted transformed target))"
-            if name == "shopee"
+            if name == "retailrocket"
             else "Close_t-1 * exp(predicted log return)"
         ),
         target_unit=(
-            "orders per source calendar day"
-            if name == "shopee"
+            "transaction events per hour"
+            if name == "retailrocket"
             else "VND per share, source Close as supplied"
         ),
         evaluation_policy="Chronological 70/15/15 split of eligible target indices. One-step rolling forecasts use observed history, including earlier validation/test observations. Hidden state is reset for each independent window. This is not recursive or multi-step forecasting.",
         transform_caveat=(
             "MSE on log1p counts learns a transformed-space conditional mean; expm1 does not generally equal the arithmetic conditional mean of counts."
-            if name == "shopee"
+            if name == "retailrocket"
             else "MSE on log returns differs from VND-price MSE; return errors are amplified when reconstructed at high price levels."
         ),
         prepared_series_file=f"data/processed/{name}.csv",

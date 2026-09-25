@@ -54,7 +54,7 @@ __all__ = [
     "save_json",
     "sha256",
     "set_seed",
-    "prepare_shopee",
+    "prepare_retailrocket",
     "prepare_fpt",
     "prepare_data",
     "fit_model",
@@ -69,8 +69,8 @@ def set_seed(seed=42):
     return _training.set_seed(seed, config=CONFIG)
 
 
-def prepare_shopee():
-    return _data.prepare_shopee(root=ROOT)
+def prepare_retailrocket():
+    return _data.prepare_retailrocket(root=ROOT)
 
 
 def prepare_fpt():
@@ -104,7 +104,7 @@ def verify_saved_outputs(summary, *, write_output=True):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--dataset", choices=["all", "shopee", "fpt"], default="all"
+        "--dataset", choices=["all", "retailrocket", "fpt"], default="all"
     )
     parser.add_argument("--verify-only", action="store_true")
     parser.add_argument(
@@ -148,7 +148,7 @@ def main():
     )
     if result_path.exists() and args.dataset != "all":
         summary["datasets"] = json.loads(result_path.read_text()).get("datasets", {})
-    names = ["shopee", "fpt"] if args.dataset == "all" else [args.dataset]
+    names = ["retailrocket", "fpt"] if args.dataset == "all" else [args.dataset]
     for name in names:
         frame, arrays, meta = prepare_data(name)
         meta["models"] = evaluate(name, frame, arrays, meta)

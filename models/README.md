@@ -1,6 +1,6 @@
 # Mô hình RNN và GRU
 
-Hai tập **Retailrocket** và **Amazon AMZN** được huấn luyện riêng với RNN và GRU: tổng cộng bốn mạng. Mỗi mạng có một lớp truy hồi, trạng thái 32 chiều và đầu ra `Linear(32, 1)`. [CODE_MAP_VI.md](CODE_MAP_VI.md) nối các câu hỏi thường gặp với mã nguồn.
+Hai tập **Shopee Thailand (mô phỏng)** và **FPT** được huấn luyện riêng với RNN và GRU: tổng cộng bốn mạng. Mỗi mạng có một lớp truy hồi, trạng thái 32 chiều và đầu ra `Linear(32, 1)`. [CODE_MAP_VI.md](CODE_MAP_VI.md) nối các câu hỏi thường gặp với mã nguồn.
 
 ## Cấu trúc
 
@@ -51,7 +51,7 @@ Các JSON kiểm chứng trong `results/` ghi nhận lần chạy đã lưu; ch�
 
 ## Huấn luyện lại
 
-Tải dữ liệu trước nếu chưa có `data/raw/events.csv` và `data/raw/AMZN.csv`:
+Tải dữ liệu trước nếu chưa có ba CSV Shopee trong `data/raw/` và `data/raw/FPT.csv`:
 
 ```sh
 python scripts/download_data.py
@@ -61,8 +61,8 @@ python src/experiments.py
 Hoặc chạy một tập:
 
 ```sh
-python src/experiments.py --dataset retailrocket
-python src/experiments.py --dataset amazon
+python src/experiments.py --dataset shopee
+python src/experiments.py --dataset fpt
 ```
 
 Huấn luyện ghi lại checkpoint, dữ liệu đã chuẩn bị, lịch sử loss, dự đoán, metric và biểu đồ của tập tương ứng. Chọn checkpoint bằng validation; chỉ chấm test sau khi huấn luyện xong. Có thể chạy ví dụ scalar riêng bằng `python src/toy_rnn.py`; lệnh này ghi `results/toy_rnn.json`.
@@ -70,7 +70,7 @@ Huấn luyện ghi lại checkpoint, dữ liệu đã chuẩn bị, lịch sử 
 Sau khi đổi kết quả mô hình, xuất lại dữ liệu website từ thư mục repository:
 
 ```sh
-python website/scripts/export_data.py retailrocket amazon
+python website/scripts/export_data.py shopee fpt
 python website/scripts/export_demo.py
 python website/scripts/package_source.py
 ```
@@ -80,7 +80,7 @@ python website/scripts/package_source.py
 | Tệp | Hàm/lớp cần đọc | Vai trò |
 |---|---|---|
 | [experiments.py](src/experiments.py) | `main` | Chọn tập, nối các bước và ghi kết quả |
-| [preprocessing.py](src/preprocessing.py) | `prepare_retailrocket`, `prepare_amazon`, `prepare_data` | Làm sạch, tạo đặc trưng, chia thời gian, chuẩn hóa và tạo cửa sổ |
+| [preprocessing.py](src/preprocessing.py) | `prepare_shopee`, `prepare_fpt`, `prepare_data` | Làm sạch, tạo đặc trưng, chia thời gian, chuẩn hóa và tạo cửa sổ |
 | [models.py](src/models.py) | `RecurrentForecaster.__init__`, `forward` | Tạo RNN/GRU và chuyển trạng thái cuối thành một dự đoán |
 | [training.py](src/training.py) | `set_seed`, `fit_model` | Cố định seed, tối ưu Adam, dừng sớm và lưu checkpoint |
 | [evaluation.py](src/evaluation.py) | `predict`, `original_units`, `metrics`, `evaluate` | Suy luận, hoàn nguyên đơn vị, baseline và MAE/RMSE |
@@ -94,10 +94,12 @@ python website/scripts/package_source.py
 
 | Tập | Đầu vào → mục tiêu | Số cửa sổ train / validation / test |
 |---|---|---:|
-| Retailrocket | 24 giờ × 7 đặc trưng → số sự kiện transaction giờ tiếp theo | 2.284 / 489 / 491 |
-| Amazon | 30 phiên × 1 lợi suất log → lợi suất phiên tới → giá Adj Close | 4.657 / 997 / 999 |
+| Shopee Thailand (mô phỏng) | 30 ngày × 5 đặc trưng → số đơn ngày tiếp theo | 1.001 / 214 / 216 |
+| FPT | 30 phiên × 1 lợi suất log → lợi suất phiên tới → giá Close (VND) | 1.810 / 388 / 389 |
 
-Retailrocket tổng hợp lượt xem, thêm giỏ và giao dịch theo giờ UTC; dùng `log1p` cho ba số đếm cùng sin/cos của giờ và thứ. Đếm transaction là đếm sự kiện, không phải đơn hàng duy nhất hay hành vi cá nhân. Amazon dùng lợi suất log; giá dự đoán bằng giá phiên trước nhân `exp` của lợi suất dự đoán. Không thêm cuối tuần hoặc ngày nghỉ.
+Shopee tổng hợp session bắt đầu, thăm trang sản phẩm, giỏ hàng, thanh toán và đơn hàng theo ngày nguồn; dùng log1p cho 5 số đếm. Một lượt thăm trang giỏ không đồng nghĩa thêm sản phẩm vào giỏ. `order_id` duy nhất nên mục tiêu là số đơn. Có 1.461 ngày trong 2022–2025. Nguồn không ghi múi giờ; UTC trong CSV là cách lưu nhãn ngày. Activity bắt đầu ở ngày 01/01/2026 ngoài khoảng mục tiêu được loại bỏ.
+
+FPT dùng lợi suất log; giá dự đoán bằng giá phiên trước nhân exp của lợi suất dự đoán. Không thêm cuối tuần hoặc ngày nghỉ.
 
 Chia 70/15/15 theo thời gian nhãn; mỗi cửa sổ chỉ dùng quá khứ. Scaler chỉ fit trên train. Mỗi cửa sổ bắt đầu với trạng thái 0; dự báo một bước dùng lịch sử đã quan sát, kể cả các quan sát trước đó trong validation/test.
 
@@ -107,15 +109,23 @@ Cấu hình ở [config.py](src/config.py): hidden size 32, một lớp, không 
 
 | Tập / đơn vị | Mô hình | MAE | RMSE |
 |---|---|---:|---:|
-| Retailrocket / sự kiện mỗi giờ | RNN | 2,5120 | 3,6459 |
-| | GRU | 2,5453 | 3,7205 |
-| | Giờ trước | 3,4582 | 4,8827 |
-| | Cùng giờ tuần trước | 3,8126 | 5,6428 |
-| Amazon / USD mỗi cổ phiếu điều chỉnh | RNN | 2,2687 | 3,1143 |
-| | GRU | 2,2614 | 3,1064 |
-| | Giá phiên trước | 2,2623 | 3,1048 |
-| | Lợi suất log trung bình train | 2,2627 | 3,1093 |
+| Shopee Thailand / đơn mỗi ngày | RNN | 309,7479 | 589,7574 |
+| | GRU | 299,7403 | 578,1637 |
+| | Hôm trước | 141,5556 | 599,1383 |
+| | Cùng thứ tuần trước | 160,5972 | 600,3748 |
+| FPT / VND mỗi cổ phiếu | RNN | 1.059,9227 | 2.014,8085 |
+|  | GRU | 1.058,9405 | 2.002,0458 |
+|  | Giá phiên trước | 1.053,7275 | 2.000,7261 |
+|  | Lợi suất log trung bình train | 1.054,2121 | 2.000,9743 |
 
-RNN tốt nhất trong các cấu hình Retailrocket đã chạy. Trên Amazon, GRU nhỉnh hơn baseline giá phiên trước khoảng 0,04% về MAE nhưng kém RMSE; chưa có lợi thế nhất quán. Một seed và một split chưa chứng minh ưu thế tổng quát. Không so sánh trực tiếp MAE giữa hai tập có đơn vị khác nhau; đường giá gần thực tế không chứng minh khả năng sinh lời. `Adj Close` là dữ liệu điều chỉnh hồi cứu, không bảo đảm thông tin point-in-time cho backtest.
+RNN và GRU Shopee có MAE cao hơn cách đoán như hôm trước, dù RMSE thấp hơn một chút. Trên FPT, cả hai có MAE/RMSE cao hơn cách giữ giá phiên trước. Một seed và một split chưa chứng minh ưu thế tổng quát. Không so trực tiếp MAE giữa các tập khác đơn vị.
 
-Nguồn: [Retailrocket](https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset), CC BY-NC-SA 4.0; [Amazon / Henry Shan](https://www.kaggle.com/datasets/henryshan/amazon-com-inc-amzn), Apache 2.0 theo nguồn. Chi tiết và hash nằm trong `data/source_manifest.json`.
+Nguồn Shopee: [Hnin Shwe Zin Hlaing trên Kaggle](https://www.kaggle.com/datasets/hninshwezinhlaing/shopee-th-customer-journey-and-operations-dataset), phiên bản 1, **CC BY-SA 4.0, 100% dữ liệu mô phỏng**. Đây không phải dữ liệu chính thức của Shopee hoặc thị trường Việt Nam. Ba CSV có 500.000 session, 2.696.481 activity và 300.000 đơn. Hash, schema và nguồn ở `data/source_manifest.json`; CSV gốc không được đóng gói vào ZIP.
+
+Nguồn FPT: [Thang Tran trên Kaggle](https://www.kaggle.com/datasets/thangtranquang/stock-vn30-vietnam), CC0: Public Domain.
+
+Shopee RNN chạy 19 epoch, chọn epoch 11; GRU chạy 10 epoch, chọn epoch 2 bằng validation MSE. Không chỉnh cấu hình theo test. Bản mã đã tạo checkpoint nằm trong `results/provenance/shopee/`; FPT giữ snapshot riêng để một lần chạy tập khác không làm mất bằng chứng nguồn.
+
+FPT có 2.706 dòng gốc: loại 87 dòng trùng hoàn toàn và 1 dòng trùng ngày/OHLCV, còn 2.618 phiên, tạo 2.617 lợi suất log. `Time` trống không dùng. Sáu dòng có trường OHLC phụ không nhất quán; Close dương được giữ, các trường phụ không được dùng hay sửa. RNN và GRU FPT chạy 9 epoch, chọn checkpoint epoch 1 bằng validation MSE. Amazon cũ được lưu ngoài Assignment 6, trong `assignment6_archive/amazon_before_fpt/`.
+
+Retailrocket cũ nằm ngoài repository, trong `assignment6_archive/retailrocket_before_shopee/`.

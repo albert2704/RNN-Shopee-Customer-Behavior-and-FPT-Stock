@@ -1,9 +1,9 @@
 {
   "status": "passed",
-  "checked_at_utc": "2026-09-26T15:17:35.011807+00:00",
+  "checked_at_utc": "2026-10-02T03:57:48.109076+00:00",
   "datasets": [
     {
-      "dataset": "retailrocket",
+      "dataset": "fpt",
       "status": "passed",
       "checks": [
         "disjoint chronological targets",
@@ -19,7 +19,7 @@
       ]
     },
     {
-      "dataset": "amazon",
+      "dataset": "shopee",
       "status": "passed",
       "checks": [
         "disjoint chronological targets",

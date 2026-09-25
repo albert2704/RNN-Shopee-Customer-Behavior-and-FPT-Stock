@@ -23,16 +23,16 @@ def predict(model, x):
 def original_units(name, scaled_predictions, meta, previous):
     """Bỏ chuẩn hóa rồi đảo biến đổi để chấm điểm ở đơn vị gốc.
 
-    Shopee Thailand: expm1(log_order_count), chặn dự báo âm tại 0.
+    Retailrocket: expm1(log_count), chặn dự báo âm tại 0.
     FPT: giá thực tại t-1 nhân exp(log_return dự báo).
-    Hàm này dành cho hai bộ dữ liệu A6: Shopee Thailand và FPT.
+    Hàm này dành cho hai bộ dữ liệu A6: Retailrocket và FPT.
     """
     transformed = (
         np.asarray(scaled_predictions, dtype=np.float64)
         * meta["normalization"]["y_scale"]
         + meta["normalization"]["y_mean"]
     )
-    if name == "shopee":
+    if name == "retailrocket":
         return np.maximum(0.0, np.expm1(transformed))
     return previous * np.exp(transformed)
 
@@ -88,7 +88,7 @@ def evaluate(name, frame, arrays, meta, *, root, fit_model):
     # Chúng dùng lịch sử quan sát; không fit lại bằng nhãn test.
     baseline_names = (
         ["persistence", "seasonal"]
-        if name == "shopee"
+        if name == "retailrocket"
         else ["persistence", "train_mean"]
     )
     for kind in baseline_names:
@@ -100,8 +100,8 @@ def evaluate(name, frame, arrays, meta, *, root, fit_model):
                 frame.target.to_numpy()[ids],
             )
             if kind == "seasonal":
-                assert (ids >= 7).all()
-                predicted = frame.target.to_numpy()[ids - 7]
+                assert (ids >= 168).all()
+                predicted = frame.target.to_numpy()[ids - 168]
             elif kind == "train_mean":
                 predicted = previous * np.exp(meta["normalization"]["y_mean"])
             else:
@@ -124,7 +124,7 @@ def evaluate(name, frame, arrays, meta, *, root, fit_model):
         result["predictions_file"] = str(path.relative_to(root))
         result["definition"] = {
             "persistence": "Previous observed target value",
-            "seasonal": "Observed order count on the same weekday 7 days earlier",
+            "seasonal": "Observed transaction-event count at the same hour 168 hours earlier",
             "train_mean": "Previous source Close multiplied by exp(mean training log return)",
         }[kind]
         models[kind] = result

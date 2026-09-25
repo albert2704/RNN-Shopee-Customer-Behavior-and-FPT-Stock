@@ -102,7 +102,7 @@ def audit_saved_dataset(name, meta, summary):
             if kind == "persistence":
                 np.testing.assert_allclose(part.predicted, frame.target.iloc[ids - 1])
             elif kind == "seasonal":
-                np.testing.assert_allclose(part.predicted, frame.target.iloc[ids - 168])
+                np.testing.assert_allclose(part.predicted, frame.target.iloc[ids - 7])
             elif kind == "train_mean":
                 np.testing.assert_allclose(
                     part.predicted, frame.target.iloc[ids - 1] * np.exp(norm["y_mean"])
@@ -127,7 +127,7 @@ def audit_saved_dataset(name, meta, summary):
                 )
             transformed = scaled.astype("float64") * norm["y_scale"] + norm["y_mean"]
             ids = windows["index_test"]
-            if name == "retailrocket":
+            if name == "shopee":
                 original_units = np.maximum(0, np.expm1(transformed))
             else:
                 original_units = frame.target.to_numpy()[ids - 1] * np.exp(transformed)
@@ -138,6 +138,21 @@ def audit_saved_dataset(name, meta, summary):
                 atol=1e-9,
             )
             reloaded_models.append(kind)
+
+    for relative, expected_sha in meta.get("source_files", {}).items():
+        candidates = [
+            ROOT / "results/provenance/source" / relative,
+            ROOT / "results/provenance" / name / "source" / relative,
+        ]
+        assert any(
+            path.exists() and hashlib.sha256(path.read_bytes()).hexdigest() == expected_sha
+            for path in candidates
+        ), f"Executed source missing or changed: {name}/{relative}"
+    historical_run = ROOT / "results/provenance" / name / "run.json"
+    if historical_run.exists() and not meta.get("source_files"):
+        recorded = json.loads(historical_run.read_text())["source_sha256"]
+        snapshot = historical_run.parent / "executed_experiments.py"
+        assert hashlib.sha256(snapshot.read_bytes()).hexdigest() == recorded
 
     windows.close()
     print(f"{name}: all windows, scalers, predictions, metrics and checkpoints PASS")
@@ -164,35 +179,54 @@ def audit_saved_dataset(name, meta, summary):
 
 
 def audit_raw_transformations():
-    raw_stock = pd.read_csv(ROOT / "data/raw/AMZN.csv")
-    prepared_stock = pd.read_csv(ROOT / "data/processed/amazon.csv")
-    np.testing.assert_allclose(prepared_stock.target, raw_stock["Adj Close"].iloc[1:])
+    raw_stock = pd.read_csv(ROOT / "data/raw/FPT.csv")
+    raw_stock = raw_stock.drop_duplicates().copy()
+    raw_stock["timestamp"] = pd.to_datetime(raw_stock.TradingDate, format="%d/%m/%Y", utc=True)
+    raw_stock = raw_stock.sort_values("timestamp")
+    raw_stock = raw_stock.drop_duplicates(subset=["Symbol", "timestamp", "Open", "High", "Low", "Close", "Volume"])
+    assert not raw_stock.timestamp.duplicated().any()
+    assert raw_stock.Symbol.eq("FPT").all()
+    prepared_stock = pd.read_csv(ROOT / "data/processed/fpt.csv")
+    np.testing.assert_array_equal(
+        pd.to_datetime(prepared_stock.timestamp, utc=True), raw_stock.timestamp.iloc[1:]
+    )
+    np.testing.assert_allclose(prepared_stock.target, raw_stock["Close"].iloc[1:])
     np.testing.assert_allclose(
         prepared_stock.log_return,
-        np.diff(np.log(raw_stock["Adj Close"])),
+        np.diff(np.log(raw_stock["Close"])),
         rtol=1e-8,
         atol=1e-12,
     )
-    events = pd.read_csv(ROOT / "data/raw/events.csv").drop_duplicates()
-    events["time"] = pd.to_datetime(events.timestamp, unit="ms", utc=True)
-    # These are the retained calendar-day boundaries for the supplied source snapshot.
-    events = events[
-        (events.time >= pd.Timestamp("2015-05-04", tz="UTC"))
-        & (events.time < pd.Timestamp("2015-09-18", tz="UTC"))
-    ]
-    actual = (
-        events.groupby([events.time.dt.floor("h"), "event"])
-        .size()
-        .unstack(fill_value=0)
-    )
-    prepared = pd.read_csv(
-        ROOT / "data/processed/retailrocket.csv",
-        index_col="timestamp",
-        parse_dates=True,
-    )
-    columns = ["view", "addtocart", "transaction"]
-    np.testing.assert_array_equal(actual[columns], prepared[columns])
-    np.testing.assert_array_equal(actual.index, prepared.index)
+    # Independently aggregate raw source records, without calling preprocessing.py.
+    orders = pd.read_csv(ROOT / "data/raw/shopee_orders_thailand.csv", usecols=["order_id", "order_date"])
+    sessions = pd.read_csv(ROOT / "data/raw/shopee_website_sessions_thailand.csv", usecols=["session_id", "session_start_time", "order_id", "session_date"])
+    activity = pd.read_csv(ROOT / "data/raw/shopee_session_activities_thailand.csv", usecols=["activity_id", "session_id", "page_url", "session_start_time"])
+    assert orders.order_id.is_unique and sessions.session_id.is_unique and activity.activity_id.is_unique
+    assert activity.session_id.isin(sessions.session_id).all()
+    linked = sessions[sessions.order_id.notna()].merge(orders, on="order_id", validate="one_to_one")
+    assert len(linked) == sessions.order_id.notna().sum()
+    assert linked.order_date.eq(linked.session_date).all()
+    calendar = pd.date_range("2022-01-01", "2025-12-31", freq="D", tz="UTC")
+    rebuilt = pd.DataFrame(index=calendar)
+    def count_dates(values):
+        dates = pd.to_datetime(values, utc=True).dt.floor("D")
+        return dates.groupby(dates).size().reindex(calendar, fill_value=0)
+    rebuilt["sessions"] = count_dates(sessions.session_start_time)
+    for name, page in [("product_visits", "/products"), ("cart_visits", "/cart"), ("checkout_visits", "/checkout")]:
+        rebuilt[name] = count_dates(activity.loc[activity.page_url.eq(page), "session_start_time"])
+    rebuilt["orders"] = count_dates(orders.order_date)
+    prepared = pd.read_csv(ROOT / "data/processed/shopee.csv", index_col="timestamp", parse_dates=True)
+    np.testing.assert_array_equal(prepared.index, calendar)
+    for column in rebuilt:
+        np.testing.assert_array_equal(prepared[column], rebuilt[column])
+        np.testing.assert_allclose(prepared["log_" + column], np.log1p(rebuilt[column]), atol=1e-12)
+    np.testing.assert_array_equal(prepared.target, rebuilt.orders)
+    np.testing.assert_allclose(prepared.model_target, np.log1p(rebuilt.orders), atol=1e-12)
+    summary = json.loads((ROOT / "results/summary.json").read_text())
+    for meta in summary["datasets"].values():
+        sources = meta["audit"].get("source_files", {meta["audit"]["source_file"]: meta["audit"]["source_sha256"]})
+        for relative, expected in sources.items():
+            assert hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() == expected
     print("Raw-to-processed transformations PASS")
 
 

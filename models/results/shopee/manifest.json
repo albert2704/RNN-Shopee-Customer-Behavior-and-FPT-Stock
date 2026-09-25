@@ -1,0 +1,268 @@
+{
+  "name": "shopee",
+  "audit": {
+    "source_file": "data/raw/shopee_orders_thailand.csv",
+    "source_sha256": "78c96592defc22244c90fd5a290e5320c35d0c6fd97b34b26edf3dea9f32a9e2",
+    "source_files": {
+      "data/raw/shopee_orders_thailand.csv": "78c96592defc22244c90fd5a290e5320c35d0c6fd97b34b26edf3dea9f32a9e2",
+      "data/raw/shopee_website_sessions_thailand.csv": "bd38474aa4fd81896ff3007d4f54395633015336b120329585337cd1425fd76d",
+      "data/raw/shopee_session_activities_thailand.csv": "6a79c6bb47a5dffc4120fa3ac7c2cdeb5e25be7f093caded6f8ccafd9435bece"
+    },
+    "source_url": "https://www.kaggle.com/datasets/hninshwezinhlaing/shopee-th-customer-journey-and-operations-dataset",
+    "synthetic": true,
+    "source_version": 1,
+    "license": "CC BY-SA 4.0",
+    "raw_rows": 300000,
+    "raw_session_rows": 500000,
+    "raw_activity_rows": 2696481,
+    "raw_rows_by_table": {
+      "orders": 300000,
+      "sessions": 500000,
+      "activities": 2696481
+    },
+    "missing_by_table": {
+      "orders": {
+        "order_id": 0,
+        "order_date": 0,
+        "customer_id": 0,
+        "order_day": 0,
+        "year_month": 0,
+        "subtotal_amount": 0,
+        "shipping_fee_total": 0,
+        "commission_total": 0,
+        "maintenance_total": 0,
+        "total_amount": 0,
+        "campaign_id": 289653
+      },
+      "sessions": {
+        "session_id": 0,
+        "user_id": 0,
+        "session_date": 0,
+        "session_start_time": 0,
+        "session_end_time": 0,
+        "utm_source": 489285,
+        "campaign_id": 489285,
+        "device_type": 0,
+        "order_id": 200000
+      },
+      "activities": {
+        "activity_id": 0,
+        "session_id": 0,
+        "page_url": 0,
+        "session_start_time": 0,
+        "session_end_time": 0
+      }
+    },
+    "duplicate_rows_by_table": {
+      "orders": 0,
+      "sessions": 0,
+      "activities": 0
+    },
+    "unique_order_ids": 300000,
+    "unique_session_ids": 500000,
+    "activity_page_counts": {
+      "/products": 652481,
+      "/home": 500000,
+      "/cart": 360000,
+      "/checkout": 300000,
+      "/billing": 300000,
+      "/thank-you-for-your-order": 300000,
+      "/about-us": 172000,
+      "/contact-us": 112000
+    },
+    "linked_order_sessions": 300000,
+    "orphan_activity_rows": 0,
+    "orphan_linked_orders": 0,
+    "linked_order_session_date_conflicts": 0,
+    "excluded_activity_rows": 58,
+    "first_timestamp": "2022-01-01T00:00:00+00:00",
+    "last_timestamp": "2025-12-31T00:00:00+00:00",
+    "raw_first_timestamp": "2022-01-05T00:00:00+00:00",
+    "raw_last_timestamp": "2025-12-31T00:00:00+00:00",
+    "series_rows": 1461,
+    "interval": "1 source calendar day; timezone not specified by publisher",
+    "zero_target_days": 6,
+    "aggregate_counts": {
+      "sessions": 500000,
+      "product_visits": 652477,
+      "cart_visits": 359993,
+      "checkout_visits": 299988,
+      "orders": 300000
+    },
+    "target_mean": 205.3388090349076,
+    "target_std": 294.65909172345755,
+    "target_min": 0.0,
+    "target_max": 5428.0,
+    "target_quantiles": {
+      "0.0": 0.0,
+      "0.25": 53.0,
+      "0.5": 118.0,
+      "0.75": 246.0,
+      "0.95": 633.0,
+      "1.0": 5428.0
+    },
+    "boundary_policy": "Use complete declared 2022–2025 source calendar days. Discard page starts on 2026-01-01 because there is no complete corresponding target day. Preserve source clock labels; UTC is a storage convention, not an inferred timezone.",
+    "zero_assumption": "Missing order days mean zero observed generated orders, not proven zero real demand. Sessions cover every retained day.",
+    "missing_decision": "Required identifiers and timestamps must be complete. Blank marketing/campaign/order links on nonpurchasing sessions are expected and not model inputs. No interpolation or future filling.",
+    "outlier_decision": "Retain all generated daily counts; log1p reduces skew without clipping targets.",
+    "behavior_meaning": "Population-level daily session starts and page visits plus unique order count. Cart-page visits do not prove add-to-cart actions. Not individual purchase prediction.",
+    "synthetic_caveat": "100% synthetic Shopee Thailand simulation from an independent publisher, not official Shopee records and not Vietnamese customer data. Evaluation only describes generated patterns."
+  },
+  "features": [
+    "log_sessions",
+    "log_product_visits",
+    "log_cart_visits",
+    "log_checkout_visits",
+    "log_orders"
+  ],
+  "lookback": 30,
+  "splits": {
+    "train": {
+      "n": 1001,
+      "first_timestamp": "2022-01-31T00:00:00+00:00",
+      "last_timestamp": "2024-10-27T00:00:00+00:00",
+      "first_target_index": 30,
+      "last_target_index": 1030
+    },
+    "validation": {
+      "n": 214,
+      "first_timestamp": "2024-10-28T00:00:00+00:00",
+      "last_timestamp": "2025-05-29T00:00:00+00:00",
+      "first_target_index": 1031,
+      "last_target_index": 1244
+    },
+    "test": {
+      "n": 216,
+      "first_timestamp": "2025-05-30T00:00:00+00:00",
+      "last_timestamp": "2025-12-31T00:00:00+00:00",
+      "first_target_index": 1245,
+      "last_target_index": 1460
+    }
+  },
+  "normalization": {
+    "x_mean": [
+      5.398110311012098,
+      5.507865567858613,
+      4.770683921669617,
+      4.1789809479974425,
+      4.178634499195558
+    ],
+    "x_scale": [
+      0.30317053885709516,
+      0.4156665151551278,
+      0.5309040230141251,
+      1.005463757623176,
+      1.005677874255685
+    ],
+    "y_mean": 4.269830092608271,
+    "y_scale": 0.8614952748086164,
+    "fit_first_timestamp": "2022-01-01T00:00:00+00:00",
+    "fit_last_timestamp": "2024-10-27T00:00:00+00:00",
+    "feature_fit_rows": 1031,
+    "target_fit_rows": 1001,
+    "x_method": "Per-feature population mean/std fitted to training timestamps only, including available lookback context.",
+    "y_method": "Population mean/std of transformed training targets only."
+  },
+  "prediction_task": "Next-day observed unique order count in a synthetic Shopee Thailand simulation",
+  "target_transform": "log1p(count)",
+  "inverse_transform": "max(0, expm1(predicted transformed target))",
+  "target_unit": "orders per source calendar day",
+  "evaluation_policy": "Chronological 70/15/15 split of eligible target indices. One-step rolling forecasts use observed history, including earlier validation/test observations. Hidden state is reset for each independent window. This is not recursive or multi-step forecasting.",
+  "transform_caveat": "MSE on log1p counts learns a transformed-space conditional mean; expm1 does not generally equal the arithmetic conditional mean of counts.",
+  "prepared_series_file": "data/processed/shopee.csv",
+  "prepared_windows_file": "data/processed/shopee_windows.npz",
+  "models": {
+    "rnn": {
+      "best_epoch": 11,
+      "epochs_run": 19,
+      "best_validation_loss": 0.08651132136583328,
+      "parameters": 1281,
+      "seconds": 0.5557085420005023,
+      "history_file": "results/shopee/rnn_history.csv",
+      "checkpoint_file": "checkpoints/shopee_rnn.pt",
+      "checkpoint_sha256": "a19e264ebc222e7de50bef71c5c94820741410010b03dd773170d1b5e90247c3",
+      "selection": "Minimum validation transformed-space MSE; test is not read during optimization/selection.",
+      "metrics": {
+        "validation": {
+          "MAE": 48.186867367738856,
+          "RMSE": 158.2263895052672
+        },
+        "test": {
+          "MAE": 309.7479481950201,
+          "RMSE": 589.7573942591946
+        }
+      },
+      "transformed_MSE": {
+        "validation": 0.08651132136583328,
+        "test": 0.5869898200035095
+      },
+      "predictions_file": "results/shopee/rnn_predictions.csv"
+    },
+    "gru": {
+      "best_epoch": 2,
+      "epochs_run": 10,
+      "best_validation_loss": 0.0878726989030838,
+      "parameters": 3777,
+      "seconds": 0.5838959589600563,
+      "history_file": "results/shopee/gru_history.csv",
+      "checkpoint_file": "checkpoints/shopee_gru.pt",
+      "checkpoint_sha256": "a9a3918329c0f4197e221036e58bb6d408c9fb13b4dba5bd01ec48f92feec3f3",
+      "selection": "Minimum validation transformed-space MSE; test is not read during optimization/selection.",
+      "metrics": {
+        "validation": {
+          "MAE": 47.45115023985889,
+          "RMSE": 159.20163012459844
+        },
+        "test": {
+          "MAE": 299.74027449714157,
+          "RMSE": 578.1636793053598
+        }
+      },
+      "transformed_MSE": {
+        "validation": 0.0878726989030838,
+        "test": 0.5175509452819824
+      },
+      "predictions_file": "results/shopee/gru_predictions.csv"
+    },
+    "persistence": {
+      "metrics": {
+        "validation": {
+          "MAE": 55.91588785046729,
+          "RMSE": 211.06543256163457
+        },
+        "test": {
+          "MAE": 141.55555555555554,
+          "RMSE": 599.1383087092353
+        }
+      },
+      "predictions_file": "results/shopee/persistence_predictions.csv",
+      "definition": "Previous observed target value"
+    },
+    "seasonal": {
+      "metrics": {
+        "validation": {
+          "MAE": 71.23364485981308,
+          "RMSE": 220.7354106058362
+        },
+        "test": {
+          "MAE": 160.59722222222223,
+          "RMSE": 600.3747633615869
+        }
+      },
+      "predictions_file": "results/shopee/seasonal_predictions.csv",
+      "definition": "Observed order count on the same weekday 7 days earlier"
+    }
+  },
+  "source_files": {
+    "src/config.py": "322183d25a69c79ea000375829e0e54b46d9409be3ebd854e5926f12a050e56f",
+    "src/evaluation.py": "393752a424274cb323f9b4400f054cb7ab9d77ee33c0355ded2c1cde2f8a4d74",
+    "src/experiments.py": "b11ffe8c606217cf831b36895b62fc19d8ea5745cfb1c7f5a72ddb4523c73c90",
+    "src/io_utils.py": "e2de0a6049940a3ca05e18ab87f096e3cd92cff9e7393860bd1fc28954f52508",
+    "src/models.py": "854e2005515c3339ebda6e9c49d27d2408b84a4d1b1e291769a9cfb3c447b984",
+    "src/plots.py": "7a04341247ca52c3a215608e1bf78712a306d6b590c01ecd561b5cc926aebc5c",
+    "src/preprocessing.py": "d40f6cece30d19419529653b83324325250b113b03ff0f6d4caf716d187f4e67",
+    "src/toy_rnn.py": "22d5f03c3721013809a59e2ad821ce3480472e450e258a75a926d15180c3704d",
+    "src/training.py": "38c7c70250d613df6ab012baf834da88da221031faf009949cebf13d68d6e7ce",
+    "src/verification.py": "0903cd59f43fa5618435548c8260906fa827072b5ed0f2e6cff624448a5cd08e"
+  }
+}
