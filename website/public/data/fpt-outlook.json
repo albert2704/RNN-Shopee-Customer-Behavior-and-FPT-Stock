@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "symbol": "FPT",
+  "run_id": "20261007T232052-ad3f98",
+  "observed_through": "2026-10-07",
+  "last_close": 59700.0,
+  "generated_at": "2026-10-07T23:20:57.169005+07:00",
+  "source": {
+    "symbol": "FPT",
+    "provider": "KBS via Vnstock Community",
+    "package": "vnstock",
+    "package_version": "4.0.9",
+    "source_url": "https://www.vnstocks.com/docs/vnstock/du-lieu-thi-truong-market-data",
+    "retrieved_at": "2026-10-07T23:13:13.969623+07:00",
+    "requested_start": "2019-01-01",
+    "requested_end": "2026-10-07",
+    "first_date": "2019-01-02",
+    "last_date": "2026-10-07",
+    "rows": 1936,
+    "raw_rows": 1936,
+    "excluded_rows": 0,
+    "price_multiplier": 1000,
+    "price_unit": "VND",
+    "upstream_price_unit": "thousand VND",
+    "price_basis": "KBS upstream historical close as returned by vnstock 4.0.9; corporate action adjustment unconfirmed",
+    "adjustment_note": "Giá lịch sử do KBS cung cấp, đổi từ nghìn VND sang VND. Adapter cộng đồng chưa xác nhận rõ cách điều chỉnh cổ tức/chia tách; không trộn với CSV Kaggle hoặc coi đây là giá khớp lệnh lịch sử chưa điều chỉnh.",
+    "completion_policy": "Exclude current Vietnam date before 16:00; provider publication/finality is not guaranteed",
+    "provider_sha256": "6fc24173e9959fc9be8eeee800c55ff2abdd1c3f1b25af4e0431480e1dca2b21",
+    "closes_sha256": "835ef8ed60801c3f0843d6f44f9cd663ec377e3cd246c75e959f350f93b4f047"
+  },
+  "horizons": [
+    {
+      "months": 1,
+      "sessions": 21,
+      "label": "Khoảng 1 tháng (21 phiên)",
+      "predicted_close": 61865.791156890125,
+      "predicted_return_pct": 3.6277908825630223,
+      "direction": "up",
+      "target_date": null,
+      "test": {
+        "rnn": {
+          "MAE": 6202.138191401621,
+          "RMSE": 8371.046215564453,
+          "direction_accuracy": 0.3716475095785441,
+          "changed_direction_accuracy": 0.3730769230769231,
+          "count": 261,
+          "unchanged_count": 1
+        },
+        "persistence": {
+          "MAE": 5222.222222222223,
+          "RMSE": 7257.141600834269,
+          "direction_accuracy": 0.0038314176245210726,
+          "changed_direction_accuracy": 0.0,
+          "count": 261,
+          "unchanged_count": 1
+        },
+        "train_mean_return": {
+          "MAE": 6283.305872149231,
+          "RMSE": 8443.321168695447,
+          "direction_accuracy": 0.3716475095785441,
+          "changed_direction_accuracy": 0.3730769230769231,
+          "count": 261,
+          "unchanged_count": 1
+        }
+      },
+      "non_overlapping": {
+        "count": 13,
+        "rnn_mae": 7500.986246112884,
+        "persistence_mae": 6573.846153846154,
+        "direction_accuracy": 0.3076923076923077
+      },
+      "test_period": {
+        "count": 261,
+        "first_origin": "2025-08-19",
+        "last_origin": "2026-09-08",
+        "first_target": "2025-09-19",
+        "last_target": "2026-10-07"
+      },
+      "lookback": 60,
+      "hidden_size": 32,
+      "best_epoch": 4,
+      "epochs_run": 12,
+      "support": {
+        "status": "experimental",
+        "beats_persistence": false,
+        "non_overlapping_count": 13,
+        "reason": "Sai lệch giá trên tập kiểm tra chưa tốt hơn cách giữ nguyên giá. Chỉ có 13 giai đoạn kiểm tra không chồng lấn, chưa chứng minh hiệu quả đầu tư."
+      }
+    },
+    {
+      "months": 3,
+      "sessions": 63,
+      "label": "Khoảng 3 tháng (63 phiên)",
+      "predicted_close": 64553.19981414032,
+      "predicted_return_pct": 8.129312921508069,
+      "direction": "up",
+      "target_date": null,
+      "test": {
+        "rnn": {
+          "MAE": 13293.333807911291,
+          "RMSE": 16136.383080502563,
+          "direction_accuracy": 0.2100456621004566,
+          "changed_direction_accuracy": 0.21100917431192662,
+          "count": 219,
+          "unchanged_count": 1
+        },
+        "persistence": {
+          "MAE": 8331.278538812785,
+          "RMSE": 11594.112877864245,
+          "direction_accuracy": 0.0045662100456621,
+          "changed_direction_accuracy": 0.0,
+          "count": 219,
+          "unchanged_count": 1
+        },
+        "train_mean_return": {
+          "MAE": 14785.536124270848,
+          "RMSE": 17530.40279970966,
+          "direction_accuracy": 0.2100456621004566,
+          "changed_direction_accuracy": 0.21100917431192662,
+          "count": 219,
+          "unchanged_count": 1
+        }
+      },
+      "non_overlapping": {
+        "count": 4,
+        "rnn_mae": 12428.678111742922,
+        "persistence_mae": 6027.499999999998,
+        "direction_accuracy": 0.0
+      },
+      "test_period": {
+        "count": 219,
+        "first_origin": "2025-08-19",
+        "last_origin": "2026-07-07",
+        "first_target": "2025-11-18",
+        "last_target": "2026-10-07"
+      },
+      "lookback": 60,
+      "hidden_size": 32,
+      "best_epoch": 27,
+      "epochs_run": 35,
+      "support": {
+        "status": "experimental",
+        "beats_persistence": false,
+        "non_overlapping_count": 4,
+        "reason": "Sai lệch giá trên tập kiểm tra chưa tốt hơn cách giữ nguyên giá. Chỉ có 4 giai đoạn kiểm tra không chồng lấn, chưa chứng minh hiệu quả đầu tư."
+      }
+    },
+    {
+      "months": 6,
+      "sessions": 126,
+      "label": "Khoảng 6 tháng (126 phiên)",
+      "predicted_close": 70258.70352518994,
+      "predicted_return_pct": 17.68627056145718,
+      "direction": "up",
+      "target_date": null,
+      "test": {
+        "rnn": {
+          "MAE": 33413.64004502819,
+          "RMSE": 34690.69114959589,
+          "direction_accuracy": 0.00641025641025641,
+          "changed_direction_accuracy": 0.00641025641025641,
+          "count": 156,
+          "unchanged_count": 0
+        },
+        "persistence": {
+          "MAE": 18404.55128205128,
+          "RMSE": 20150.938850050177,
+          "direction_accuracy": 0.0,
+          "changed_direction_accuracy": 0.0,
+          "count": 156,
+          "unchanged_count": 0
+        },
+        "train_mean_return": {
+          "MAE": 34231.287270420245,
+          "RMSE": 35514.45031796164,
+          "direction_accuracy": 0.00641025641025641,
+          "changed_direction_accuracy": 0.00641025641025641,
+          "count": 156,
+          "unchanged_count": 0
+        }
+      },
+      "non_overlapping": {
+        "count": 2,
+        "rnn_mae": 27853.933625603702,
+        "persistence_mae": 12054.999999999996,
+        "direction_accuracy": 0.0
+      },
+      "test_period": {
+        "count": 156,
+        "first_origin": "2025-08-19",
+        "last_origin": "2026-04-06",
+        "first_target": "2026-02-24",
+        "last_target": "2026-10-07"
+      },
+      "lookback": 60,
+      "hidden_size": 32,
+      "best_epoch": 1,
+      "epochs_run": 9,
+      "support": {
+        "status": "experimental",
+        "beats_persistence": false,
+        "non_overlapping_count": 2,
+        "reason": "Sai lệch giá trên tập kiểm tra chưa tốt hơn cách giữ nguyên giá. Chỉ có 2 giai đoạn kiểm tra không chồng lấn, chưa chứng minh hiệu quả đầu tư."
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "symbol": "FPT",
+  "provider": "KBS via Vnstock Community",
+  "package": "vnstock",
+  "package_version": "4.0.9",
+  "source_url": "https://www.vnstocks.com/docs/vnstock/du-lieu-thi-truong-market-data",
+  "retrieved_at": "2026-10-07T23:13:13.969623+07:00",
+  "requested_start": "2019-01-01",
+  "requested_end": "2026-10-07",
+  "first_date": "2019-01-02",
+  "last_date": "2026-10-07",
+  "rows": 1936,
+  "raw_rows": 1936,
+  "excluded_rows": 0,
+  "price_multiplier": 1000,
+  "price_unit": "VND",
+  "upstream_price_unit": "thousand VND",
+  "price_basis": "KBS upstream historical close as returned by vnstock 4.0.9; corporate action adjustment unconfirmed",
+  "adjustment_note": "Giá lịch sử do KBS cung cấp, đổi từ nghìn VND sang VND. Adapter cộng đồng chưa xác nhận rõ cách điều chỉnh cổ tức/chia tách; không trộn với CSV Kaggle hoặc coi đây là giá khớp lệnh lịch sử chưa điều chỉnh.",
+  "completion_policy": "Exclude current Vietnam date before 16:00; provider publication/finality is not guaranteed",
+  "provider_sha256": "6fc24173e9959fc9be8eeee800c55ff2abdd1c3f1b25af4e0431480e1dca2b21",
+  "closes_sha256": "835ef8ed60801c3f0843d6f44f9cd663ec377e3cd246c75e959f350f93b4f047"
+}

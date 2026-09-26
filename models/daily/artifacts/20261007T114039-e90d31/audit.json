@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "run_id": "20261007T114039-e90d31",
+  "raw_and_source_hashes": "passed",
+  "manual_numpy_recurrence": "passed",
+  "max_price_difference_vnd": 0.00016074599989224225,
+  "all_validation_and_test_metrics": "passed",
+  "best_epoch": 10
+}

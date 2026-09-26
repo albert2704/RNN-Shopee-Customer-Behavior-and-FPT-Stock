@@ -1,0 +1,587 @@
+{
+  "schema_version": 1,
+  "run_id": "20261007T232052-ad3f98",
+  "created_at": "2026-10-07T23:20:57.152329+07:00",
+  "source": {
+    "symbol": "FPT",
+    "provider": "KBS via Vnstock Community",
+    "package": "vnstock",
+    "package_version": "4.0.9",
+    "source_url": "https://www.vnstocks.com/docs/vnstock/du-lieu-thi-truong-market-data",
+    "retrieved_at": "2026-10-07T23:13:13.969623+07:00",
+    "requested_start": "2019-01-01",
+    "requested_end": "2026-10-07",
+    "first_date": "2019-01-02",
+    "last_date": "2026-10-07",
+    "rows": 1936,
+    "raw_rows": 1936,
+    "excluded_rows": 0,
+    "price_multiplier": 1000,
+    "price_unit": "VND",
+    "upstream_price_unit": "thousand VND",
+    "price_basis": "KBS upstream historical close as returned by vnstock 4.0.9; corporate action adjustment unconfirmed",
+    "adjustment_note": "Giá lịch sử do KBS cung cấp, đổi từ nghìn VND sang VND. Adapter cộng đồng chưa xác nhận rõ cách điều chỉnh cổ tức/chia tách; không trộn với CSV Kaggle hoặc coi đây là giá khớp lệnh lịch sử chưa điều chỉnh.",
+    "completion_policy": "Exclude current Vietnam date before 16:00; provider publication/finality is not guaranteed",
+    "provider_sha256": "6fc24173e9959fc9be8eeee800c55ff2abdd1c3f1b25af4e0431480e1dca2b21",
+    "closes_sha256": "835ef8ed60801c3f0843d6f44f9cd663ec377e3cd246c75e959f350f93b4f047"
+  },
+  "source_files": {
+    "src/verification.py": "0903cd59f43fa5618435548c8260906fa827072b5ed0f2e6cff624448a5cd08e",
+    "src/toy_rnn.py": "22d5f03c3721013809a59e2ad821ce3480472e450e258a75a926d15180c3704d",
+    "src/config.py": "322183d25a69c79ea000375829e0e54b46d9409be3ebd854e5926f12a050e56f",
+    "src/models.py": "854e2005515c3339ebda6e9c49d27d2408b84a4d1b1e291769a9cfb3c447b984",
+    "src/evaluation.py": "393752a424274cb323f9b4400f054cb7ab9d77ee33c0355ded2c1cde2f8a4d74",
+    "src/plots.py": "7a04341247ca52c3a215608e1bf78712a306d6b590c01ecd561b5cc926aebc5c",
+    "src/experiments.py": "b11ffe8c606217cf831b36895b62fc19d8ea5745cfb1c7f5a72ddb4523c73c90",
+    "src/preprocessing.py": "d40f6cece30d19419529653b83324325250b113b03ff0f6d4caf716d187f4e67",
+    "src/io_utils.py": "f8f22067d4ddc984f90305614bed5773a17e5ada844449f4f2f406962b66ca5b",
+    "src/training.py": "38c7c70250d613df6ab012baf834da88da221031faf009949cebf13d68d6e7ce",
+    "daily/audit.py": "98ad62edac9e6e86f354fe49ea58ad7c6da90d880aaed055d421c7a3e58a0f9b",
+    "daily/provider.py": "111a3bd7c1735aeeb21c8acbc38f60ccc94f97bd19f66c2e3fa14d747d541c5e",
+    "daily/test_daily.py": "733eadc83491a84550707d5ce063d496824202e12bc56f9e2967f9b2879d5be2",
+    "daily/__init__.py": "9cd822ceeecc31e7368e03f0247a77df8003bf92e86431815aabb69a4e2d07ac",
+    "daily/core.py": "13c3120c9c78d59d69782fafd1f251eed23b156f313a9322dff58608b08a16b8",
+    "daily/api.py": "370031d3806f4290327c76ce7a28e0875e4577e30a1981c91f20d840fd96e2eb",
+    "daily/pipeline.py": "2453cad130f6fe0774c2abb03aee604779ac89742f892567ada3edb7a2ab8288",
+    "outlook/__init__.py": "1801507ff1e471d87b8c1a57bf65b8e9e38d5c4663d747e4bae9c64d2d7342d8",
+    "outlook/core.py": "ec5ff1b836757c3240edcdb03ded8037578c032ff7af690e7cedaab506d159b3",
+    "outlook/pipeline.py": "3b0781f376781e5e8ccc4bda0b68f41c57323d2fae34e28996b13a6deff2d2ef",
+    "outlook/test_outlook.py": "a4b7e69617727fa687c2050228a6e4474f893272e1a0850c67c4877f1c9f1673"
+  },
+  "config": {
+    "seed": 42,
+    "hidden_size": 32,
+    "num_layers": 1,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "max_epochs": 40,
+    "patience": 8,
+    "gradient_clip_norm": 1.0,
+    "cpu_threads": 2,
+    "dropout": 0.0,
+    "split_fractions": [
+      0.7,
+      0.15,
+      0.15
+    ],
+    "loss": "MSE on standardized transformed target"
+  },
+  "horizons": {
+    "21": {
+      "meta": {
+        "features": [
+          "log_return"
+        ],
+        "lookback": 60,
+        "horizon_sessions": 21,
+        "normalization": {
+          "x_mean": [
+            0.001522280787049228
+          ],
+          "x_scale": [
+            0.0169792282426757
+          ],
+          "y_mean": 0.032001280115871944,
+          "y_scale": 0.07416233576421824
+        },
+        "target_transform": "log(Close[t+21] / Close[t])",
+        "splits": {
+          "train": {
+            "count": 1292,
+            "first_origin": "2019-04-03",
+            "last_origin": "2024-06-04",
+            "first_target": "2019-05-08",
+            "last_target": "2024-07-03"
+          },
+          "validation": {
+            "count": 260,
+            "first_origin": "2024-07-04",
+            "last_origin": "2025-07-18",
+            "first_target": "2024-08-02",
+            "last_target": "2025-08-18"
+          },
+          "test": {
+            "count": 261,
+            "first_origin": "2025-08-19",
+            "last_origin": "2026-09-08",
+            "first_target": "2025-09-19",
+            "last_target": "2026-10-07"
+          }
+        },
+        "origin_cutoffs": {
+          "validation_index": 1373,
+          "test_index": 1654,
+          "purged_origins_per_boundary": 21,
+          "rule": "train target < first validation origin; validation target < first test origin"
+        }
+      },
+      "training": {
+        "best_epoch": 4,
+        "epochs_run": 12,
+        "best_validation_loss": 1.2715812921524048,
+        "parameters": 1153,
+        "seconds": 0.9161649157758802,
+        "history_file": "results/fpt_outlook_21/rnn_history.csv",
+        "checkpoint_file": "checkpoints/fpt_outlook_21_rnn.pt",
+        "checkpoint_sha256": "71d2c712a0131588e625601dcca42648a98814db1676e00c121154e58b150be8",
+        "selection": "Minimum validation transformed-space MSE; test is not read during optimization/selection."
+      },
+      "evaluation": {
+        "validation": {
+          "all": {
+            "rnn": {
+              "MAE": 6293.479176900536,
+              "RMSE": 8353.319392906917,
+              "direction_accuracy": 0.5384615384615384,
+              "changed_direction_accuracy": 0.5405405405405406,
+              "count": 260,
+              "unchanged_count": 1
+            },
+            "persistence": {
+              "MAE": 5665.2692307692305,
+              "RMSE": 7498.692629641927,
+              "direction_accuracy": 0.0038461538461538464,
+              "changed_direction_accuracy": 0.0,
+              "count": 260,
+              "unchanged_count": 1
+            },
+            "train_mean_return": {
+              "MAE": 6384.9933949104125,
+              "RMSE": 8432.558550380245,
+              "direction_accuracy": 0.5384615384615384,
+              "changed_direction_accuracy": 0.5405405405405406,
+              "count": 260,
+              "unchanged_count": 1
+            }
+          },
+          "non_overlapping": {
+            "rnn": {
+              "MAE": 7127.798373968524,
+              "RMSE": 10234.575489866324,
+              "direction_accuracy": 0.5384615384615384,
+              "changed_direction_accuracy": 0.5384615384615384,
+              "count": 13,
+              "unchanged_count": 0
+            },
+            "persistence": {
+              "MAE": 6756.923076923077,
+              "RMSE": 9635.58149616466,
+              "direction_accuracy": 0.0,
+              "changed_direction_accuracy": 0.0,
+              "count": 13,
+              "unchanged_count": 0
+            },
+            "train_mean_return": {
+              "MAE": 7458.583238144622,
+              "RMSE": 10536.827468117406,
+              "direction_accuracy": 0.5384615384615384,
+              "changed_direction_accuracy": 0.5384615384615384,
+              "count": 13,
+              "unchanged_count": 0
+            }
+          }
+        },
+        "test": {
+          "all": {
+            "rnn": {
+              "MAE": 6202.138191401621,
+              "RMSE": 8371.046215564453,
+              "direction_accuracy": 0.3716475095785441,
+              "changed_direction_accuracy": 0.3730769230769231,
+              "count": 261,
+              "unchanged_count": 1
+            },
+            "persistence": {
+              "MAE": 5222.222222222223,
+              "RMSE": 7257.141600834269,
+              "direction_accuracy": 0.0038314176245210726,
+              "changed_direction_accuracy": 0.0,
+              "count": 261,
+              "unchanged_count": 1
+            },
+            "train_mean_return": {
+              "MAE": 6283.305872149231,
+              "RMSE": 8443.321168695447,
+              "direction_accuracy": 0.3716475095785441,
+              "changed_direction_accuracy": 0.3730769230769231,
+              "count": 261,
+              "unchanged_count": 1
+            }
+          },
+          "non_overlapping": {
+            "rnn": {
+              "MAE": 7500.986246112884,
+              "RMSE": 9182.819711251215,
+              "direction_accuracy": 0.3076923076923077,
+              "changed_direction_accuracy": 0.3076923076923077,
+              "count": 13,
+              "unchanged_count": 0
+            },
+            "persistence": {
+              "MAE": 6573.846153846154,
+              "RMSE": 8252.989202054658,
+              "direction_accuracy": 0.0,
+              "changed_direction_accuracy": 0.0,
+              "count": 13,
+              "unchanged_count": 0
+            },
+            "train_mean_return": {
+              "MAE": 7600.198369104298,
+              "RMSE": 9278.209267667797,
+              "direction_accuracy": 0.3076923076923077,
+              "changed_direction_accuracy": 0.3076923076923077,
+              "count": 13,
+              "unchanged_count": 0
+            }
+          }
+        }
+      }
+    },
+    "63": {
+      "meta": {
+        "features": [
+          "log_return"
+        ],
+        "lookback": 60,
+        "horizon_sessions": 63,
+        "normalization": {
+          "x_mean": [
+            0.0014375576323738455
+          ],
+          "x_scale": [
+            0.016903394397155658
+          ],
+          "y_mean": 0.09173167056845637,
+          "y_scale": 0.12891660908335253
+        },
+        "target_transform": "log(Close[t+63] / Close[t])",
+        "splits": {
+          "train": {
+            "count": 1250,
+            "first_origin": "2019-04-03",
+            "last_origin": "2024-04-01",
+            "first_target": "2019-07-05",
+            "last_target": "2024-07-03"
+          },
+          "validation": {
+            "count": 218,
+            "first_origin": "2024-07-04",
+            "last_origin": "2025-05-21",
+            "first_target": "2024-10-03",
+            "last_target": "2025-08-18"
+          },
+          "test": {
+            "count": 219,
+            "first_origin": "2025-08-19",
+            "last_origin": "2026-07-07",
+            "first_target": "2025-11-18",
+            "last_target": "2026-10-07"
+          }
+        },
+        "origin_cutoffs": {
+          "validation_index": 1373,
+          "test_index": 1654,
+          "purged_origins_per_boundary": 63,
+          "rule": "train target < first validation origin; validation target < first test origin"
+        }
+      },
+      "training": {
+        "best_epoch": 27,
+        "epochs_run": 35,
+        "best_validation_loss": 1.7137517929077148,
+        "parameters": 1153,
+        "seconds": 2.1020597079768777,
+        "history_file": "results/fpt_outlook_63/rnn_history.csv",
+        "checkpoint_file": "checkpoints/fpt_outlook_63_rnn.pt",
+        "checkpoint_sha256": "0cc4ac0f1910aeab5eb9403dbd32aee50491ebe2c6412e7c824d6284d09c4ed8",
+        "selection": "Minimum validation transformed-space MSE; test is not read during optimization/selection."
+      },
+      "evaluation": {
+        "validation": {
+          "all": {
+            "rnn": {
+              "MAE": 12344.459611601713,
+              "RMSE": 17484.54074637852,
+              "direction_accuracy": 0.573394495412844,
+              "changed_direction_accuracy": 0.573394495412844,
+              "count": 218,
+              "unchanged_count": 0
+            },
+            "persistence": {
+              "MAE": 11857.064220183487,
+              "RMSE": 14298.780630631962,
+              "direction_accuracy": 0.0,
+              "changed_direction_accuracy": 0.0,
+              "count": 218,
+              "unchanged_count": 0
+            },
+            "train_mean_return": {
+              "MAE": 13401.510671737775,
+              "RMSE": 18901.98804216348,
+              "direction_accuracy": 0.573394495412844,
+              "changed_direction_accuracy": 0.573394495412844,
+              "count": 218,
+              "unchanged_count": 0
+            }
+          },
+          "non_overlapping": {
+            "rnn": {
+              "MAE": 16692.414554721036,
+              "RMSE": 23234.943410443622,
+              "direction_accuracy": 0.5,
+              "changed_direction_accuracy": 0.5,
+              "count": 4,
+              "unchanged_count": 0
+            },
+            "persistence": {
+              "MAE": 16722.5,
+              "RMSE": 20893.584541672117,
+              "direction_accuracy": 0.0,
+              "changed_direction_accuracy": 0.0,
+              "count": 4,
+              "unchanged_count": 0
+            },
+            "train_mean_return": {
+              "MAE": 17627.005401333787,
+              "RMSE": 24769.79772634541,
+              "direction_accuracy": 0.5,
+              "changed_direction_accuracy": 0.5,
+              "count": 4,
+              "unchanged_count": 0
+            }
+          }
+        },
+        "test": {
+          "all": {
+            "rnn": {
+              "MAE": 13293.333807911291,
+              "RMSE": 16136.383080502563,
+              "direction_accuracy": 0.2100456621004566,
+              "changed_direction_accuracy": 0.21100917431192662,
+              "count": 219,
+              "unchanged_count": 1
+            },
+            "persistence": {
+              "MAE": 8331.278538812785,
+              "RMSE": 11594.112877864245,
+              "direction_accuracy": 0.0045662100456621,
+              "changed_direction_accuracy": 0.0,
+              "count": 219,
+              "unchanged_count": 1
+            },
+            "train_mean_return": {
+              "MAE": 14785.536124270848,
+              "RMSE": 17530.40279970966,
+              "direction_accuracy": 0.2100456621004566,
+              "changed_direction_accuracy": 0.21100917431192662,
+              "count": 219,
+              "unchanged_count": 1
+            }
+          },
+          "non_overlapping": {
+            "rnn": {
+              "MAE": 12428.678111742922,
+              "RMSE": 14271.927896509456,
+              "direction_accuracy": 0.0,
+              "changed_direction_accuracy": 0.0,
+              "count": 4,
+              "unchanged_count": 0
+            },
+            "persistence": {
+              "MAE": 6027.499999999998,
+              "RMSE": 8976.556968013962,
+              "direction_accuracy": 0.0,
+              "changed_direction_accuracy": 0.0,
+              "count": 4,
+              "unchanged_count": 0
+            },
+            "train_mean_return": {
+              "MAE": 13876.714291287708,
+              "RMSE": 15488.69798043786,
+              "direction_accuracy": 0.0,
+              "changed_direction_accuracy": 0.0,
+              "count": 4,
+              "unchanged_count": 0
+            }
+          }
+        }
+      }
+    },
+    "126": {
+      "meta": {
+        "features": [
+          "log_return"
+        ],
+        "lookback": 60,
+        "horizon_sessions": 126,
+        "normalization": {
+          "x_mean": [
+            0.0013629122339085208
+          ],
+          "x_scale": [
+            0.01707332250219407
+          ],
+          "y_mean": 0.17141576957254817,
+          "y_scale": 0.1917371832259135
+        },
+        "target_transform": "log(Close[t+126] / Close[t])",
+        "splits": {
+          "train": {
+            "count": 1187,
+            "first_origin": "2019-04-03",
+            "last_origin": "2023-12-26",
+            "first_target": "2019-10-03",
+            "last_target": "2024-07-03"
+          },
+          "validation": {
+            "count": 155,
+            "first_origin": "2024-07-04",
+            "last_origin": "2025-02-17",
+            "first_target": "2024-12-31",
+            "last_target": "2025-08-18"
+          },
+          "test": {
+            "count": 156,
+            "first_origin": "2025-08-19",
+            "last_origin": "2026-04-06",
+            "first_target": "2026-02-24",
+            "last_target": "2026-10-07"
+          }
+        },
+        "origin_cutoffs": {
+          "validation_index": 1373,
+          "test_index": 1654,
+          "purged_origins_per_boundary": 126,
+          "rule": "train target < first validation origin; validation target < first test origin"
+        }
+      },
+      "training": {
+        "best_epoch": 1,
+        "epochs_run": 9,
+        "best_validation_loss": 2.0798709392547607,
+        "parameters": 1153,
+        "seconds": 0.5100049169268459,
+        "history_file": "results/fpt_outlook_126/rnn_history.csv",
+        "checkpoint_file": "checkpoints/fpt_outlook_126_rnn.pt",
+        "checkpoint_sha256": "210bb3f848e8f5e3ddc9d298a7fab5985cee1009a8e2b7af3b57a44b44cce0f9",
+        "selection": "Minimum validation transformed-space MSE; test is not read during optimization/selection."
+      },
+      "evaluation": {
+        "validation": {
+          "all": {
+            "rnn": {
+              "MAE": 26302.53042711832,
+              "RMSE": 30000.084023408373,
+              "direction_accuracy": 0.3096774193548387,
+              "changed_direction_accuracy": 0.3096774193548387,
+              "count": 155,
+              "unchanged_count": 0
+            },
+            "persistence": {
+              "MAE": 14826.516129032258,
+              "RMSE": 15986.224170385152,
+              "direction_accuracy": 0.0,
+              "changed_direction_accuracy": 0.0,
+              "count": 155,
+              "unchanged_count": 0
+            },
+            "train_mean_return": {
+              "MAE": 27347.406616644465,
+              "RMSE": 31033.774314329257,
+              "direction_accuracy": 0.3096774193548387,
+              "changed_direction_accuracy": 0.3096774193548387,
+              "count": 155,
+              "unchanged_count": 0
+            }
+          },
+          "non_overlapping": {
+            "rnn": {
+              "MAE": 22885.262224626495,
+              "RMSE": 29895.948987537216,
+              "direction_accuracy": 0.5,
+              "changed_direction_accuracy": 0.5,
+              "count": 2,
+              "unchanged_count": 0
+            },
+            "persistence": {
+              "MAE": 17715.0,
+              "RMSE": 18209.54282786913,
+              "direction_accuracy": 0.0,
+              "changed_direction_accuracy": 0.0,
+              "count": 2,
+              "unchanged_count": 0
+            },
+            "train_mean_return": {
+              "MAE": 24785.12725881261,
+              "RMSE": 31215.933307986357,
+              "direction_accuracy": 0.5,
+              "changed_direction_accuracy": 0.5,
+              "count": 2,
+              "unchanged_count": 0
+            }
+          }
+        },
+        "test": {
+          "all": {
+            "rnn": {
+              "MAE": 33413.64004502819,
+              "RMSE": 34690.69114959589,
+              "direction_accuracy": 0.00641025641025641,
+              "changed_direction_accuracy": 0.00641025641025641,
+              "count": 156,
+              "unchanged_count": 0
+            },
+            "persistence": {
+              "MAE": 18404.55128205128,
+              "RMSE": 20150.938850050177,
+              "direction_accuracy": 0.0,
+              "changed_direction_accuracy": 0.0,
+              "count": 156,
+              "unchanged_count": 0
+            },
+            "train_mean_return": {
+              "MAE": 34231.287270420245,
+              "RMSE": 35514.45031796164,
+              "direction_accuracy": 0.00641025641025641,
+              "changed_direction_accuracy": 0.00641025641025641,
+              "count": 156,
+              "unchanged_count": 0
+            }
+          },
+          "non_overlapping": {
+            "rnn": {
+              "MAE": 27853.933625603702,
+              "RMSE": 28426.172057131414,
+              "direction_accuracy": 0.0,
+              "changed_direction_accuracy": 0.0,
+              "count": 2,
+              "unchanged_count": 0
+            },
+            "persistence": {
+              "MAE": 12054.999999999996,
+              "RMSE": 13458.946838441701,
+              "direction_accuracy": 0.0,
+              "changed_direction_accuracy": 0.0,
+              "count": 2,
+              "unchanged_count": 0
+            },
+            "train_mean_return": {
+              "MAE": 28136.572537898177,
+              "RMSE": 28653.37770309424,
+              "direction_accuracy": 0.0,
+              "changed_direction_accuracy": 0.0,
+              "count": 2,
+              "unchanged_count": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "environment": {
+    "torch": "2.14.1",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3"
+  },
+  "policy": "Fixed direct horizons/configuration, one seed. Minimum validation MSE selects each checkpoint before test. Nonoverlapping origins start at the first origin and advance h sessions. They are not necessarily independent. Unconfirmed source adjustment; forecasts are not total investment returns."
+}

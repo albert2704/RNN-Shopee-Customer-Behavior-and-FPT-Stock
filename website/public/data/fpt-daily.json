@@ -1,0 +1,381 @@
+{
+  "schema_version": 1,
+  "symbol": "FPT",
+  "generated_at": "2026-10-07T23:13:31.976522+07:00",
+  "source": {
+    "symbol": "FPT",
+    "provider": "KBS via Vnstock Community",
+    "package": "vnstock",
+    "package_version": "4.0.9",
+    "source_url": "https://www.vnstocks.com/docs/vnstock/du-lieu-thi-truong-market-data",
+    "retrieved_at": "2026-10-07T23:13:13.969623+07:00",
+    "requested_start": "2019-01-01",
+    "requested_end": "2026-10-07",
+    "first_date": "2019-01-02",
+    "last_date": "2026-10-07",
+    "rows": 1936,
+    "raw_rows": 1936,
+    "excluded_rows": 0,
+    "price_multiplier": 1000,
+    "price_unit": "VND",
+    "upstream_price_unit": "thousand VND",
+    "price_basis": "KBS upstream historical close as returned by vnstock 4.0.9; corporate action adjustment unconfirmed",
+    "adjustment_note": "Giá lịch sử do KBS cung cấp, đổi từ nghìn VND sang VND. Adapter cộng đồng chưa xác nhận rõ cách điều chỉnh cổ tức/chia tách; không trộn với CSV Kaggle hoặc coi đây là giá khớp lệnh lịch sử chưa điều chỉnh.",
+    "completion_policy": "Exclude current Vietnam date before 16:00; provider publication/finality is not guaranteed",
+    "provider_sha256": "6fc24173e9959fc9be8eeee800c55ff2abdd1c3f1b25af4e0431480e1dca2b21",
+    "closes_sha256": "835ef8ed60801c3f0843d6f44f9cd663ec377e3cd246c75e959f350f93b4f047"
+  },
+  "forecast": {
+    "id": "98ef6e4685977086195b",
+    "created_at": "2026-10-07T23:13:31.976522+07:00",
+    "model_id": "20261007T114039-e90d31",
+    "observed_through": "2026-10-07",
+    "last_close": 59700.0,
+    "predicted_close": 59862.655775461,
+    "predicted_return_pct": 0.2724552352780508,
+    "direction": "up",
+    "actual": null,
+    "input_sha256": "f547b90a6017a7d6eb52567e67f5ba4899ee52da4cb1ba7ca0dcc87555df6808"
+  },
+  "model": {
+    "run_id": "20261007T114039-e90d31",
+    "trained_at": "2026-10-07T11:40:41.041541+07:00",
+    "hidden_size": 32,
+    "lookback": 30,
+    "epochs_run": 18,
+    "best_epoch": 10,
+    "splits": {
+      "train": {
+        "count": 1332,
+        "first": "2019-02-21",
+        "last": "2024-06-19"
+      },
+      "validation": {
+        "count": 285,
+        "first": "2024-06-20",
+        "last": "2025-08-08"
+      },
+      "test": {
+        "count": 287,
+        "first": "2025-08-11",
+        "last": "2026-10-06"
+      }
+    },
+    "test": {
+      "rnn": {
+        "MAE": 1184.5586896623283,
+        "RMSE": 1557.4878596885665,
+        "direction_accuracy": 0.44947735191637633,
+        "changed_direction_accuracy": 0.45907473309608543,
+        "count": 287,
+        "unchanged_count": 6
+      },
+      "persistence": {
+        "MAE": 1174.1811846689895,
+        "RMSE": 1543.9872135738178,
+        "direction_accuracy": 0.020905923344947737,
+        "changed_direction_accuracy": 0.0,
+        "count": 287,
+        "unchanged_count": 6
+      },
+      "previous_return": {
+        "MAE": 1644.38431394123,
+        "RMSE": 2199.6278671623722,
+        "direction_accuracy": 0.49477351916376305,
+        "changed_direction_accuracy": 0.501779359430605,
+        "count": 287,
+        "unchanged_count": 6
+      },
+      "train_mean_return": {
+        "MAE": 1195.7798745676569,
+        "RMSE": 1558.740585097,
+        "direction_accuracy": 0.4146341463414634,
+        "changed_direction_accuracy": 0.4234875444839858,
+        "count": 287,
+        "unchanged_count": 6
+      }
+    },
+    "beats_persistence_mae": false,
+    "checkpoint_sha256": "e9b62aaabdd56dabacf49775b5fc37e7eb92d09164de237748793bd5f7489843"
+  },
+  "history": [
+    {
+      "date": "2026-07-13",
+      "close": 64110.0
+    },
+    {
+      "date": "2026-07-14",
+      "close": 63930.0
+    },
+    {
+      "date": "2026-07-15",
+      "close": 60740.0
+    },
+    {
+      "date": "2026-07-16",
+      "close": 61840.0
+    },
+    {
+      "date": "2026-07-17",
+      "close": 60930.0
+    },
+    {
+      "date": "2026-07-20",
+      "close": 61020.0
+    },
+    {
+      "date": "2026-07-21",
+      "close": 58920.0
+    },
+    {
+      "date": "2026-07-22",
+      "close": 58740.0
+    },
+    {
+      "date": "2026-07-23",
+      "close": 58840.0
+    },
+    {
+      "date": "2026-07-24",
+      "close": 57200.0
+    },
+    {
+      "date": "2026-07-27",
+      "close": 56560.0
+    },
+    {
+      "date": "2026-07-28",
+      "close": 57290.0
+    },
+    {
+      "date": "2026-07-29",
+      "close": 59200.0
+    },
+    {
+      "date": "2026-07-30",
+      "close": 60930.0
+    },
+    {
+      "date": "2026-07-31",
+      "close": 61020.0
+    },
+    {
+      "date": "2026-08-03",
+      "close": 65200.0
+    },
+    {
+      "date": "2026-08-04",
+      "close": 65019.99999999999
+    },
+    {
+      "date": "2026-08-05",
+      "close": 63930.0
+    },
+    {
+      "date": "2026-08-06",
+      "close": 64290.00000000001
+    },
+    {
+      "date": "2026-08-07",
+      "close": 64379.99999999999
+    },
+    {
+      "date": "2026-08-10",
+      "close": 65290.00000000001
+    },
+    {
+      "date": "2026-08-11",
+      "close": 64739.99999999999
+    },
+    {
+      "date": "2026-08-12",
+      "close": 64379.99999999999
+    },
+    {
+      "date": "2026-08-13",
+      "close": 62930.0
+    },
+    {
+      "date": "2026-08-14",
+      "close": 62110.0
+    },
+    {
+      "date": "2026-08-17",
+      "close": 62560.0
+    },
+    {
+      "date": "2026-08-18",
+      "close": 62740.0
+    },
+    {
+      "date": "2026-08-19",
+      "close": 62650.0
+    },
+    {
+      "date": "2026-08-20",
+      "close": 63470.0
+    },
+    {
+      "date": "2026-08-21",
+      "close": 65470.0
+    },
+    {
+      "date": "2026-08-24",
+      "close": 64930.00000000001
+    },
+    {
+      "date": "2026-08-25",
+      "close": 64290.00000000001
+    },
+    {
+      "date": "2026-08-26",
+      "close": 66020.0
+    },
+    {
+      "date": "2026-08-27",
+      "close": 65660.0
+    },
+    {
+      "date": "2026-08-28",
+      "close": 66560.0
+    },
+    {
+      "date": "2026-09-03",
+      "close": 65660.0
+    },
+    {
+      "date": "2026-09-04",
+      "close": 66200.0
+    },
+    {
+      "date": "2026-09-07",
+      "close": 65840.0
+    },
+    {
+      "date": "2026-09-08",
+      "close": 65660.0
+    },
+    {
+      "date": "2026-09-09",
+      "close": 65840.0
+    },
+    {
+      "date": "2026-09-10",
+      "close": 67750.0
+    },
+    {
+      "date": "2026-09-11",
+      "close": 66110.0
+    },
+    {
+      "date": "2026-09-14",
+      "close": 65840.0
+    },
+    {
+      "date": "2026-09-15",
+      "close": 66110.0
+    },
+    {
+      "date": "2026-09-16",
+      "close": 67110.0
+    },
+    {
+      "date": "2026-09-17",
+      "close": 67560.0
+    },
+    {
+      "date": "2026-09-18",
+      "close": 65200.0
+    },
+    {
+      "date": "2026-09-21",
+      "close": 66400.0
+    },
+    {
+      "date": "2026-09-22",
+      "close": 66600.0
+    },
+    {
+      "date": "2026-09-23",
+      "close": 66100.0
+    },
+    {
+      "date": "2026-09-24",
+      "close": 65300.0
+    },
+    {
+      "date": "2026-09-25",
+      "close": 64700.0
+    },
+    {
+      "date": "2026-09-28",
+      "close": 63700.0
+    },
+    {
+      "date": "2026-09-29",
+      "close": 63200.0
+    },
+    {
+      "date": "2026-09-30",
+      "close": 63000.0
+    },
+    {
+      "date": "2026-10-01",
+      "close": 62700.0
+    },
+    {
+      "date": "2026-10-02",
+      "close": 62100.0
+    },
+    {
+      "date": "2026-10-05",
+      "close": 61900.0
+    },
+    {
+      "date": "2026-10-06",
+      "close": 60400.0
+    },
+    {
+      "date": "2026-10-07",
+      "close": 59700.0
+    }
+  ],
+  "ledger": [
+    {
+      "id": "13a976bb58cd24c41efe",
+      "created_at": "2026-10-07T11:40:41.048539+07:00",
+      "model_id": "20261007T114039-e90d31",
+      "observed_through": "2026-10-06",
+      "last_close": 60400.0,
+      "predicted_close": 60455.780087438434,
+      "predicted_return_pct": 0.09235113814309796,
+      "direction": "up",
+      "actual": 59700.0,
+      "input_sha256": "e8efcb47a9de43479130f3b4f4ddad4ee8c49cb7cf19f4ef5723ec25fbdabbfc",
+      "actual_date": "2026-10-07",
+      "absolute_error": 755.7800874384338,
+      "prospective": true,
+      "comparable": true
+    },
+    {
+      "id": "98ef6e4685977086195b",
+      "created_at": "2026-10-07T23:13:31.976522+07:00",
+      "model_id": "20261007T114039-e90d31",
+      "observed_through": "2026-10-07",
+      "last_close": 59700.0,
+      "predicted_close": 59862.655775461,
+      "predicted_return_pct": 0.2724552352780508,
+      "direction": "up",
+      "actual": null,
+      "input_sha256": "f547b90a6017a7d6eb52567e67f5ba4899ee52da4cb1ba7ca0dcc87555df6808"
+    }
+  ],
+  "delivery": "saved_snapshot",
+  "target": "Next recorded trading session after observed_through; not a calendar date or a trading recommendation.",
+  "freshness": {
+    "checked_at": "2026-10-07T23:13:32.205111+07:00",
+    "calendar_days": 0,
+    "stale": false,
+    "threshold_days": 7
+  }
+}
