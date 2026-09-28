@@ -1,4 +1,4 @@
-import { BookOpen, Database, Layers3, Maximize2 } from 'lucide-react';
+import { BookOpen, Database, Layers3, Maximize2, TrendingUp, MessageSquare } from 'lucide-react';
 
 interface Props {
   ready: boolean;
@@ -6,6 +6,7 @@ interface Props {
   onQuickAnswers: () => void;
   onDetails: () => void;
   onFullscreen: () => void;
+  onDaily: () => void;
 }
 
 /** Thanh công cụ phụ; nội dung chính vẫn chạy trong cùng một màn hình. */
@@ -15,6 +16,7 @@ export default function DemoHeader({
   onQuickAnswers,
   onDetails,
   onFullscreen,
+  onDaily,
 }: Props) {
   return (
     <header className="stage-header">
@@ -22,8 +24,20 @@ export default function DemoHeader({
         <Layers3 size={24} />
         <span>sequence.</span>
       </a>
-      <span className="stage-header-caption">A6 · RNN trên dữ liệu thực</span>
       <div>
+        <button
+          aria-label="Chat đầu tư"
+          onClick={() => {
+            location.hash = '#chat';
+          }}
+        >
+          <MessageSquare size={18} />
+          <span>Chat đầu tư</span>
+        </button>
+        <button aria-label="Dự báo FPT" onClick={onDaily}>
+          <TrendingUp size={18} />
+          <span>Dự báo FPT</span>
+        </button>
         <button aria-label="Giải thích nhanh" onClick={onQuickAnswers} disabled={!ready}>
           <BookOpen size={18} />
           <span>Giải thích nhanh</span>

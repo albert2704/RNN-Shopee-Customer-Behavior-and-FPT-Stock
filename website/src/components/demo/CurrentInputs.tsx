@@ -1,10 +1,10 @@
 import type { DemoDataset } from '../../demoTypes';
 import { getInputReadout } from '../../domain/demo/inputReadout';
 
-/** Hiện các phép đo dễ đọc; bốn giá trị lịch được ghi gọn ở phần cuối. */
+/** Hiện các phép đo dễ đọc; năm số đếm hành vi được giữ đúng nghĩa nguồn. */
 export default function CurrentInputs({ data, read }: { data: DemoDataset; read: number }) {
   const input = getInputReadout(data, read);
-  const when = input.timestamp || (data.id === 'amazon' ? 'mỗi phiên' : 'mỗi giờ');
+  const when = input.timestamp || (data.id === 'fpt' ? 'mỗi phiên' : 'mỗi ngày');
   return (
     <section className={`stage-current-inputs ${data.id}`} aria-label="Đầu vào RNN">
       <header className="stage-current-inputs-head">

@@ -20,29 +20,28 @@ MODELS = WEBSITE.parent / "models"
 DESTINATION = WEBSITE / "public/data/demo.json"
 
 COPY = {
-    "retailrocket": dict(
-        title="Retailrocket",
-        question="Giờ tiếp theo có bao nhiêu sự kiện giao dịch?",
-        unit="sự kiện",
-        stepUnit="giờ",
+    "shopee": dict(
+        title="Shopee Thailand",
+        question="Ngày mai có bao nhiêu đơn hàng?",
+        unit="đơn", stepUnit="ngày",
         notes=dict(
-            input="Mỗi giờ: số lượt xem, thêm giỏ, giao dịch qua log1p và 4 đặc trưng sin/cos của giờ, thứ. Cả 7 giá trị được chuẩn hóa bằng thống kê tập train.",
-            output="RNN dự đoán log1p của số sự kiện giao dịch đã chuẩn hóa. Đổi về đơn vị gốc bằng max(0, expm1(z × độ lệch chuẩn train + trung bình train)).",
-            limitation="Đây là tổng số sự kiện giao dịch mỗi giờ, không phải xác suất mua của một khách hàng hay số đơn hàng duy nhất. Dự đoán có thể là số thập phân.",
-            display="Đường biểu đồ là số sự kiện giao dịch. Mạng nhận đủ 7 đặc trưng, không chỉ đường này.",
+            input="30 ngày quá khứ. Mỗi ngày có 5 số đếm: lượt truy cập, thăm trang sản phẩm, giỏ hàng, thanh toán và đơn hàng. Dùng log1p rồi chuẩn hóa bằng thống kê train.",
+            output="RNN dự đoán log1p của số đơn ngày sau đã chuẩn hóa. Bỏ chuẩn hóa rồi tính max(0, expm1(z × độ lệch chuẩn train + trung bình train)).",
+            limitation="100% mô phỏng Shopee Thailand từ một tác giả độc lập. Không phải dữ liệu chính thức hoặc khách hàng Việt Nam. Lượt thăm giỏ không phải hành động thêm giỏ. Dự đoán số đơn có thể là số thập phân; một ngày không đủ kết luận.",
+            display="Đường biểu đồ là số đơn mỗi ngày. RNN đọc đủ 5 đặc trưng hành vi của các ngày đã kết thúc, không dùng dữ liệu của ngày đích.",
         ),
-        clockNote="Giờ UTC của dữ liệu đã tổng hợp theo giờ.",
+        clockNote="Giữ ngày nguồn 2022–2025. Nguồn không ghi múi giờ; UTC trong CSV chỉ là quy ước lưu nhãn ngày. Bỏ lượt thăm bắt đầu vào 01/01/2026 ngoài khoảng mục tiêu đầy đủ.",
     ),
-    "amazon": dict(
-        title="Amazon",
-        question="Giá đóng cửa điều chỉnh của phiên tiếp theo là bao nhiêu?",
-        unit="USD",
+    "fpt": dict(
+        title="FPT",
+        question="Giá đóng cửa của phiên tiếp theo là bao nhiêu?",
+        unit="VND",
         stepUnit="phiên",
         notes=dict(
-            input="30 phiên giao dịch, mỗi phiên có 1 log return: ln(P_t / P_(t−1)), chuẩn hóa bằng thống kê tập train. Mạng không nhận trực tiếp giá USD.",
+            input="30 phiên giao dịch, mỗi phiên có 1 log return: ln(P_t / P_(t−1)), chuẩn hóa bằng thống kê tập train. Mạng không nhận trực tiếp giá VND.",
             output="Đổi đầu ra đã chuẩn hóa thành log return dự đoán r̂, rồi tính giá phiên sau: P̂ = giá phiên cuối × exp(r̂).",
-            limitation="Trên toàn bộ test, RNN chưa vượt cách lấy giá phiên trước. Giá điều chỉnh là dữ liệu lịch sử do nguồn cung cấp; đây không phải kiểm thử chiến lược giao dịch theo thông tin tại từng thời điểm.",
-            display="Đường biểu đồ là giá đóng cửa điều chỉnh (USD). Đầu vào thật của mạng là log return đã chuẩn hóa.",
+            limitation="Nguồn FPT chỉ có Close, không có Adj Close và không mô tả phương pháp điều chỉnh. Biến động có thể bao gồm sự kiện doanh nghiệp. So sánh RNN với giá phiên trước trên toàn bộ test; một ví dụ không đủ kết luận.",
+            display="Đường biểu đồ là giá đóng cửa (VND). Đầu vào thật của mạng là log return đã chuẩn hóa.",
         ),
         clockNote="Nhãn ngày của các phiên giao dịch; không thêm ngày nghỉ. UTC trong file xử lý chỉ là cách lưu nhãn ngày, không phải thời điểm đóng cửa sàn.",
     ),
@@ -68,7 +67,7 @@ def original_units(name, scaled, norm, previous):
     )
     return (
         np.maximum(0.0, np.expm1(transformed))
-        if name == "retailrocket"
+        if name == "shopee"
         else previous * np.exp(transformed)
     )
 
@@ -171,7 +170,7 @@ def trace_first_component(inputs, state, hidden):
 def export_dataset(name):
     """Đọc một tập, xác minh tính nhân quả và đóng gói dữ liệu đúng schema DemoDataset."""
     if name not in COPY:
-        raise ValueError(f"Unsupported dataset: {name}. Choose retailrocket or amazon.")
+        raise ValueError(f"Unsupported dataset: {name}. Choose shopee or fpt.")
     root = MODELS
     meta = json.loads((root / f"results/{name}/manifest.json").read_text())
     frame = pd.read_csv(root / meta["prepared_series_file"], parse_dates=["timestamp"])
@@ -186,9 +185,9 @@ def export_dataset(name):
     assert len(context) == lookback
     assert context.timestamp.is_monotonic_increasing and context.timestamp.is_unique
     assert context.timestamp.lt(target.timestamp).all()
-    if name != "amazon":
-        assert context.timestamp.diff().dropna().eq(pd.Timedelta(hours=1)).all()
-        assert target.timestamp - context.timestamp.iloc[-1] == pd.Timedelta(hours=1)
+    if name != "fpt":
+        assert context.timestamp.diff().dropna().eq(pd.Timedelta(days=1)).all()
+        assert target.timestamp - context.timestamp.iloc[-1] == pd.Timedelta(days=1)
 
     # Áp dụng thống kê train đã lưu; không fit lại trên context/test.
     norm = meta["normalization"]
@@ -331,7 +330,7 @@ def export_dataset(name):
 
 def export():
     torch.set_num_threads(2)
-    datasets = [export_dataset(name) for name in ["retailrocket", "amazon"]]
+    datasets = [export_dataset(name) for name in ["shopee", "fpt"]]
     DESTINATION.parent.mkdir(parents=True, exist_ok=True)
     DESTINATION.write_text(
         json.dumps(

@@ -45,7 +45,7 @@ export default function RecurrentMechanism({
   const previous =
     read > 1 ? data.context[read - 2].hiddenState : Array<number>(data.hiddenSize).fill(0);
   // Tên nhóm đầu vào; số liệu trước biến đổi nằm trong CurrentInputs bên cạnh.
-  const input = data.id === 'amazon' ? 'Lợi suất log' : 'Hành vi + thời gian';
+  const input = data.id === 'fpt' ? 'Lợi suất log' : 'Hành vi trong ngày';
   const phaseMessage = predicted
     ? `Đã đọc đủ ${data.lookback} ${data.stepUnit}. Dự báo dùng trọng số RNN đã học.`
     : read === 0

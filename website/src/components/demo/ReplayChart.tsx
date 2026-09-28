@@ -41,7 +41,8 @@ export default function ReplayChart({
     max = rawMax + pad;
   const width = Math.max(280, size.width),
     height = Math.max(140, size.height);
-  const left = width < 480 ? 48 : 68,
+  // VND prices have longer tick labels than event counts.
+  const left = data.id === 'fpt' ? (width < 480 ? 76 : 90) : width < 480 ? 48 : 68,
     right = width - 37,
     top = 25,
     bottom = height - 27;
@@ -57,9 +58,7 @@ export default function ReplayChart({
   return (
     <div className="stage-chart">
       <div className="stage-chart-label">
-        <span>
-          {data.id === 'retailrocket' ? 'Sự kiện giao dịch mỗi giờ' : 'Giá đóng cửa điều chỉnh'}
-        </span>
+        <span>{data.id === 'shopee' ? 'Số đơn hàng mỗi ngày' : 'Giá đóng cửa'}</span>
         <span>{data.unit}</span>
       </div>
       <svg
@@ -72,16 +71,9 @@ export default function ReplayChart({
           const v = min + (max - min) * f;
           return (
             <g key={f}>
-              <line
-                x1={left}
-                x2={right + 25}
-                y1={y(v)}
-                y2={y(v)}
-                stroke="#e2e8f0"
-                strokeDasharray="3 5"
-              />
+              <line x1={left} x2={right + 25} y1={y(v)} y2={y(v)} stroke="#D9D4C8" />
               <text x={left - 12} y={y(v) + 4} textAnchor="end">
-                {n(v, data.id === 'amazon' ? 1 : 0)}
+                {n(v, 0)}
               </text>
             </g>
           );
@@ -91,16 +83,16 @@ export default function ReplayChart({
           y="17"
           width="38"
           height={bottom - 9}
-          rx="8"
-          fill="#eef1ff"
+          rx="0"
+          fill="#F6E1DA"
         />
         <text x={x(data.lookback)} y="12" textAnchor="middle" className="stage-future-label">
-          {data.id === 'amazon' ? 'Phiên tới' : 'Giờ tới'}
+          {data.id === 'fpt' ? 'Phiên tới' : 'Ngày mai'}
         </text>
         <path
           d={path(data.lookback)}
           fill="none"
-          stroke="#cbd5e1"
+          stroke="#C9C3B6"
           strokeWidth="2.5"
           strokeLinejoin="round"
         />
@@ -110,7 +102,7 @@ export default function ReplayChart({
               d={path(read)}
               className="stage-read-path"
               fill="none"
-              stroke="#475569"
+              stroke="#161512"
               strokeWidth="3"
               strokeLinejoin="round"
             />
@@ -119,7 +111,7 @@ export default function ReplayChart({
               x2={x(index)}
               y1={top}
               y2={bottom}
-              stroke="#94a3b8"
+              stroke="#161512"
               strokeDasharray="4 5"
             />
             <circle
@@ -127,8 +119,8 @@ export default function ReplayChart({
               cx={x(index)}
               cy={y(data.context[index].value)}
               r="6"
-              fill="#475569"
-              stroke="white"
+              fill="#161512"
+              stroke="#F6F4EF"
               strokeWidth="2"
             />
           </>
@@ -138,14 +130,14 @@ export default function ReplayChart({
             <path
               d={`M${x(data.lookback - 1)},${y(data.target.baseline)} L${x(data.lookback)},${y(data.target.baseline)}`}
               fill="none"
-              stroke="#ac794c"
+              stroke="#8D877B"
               strokeWidth="2"
               strokeDasharray="4 4"
             />
             <path
               d={`M${x(data.lookback - 1)},${y(data.context[data.lookback - 1].value)} L${x(data.lookback)},${y(data.target.prediction)}`}
               fill="none"
-              stroke="#365eeb"
+              stroke="#D2462A"
               strokeWidth="3"
               strokeLinecap="round"
             />
@@ -153,8 +145,8 @@ export default function ReplayChart({
               cx={x(data.lookback)}
               cy={y(data.target.prediction)}
               r="6"
-              fill="#365eeb"
-              stroke="white"
+              fill="#D2462A"
+              stroke="#F6F4EF"
               strokeWidth="2"
             />
           </>
@@ -164,14 +156,14 @@ export default function ReplayChart({
             <path
               d={`M${x(data.lookback - 1)},${y(data.context[data.lookback - 1].value)} L${x(data.lookback)},${y(data.target.value)}`}
               fill="none"
-              stroke="#1e293b"
+              stroke="#161512"
               strokeWidth="3"
               strokeLinecap="round"
             />
             <path
               d={`M${x(data.lookback)} ${y(data.target.value) - 8}l8 8-8 8-8-8Z`}
-              fill="#1e293b"
-              stroke="white"
+              fill="#161512"
+              stroke="#F6F4EF"
               strokeWidth="2"
             />
           </>

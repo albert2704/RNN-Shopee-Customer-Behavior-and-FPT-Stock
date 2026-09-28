@@ -34,13 +34,15 @@ export default function StateHandover({
     if (!container || !from || !to) return;
     function measure() {
       const parent = container!.getBoundingClientRect();
+      const scaleX = parent.width / (container!.offsetWidth || 1) || 1;
+      const scaleY = parent.height / (container!.offsetHeight || 1) || 1;
       const box = (element: HTMLDivElement) => {
         const rect = element.getBoundingClientRect();
         return {
-          x: rect.left - parent.left,
-          y: rect.top - parent.top,
-          width: rect.width,
-          height: rect.height,
+          x: (rect.left - parent.left) / scaleX,
+          y: (rect.top - parent.top) / scaleY,
+          width: rect.width / scaleX,
+          height: rect.height / scaleY,
         };
       };
       const sourceBox = box(from!);
@@ -48,7 +50,7 @@ export default function StateHandover({
       setGeometry({
         from: sourceBox,
         to: destinationBox,
-        railY: parent.height - 12,
+        railY: parent.height / scaleY - Math.max(sourceBox.height, destinationBox.height) / 2 - 3,
         stacked: sourceBox.y > destinationBox.y + 60,
       });
     }
@@ -56,7 +58,11 @@ export default function StateHandover({
     // Đo lại khi đổi viewport/toàn màn hình; không dùng tọa độ cứng theo ảnh chụp.
     const observer = new ResizeObserver(measure);
     [container, from, to].forEach((element) => observer.observe(element));
-    return () => observer.disconnect();
+    window.addEventListener('resize', measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', measure);
+    };
   }, [root, source, destination, layoutKey]);
 
   if (!geometry || !visible) return null;
@@ -98,9 +104,9 @@ export default function StateHandover({
             y="-4"
             width={packet.width + 8}
             height={packet.height + 8}
-            rx="5"
+            rx="0"
             fill="#fff"
-            stroke="#365eeb"
+            stroke="#D2462A"
             strokeWidth="2"
           />
           {values.map((value, i) => (
@@ -110,7 +116,7 @@ export default function StateHandover({
               y={Math.floor(i / 16) * (cellHeight + gap)}
               width={cellWidth}
               height={cellHeight}
-              rx="1.5"
+              rx="0"
               fill={stateColor(value)}
             />
           ))}

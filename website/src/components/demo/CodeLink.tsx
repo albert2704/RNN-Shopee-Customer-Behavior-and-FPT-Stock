@@ -1,11 +1,11 @@
 import { ExternalLink } from 'lucide-react';
 
 const sources = {
-  data: ['Code dữ liệu', 'models/src/preprocessing.py#L171'],
+  data: ['Code dữ liệu', 'models/src/preprocessing.py#L11'],
   model: ['Code mô hình', 'models/src/models.py#L6'],
   training: ['Code huấn luyện', 'models/src/training.py#L31'],
-  evaluation: ['Code đánh giá', 'models/src/evaluation.py#L23'],
-  replay: ['Code phát lại', 'website/scripts/export_demo.py#L104'],
+  evaluation: ['Code đánh giá', 'models/src/evaluation.py#L40'],
+  replay: ['Code phát lại', 'website/scripts/export_demo.py#L103'],
 } as const;
 
 /** Các liên kết trỏ thẳng đến mã hiện có, không tạo ví dụ Python khác. */

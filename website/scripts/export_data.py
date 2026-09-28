@@ -10,16 +10,17 @@ MODELS = ROOT.parent / "models"
 OUT = ROOT / "public/data"
 
 COPY = {
-    "retailrocket": dict(title="Retailrocket",subtitle="Hành vi khách hàng",unit="sự kiện giao dịch / giờ",frequency="Theo giờ · UTC",label="Retailrocket · Kaggle",license="CC BY-NC-SA 4.0",
-        description="Từ các lượt xem, thêm vào giỏ và giao dịch, tổng hợp hành vi theo giờ rồi dự báo số sự kiện giao dịch của giờ tiếp theo.",
-        cleaning=["Loại 460 dòng trùng hoàn toàn; giữ các hành động lặp khác nhau.","Bỏ hai ngày UTC ở biên vì chưa đủ 24 giờ; tổng hợp thành 3.288 giờ.","Mã giao dịch trống ở lượt xem/thêm giỏ là bình thường, không loại các sự kiện này.","Dùng log1p cho số sự kiện; chuẩn hóa bằng dữ liệu train."],
-        limitations=["Dự báo hành vi tổng hợp, không dự báo một khách hàng cụ thể.","Sự kiện giao dịch không đồng nghĩa số đơn hàng hay doanh thu.","Chỉ khoảng 4,5 tháng dữ liệu; giờ không ghi nhận có thể là lỗi logging.","Nghịch biến đổi log1p không bảo đảm cho kỳ vọng số đếm trong không gian gốc."],
-        insight="RNN giảm sai số so với việc lặp lại giờ trước; thêm cổng GRU chưa cải thiện trên lần chia này."),
-    "amazon": dict(title="Amazon",subtitle="Giá cổ phiếu AMZN",unit="USD / cổ phiếu điều chỉnh",frequency="Mỗi phiên giao dịch",label="Henry Shan · Kaggle",license="Apache 2.0",
-        description="Học từ 30 lợi suất log quá khứ để dự báo lợi suất phiên tiếp theo, sau đó quy đổi về giá đóng cửa điều chỉnh bằng giá quan sát gần nhất.",
-        cleaning=["Sắp xếp theo ngày; kiểm tra trùng và thiếu dữ liệu.","Giữ lịch phiên giao dịch gốc, không tạo giá cho cuối tuần hoặc ngày nghỉ.","Bỏ dòng đầu vì chưa có lợi suất so với phiên trước, còn 6.683 phiên.","Dùng lợi suất log thay cho mức giá; mọi thống kê chuẩn hóa chỉ fit trên train."],
-        limitations=["Dữ liệu lịch sử kết thúc ngày 05/12/2023, không phải giá trực tiếp.","Adjusted Close dùng điều chỉnh hồi cứu từ nguồn; đây không phải backtest giao dịch point-in-time.","RNN/GRU không vượt rõ rệt baseline giữ nguyên giá gần nhất.","MAE/RMSE theo USD không thể so trực tiếp với Retailrocket vì khác đơn vị."],
-        insight="Baseline giữ giá phiên trước có RMSE tốt nhất. Đường dự báo sát giá chưa chứng minh mô hình có khả năng dự báo lợi suất."),
+    "shopee": dict(title="Shopee Thailand", subtitle="Hành vi khách hàng · dữ liệu mô phỏng", unit="đơn hàng / ngày", frequency="Theo ngày nguồn · múi giờ không xác định", label="Hnin Shwe Zin Hlaing · Kaggle · mô phỏng", license="CC BY-SA 4.0",
+        description="Tổng hợp lượt truy cập, thăm trang sản phẩm, giỏ hàng, thanh toán và số đơn theo ngày. Học từ 30 ngày đã kết thúc để dự báo số đơn ngày tiếp theo.",
+        cleaning=["Kiểm tra ID duy nhất, liên kết trang với session và ngày đơn với session.", "Tổng hợp 1.461 ngày trong 2022–2025; lượt thăm trang ngày 01/01/2026 không thuộc khoảng mục tiêu đầy đủ.", "Giữ session không mua và các cột marketing trống; chúng không phải đầu vào.", "Dùng log1p cho 5 số đếm; chuẩn hóa chỉ fit trên train. Không dùng ngày đích trong cửa sổ."],
+        limitations=["100% dữ liệu mô phỏng Shopee Thailand, không phải dữ liệu chính thức hoặc thị trường Việt Nam.", "Thăm trang giỏ không đồng nghĩa thêm sản phẩm vào giỏ.", "Dự báo tổng số đơn toàn hệ thống, không dự báo một khách cụ thể.", "Nguồn không ghi múi giờ. Giữ ngày nguồn; không đổi múi giờ khi tổng hợp.", "MSE trên log1p và nghịch biến đổi không bảo đảm tối ưu MAE trong không gian số đơn."],
+        insight="RNN và GRU có MAE cao hơn cách đoán như hôm trước; RMSE thấp hơn một chút. Đây là kết quả của một seed và một lần chia trên dữ liệu mô phỏng."),
+    "fpt": dict(title="FPT",subtitle="Giá cổ phiếu FPT tại Việt Nam",unit="VND / cổ phiếu",frequency="Mỗi phiên giao dịch",label="Thang Tran · Kaggle",license="CC0: Public Domain",
+        description="Học từ 30 lợi suất log quá khứ để dự báo lợi suất phiên tiếp theo, sau đó quy đổi về giá đóng cửa FPT bằng giá quan sát gần nhất.",
+        cleaning=["Đọc TradingDate theo ngày/tháng/năm; loại 87 dòng trùng hoàn toàn và 1 dòng trùng ngày/OHLCV chỉ khác Value, còn 2.618 phiên.","Giữ lịch phiên giao dịch gốc, không tạo giá cho cuối tuần hoặc ngày nghỉ.","Bỏ phiên đầu vì chưa có lợi suất so với phiên trước, còn 2.617 lợi suất.","Time trống không dùng; kiểm tra các cột ngày, mã FPT và OHLCV. Chuẩn hóa chỉ fit trên train."],
+        limitations=["Dữ liệu lịch sử từ 02/01/2013 đến 30/06/2023, không phải giá trực tiếp.","Nguồn chỉ có Close, không có Adj Close và không mô tả phương pháp điều chỉnh. Biến động lớn có thể bao gồm tác động của sự kiện doanh nghiệp.","Chỉ một seed và một lần chia theo thời gian; cần so sánh với cách giữ giá phiên trước.","MAE/RMSE theo VND không thể so trực tiếp với số đơn Shopee Thailand."],
+        insight="Đánh giá RNN và GRU bằng MAE/RMSE trên cùng các phiên test, so với giá phiên trước; đường giá sát thực tế chưa chứng minh lợi thế dự báo."),
+
 }
 
 
@@ -31,7 +32,7 @@ def downsample(frame, limit):
 
 def export(name):
     if name not in COPY:
-        raise ValueError(f"Unsupported dataset: {name}. Choose retailrocket or amazon.")
+        raise ValueError(f"Unsupported dataset: {name}. Choose shopee or fpt.")
     base = MODELS
     meta = json.loads((base / f"results/{name}/manifest.json").read_text())
     audit = meta["audit"]
@@ -40,8 +41,8 @@ def export(name):
     copy = COPY[name]
     splits = meta["splits"]
     summary = dict(rows=audit["series_rows"],rawRows=audit["raw_rows"],period=[audit["first_timestamp"],audit["last_timestamp"]],features=meta["features"],featureCount=len(meta["features"]),minimum=audit["target_min"],maximum=audit["target_max"],mean=audit["target_mean"])
-    if name == "retailrocket":
-        summary.update(cleanEventRows=audit["clean_event_rows"],eventCounts=audit["event_counts_after_cleaning"])
+    if name == "shopee":
+        summary.update(rawSessionRows=audit["raw_session_rows"],rawActivityRows=audit["raw_activity_rows"],aggregateCounts=audit["aggregate_counts"],synthetic=True)
     protocol = dict(lookback=meta["lookback"],train={"n":splits["train"]["n"],"start":splits["train"]["first_timestamp"],"end":splits["train"]["last_timestamp"]},
         validation={"n":splits["validation"]["n"],"start":splits["validation"]["first_timestamp"],"end":splits["validation"]["last_timestamp"]},
         test={"n":splits["test"]["n"],"start":splits["test"]["first_timestamp"],"end":splits["test"]["last_timestamp"]},policy=meta["evaluation_policy"],target=meta["prediction_task"],transform=meta["target_transform"],loss="MSE trên mục tiêu đã biến đổi và chuẩn hóa",seed=42,hiddenSize=32,splitFractions=[.70,.15,.15])
@@ -86,5 +87,5 @@ def export(name):
 
 if __name__ == "__main__":
     import sys
-    for name in sys.argv[1:] or ["retailrocket","amazon"]:
+    for name in sys.argv[1:] or ["shopee","fpt"]:
         export(name)

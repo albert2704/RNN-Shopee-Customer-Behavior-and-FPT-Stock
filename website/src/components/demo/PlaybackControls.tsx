@@ -12,7 +12,7 @@ interface Props {
 
 /** Nút và thanh tua chỉ gọi bộ điều khiển; không can thiệp vào số liệu mô hình. */
 export default function PlaybackControls({ data, playback, caption, announcement }: Props) {
-  const { playing, begun, summary, playLabel, read, length, frame, speed } = playback;
+  const { playing, summary, playLabel, read, length, frame, speed } = playback;
   return (
     <footer className="stage-player">
       {/* Thông báo kết quả theo pha cho người dùng trình đọc màn hình. */}
@@ -36,7 +36,7 @@ export default function PlaybackControls({ data, playback, caption, announcement
           )}
           <span>{playLabel}</span>
         </button>
-        {begun && !summary && (
+        {!summary && (
           <button
             className="stage-restart"
             title="Chạy lại tập này từ đầu"
@@ -58,24 +58,23 @@ export default function PlaybackControls({ data, playback, caption, announcement
               aria-label="Tiến trình demo"
               type="range"
               min="0"
-              max={playback.lastFrame}
-              value={frame}
+              max={length + 1}
+              value={Math.min(frame, length + 1)}
               onChange={(event) => playback.seek(Number(event.target.value))}
             />
           </label>
         )}
-        <label className="stage-speed">
-          <span>Tốc độ</span>
-          <select
-            aria-label="Tốc độ phát"
-            value={speed}
-            onChange={(event) => playback.setSpeed(Number(event.target.value))}
-          >
-            <option value={0.5}>0,5×</option>
-            <option value={1}>1×</option>
-            <option value={2}>2×</option>
-          </select>
-        </label>
+        <div className="stage-speed" role="group" aria-label="Tốc độ phát">
+          {[0.5, 1, 2].map((value) => (
+            <button
+              key={value}
+              aria-pressed={speed === value}
+              onClick={() => playback.setSpeed(value)}
+            >
+              {value === 0.5 ? '0,5' : value}×
+            </button>
+          ))}
+        </div>
         <span className="stage-key-hint">
           <kbd>Space</kbd> {playback.predicted ? 'bước tiếp' : 'phát / dừng'}
         </span>

@@ -20,62 +20,61 @@ type DatasetSummary = {
 // Values are rounded from the saved test metrics in public/data/<id>.json.
 const datasets: DatasetSummary[] = [
   {
-    id: 'retailrocket',
-    name: 'Retailrocket',
-    label: 'Bài A6 · Hành vi khách hàng',
+    id: 'shopee',
+    name: 'Shopee Thailand',
+    label: 'Bài A6 · Hành vi mô phỏng',
     Icon: ShoppingBag,
-    observation: 'Một giờ: số lượt xem, thêm giỏ và sự kiện giao dịch được ghi nhận.',
-    input: '24 giờ trước, kèm thông tin giờ và thứ trong tuần.',
-    prediction: 'Số sự kiện giao dịch trong giờ tiếp theo.',
-    rnnMAE: '2,512',
-    baselineMAE: '3,458',
-    unit: 'sự kiện / giờ',
+    observation: 'Một ngày: số lượt truy cập, thăm sản phẩm, giỏ hàng, thanh toán và đơn hàng.',
+    input: '30 ngày trước, mỗi ngày có 5 số đếm qua log1p.',
+    prediction: 'Số đơn hàng trong ngày tiếp theo.',
+    rnnMAE: '309,75',
+    baselineMAE: '141,56',
+    unit: 'đơn hàng / ngày',
     finding:
-      'RNN có sai số thấp hơn. Đây là số sự kiện tổng hợp, không phải số đơn hàng hay dự đoán cho từng người.',
+      'RNN và GRU có MAE cao hơn cách đoán như hôm trước. Dữ liệu mô phỏng, không chứng minh hiệu quả trên Shopee thực tế.',
     details: [
       {
         label: 'Chuẩn bị',
-        text: 'Từ 2.756.101 sự kiện gốc, loại 460 dòng trùng hoàn toàn và hai ngày UTC ở biên chưa đủ 24 giờ; còn 3.288 giờ.',
+        text: '500.000 lượt truy cập, 2.696.481 lượt thăm trang và 300.000 đơn hàng. Tổng hợp 1.461 ngày trong 2022–2025. Bỏ lượt thăm bắt đầu ở ngày 01/01/2026 ngoài khoảng mục tiêu.',
       },
       {
         label: 'Đầu vào của một mẫu',
-        text: '24 × 7: ba số đếm sự kiện và bốn giá trị sin/cos biểu diễn giờ, thứ. Số đếm được biến đổi bằng log1p trước khi chuẩn hóa.',
+        text: '30 × 5: lượt truy cập, thăm sản phẩm, giỏ hàng, thanh toán và số đơn quá khứ. Dùng log1p rồi chuẩn hóa chỉ theo train.',
       },
       {
         label: 'Đánh giá',
-        text: '491 giờ kiểm tra. RNN: MAE 2,512; RMSE 3,646. GRU: MAE 2,545. Dự báo được đổi về đơn vị số sự kiện trước khi tính các chỉ số này.',
+        text: '216 ngày kiểm tra. RNN: MAE 309,75; RMSE 589,76. GRU: MAE 299,74; đoán như hôm trước: MAE 141,56 đơn. Mỗi dự đoán dùng lịch sử trước ngày đích.',
       },
     ],
   },
   {
-    id: 'amazon',
-    name: 'Amazon',
+    id: 'fpt',
+    name: 'FPT',
     label: 'Bài A6 · Chứng khoán',
     Icon: TrendingUp,
-    observation: 'Một phiên giao dịch: mức thay đổi giá đóng cửa điều chỉnh so với phiên trước.',
+    observation: 'Một phiên giao dịch: mức thay đổi giá đóng cửa so với phiên trước.',
     input: '30 phiên trước, biểu diễn bằng lợi suất log.',
-    prediction: 'Lợi suất phiên tiếp theo, rồi đổi thành giá đóng cửa điều chỉnh.',
-    rnnMAE: '2,269',
-    baselineMAE: '2,262',
-    unit: 'USD / cổ phiếu điều chỉnh',
-    finding:
-      'RNN chưa tốt hơn cách giữ nguyên giá. GRU giảm MAE rất ít nhưng có RMSE cao hơn: chưa có lợi thế nhất quán.',
+    prediction: 'Lợi suất phiên tiếp theo, rồi đổi thành giá đóng cửa.',
+    rnnMAE: '1.059,92',
+    baselineMAE: '1.053,73',
+    unit: 'VND / cổ phiếu',
+    finding: 'RNN và GRU đều có MAE và RMSE cao hơn cách giữ giá phiên trước trong lần thử này.',
     details: [
       {
         label: 'Lợi suất log là gì?',
-        text: 'rₜ = ln(Pₜ / Pₜ₋₁), với P là giá đóng cửa điều chỉnh. Giá dự báo = giá phiên trước × exp(lợi suất dự báo).',
+        text: 'rₜ = ln(Pₜ / Pₜ₋₁), với P là giá đóng cửa. Giá dự báo = giá phiên trước × exp(lợi suất dự báo).',
       },
       {
         label: 'Đầu vào của một mẫu',
-        text: '30 × 1. Từ 6.684 phiên gốc còn 6.683 lợi suất; không tạo thêm dữ liệu cho cuối tuần và ngày nghỉ.',
+        text: '30 × 1. Từ 2.706 dòng, loại 87 dòng trùng hoàn toàn và 1 dòng trùng ngày/OHLCV; còn 2.618 phiên và 2.617 lợi suất. Không thêm ngày nghỉ.',
       },
       {
         label: 'Đánh giá',
-        text: '999 phiên kiểm tra. GRU: MAE 2,2614, RMSE 3,1064; giữ nguyên giá: MAE 2,2623, RMSE 3,1048. Sai số được tính trên giá, không phải lợi suất.',
+        text: '389 phiên kiểm tra. RNN: MAE 1.059,92; GRU: MAE 1.058,94; giữ giá trước: MAE 1.053,73 VND. Sai số được tính trên giá, không phải lợi suất.',
       },
       {
         label: 'Giới hạn',
-        text: 'Nguồn dùng giá điều chỉnh hồi cứu và kết thúc ngày 05/12/2023. Kết quả này không chứng minh khả năng sinh lời khi giao dịch.',
+        text: 'Kaggle cung cấp Close từ 02/01/2013 đến 30/06/2023, không có Adj Close hay phương pháp điều chỉnh. Kết quả không chứng minh khả năng sinh lời.',
       },
     ],
   },
@@ -95,7 +94,7 @@ export default function DatasetOverview({
       <div className="flow-section-heading">
         <div>
           <h2>Cùng một cách làm, hai bài toán</h2>
-          <p>Retailrocket và Amazon là hai tập dữ liệu của A6.</p>
+          <p>Shopee Thailand và FPT là hai tập dữ liệu của A6.</p>
         </div>
       </div>
       <p className="dataset-comparison-intro">

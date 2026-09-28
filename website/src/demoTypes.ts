@@ -1,15 +1,15 @@
 /**
  * Hợp đồng dữ liệu giữa Python (scripts/export_demo.py) và giao diện TypeScript.
  * Mỗi dataset chứa một cửa sổ minh họa + chỉ số toàn test, không chứa tập train.
- * Đơn vị: Retailrocket = sự kiện giao dịch; Amazon = USD.
+ * Đơn vị: Shopee Thailand = đơn hàng/ngày (mô phỏng); FPT = VND.
  */
-export type DemoDatasetId = 'retailrocket' | 'amazon';
+export type DemoDatasetId = 'shopee' | 'fpt';
 
 export interface DemoContext {
   timestamp: string;
-  /** Giá trị để vẽ: số giao dịch hoặc giá USD điều chỉnh. */
+  /** Giá trị để vẽ: số đơn hàng hoặc giá VND. */
   value: number;
-  /** Đặc trưng sau log/sin/cos nhưng trước chuẩn hóa; không phải toàn bộ CSV thô. */
+  /** Đặc trưng sau log nhưng trước chuẩn hóa; không phải toàn bộ CSV thô. */
   input: number[];
   /** Vector x_t thật, chuẩn hóa bằng trung bình/độ lệch chuẩn của tập học. */
   normalizedInput: number[];

@@ -32,18 +32,18 @@ import {
 
 const datasetChoices = [
   {
-    id: 'retailrocket' as DatasetId,
-    name: 'Retailrocket',
-    type: 'Hành vi khách hàng',
+    id: 'shopee' as DatasetId,
+    name: 'Shopee Thailand',
+    type: 'Hành vi khách hàng · mô phỏng',
     Icon: ShoppingBag,
-    question: 'Giờ tới sẽ ghi nhận bao nhiêu lượt giao dịch?',
+    question: 'Ngày mai có bao nhiêu đơn hàng?',
   },
   {
-    id: 'amazon' as DatasetId,
-    name: 'Amazon',
+    id: 'fpt' as DatasetId,
+    name: 'FPT',
     type: 'Giá cổ phiếu',
     Icon: TrendingUp,
-    question: 'Giá đóng cửa điều chỉnh phiên sau là bao nhiêu?',
+    question: 'Giá đóng cửa phiên sau là bao nhiêu?',
   },
 ];
 type DataMap = Partial<Record<DatasetId, Dataset>>;
@@ -239,12 +239,12 @@ function DatasetExplorer({
               </div>
               <div>
                 <dt>Tần suất</dt>
-                <dd>{selected === 'amazon' ? 'Mỗi phiên' : 'Mỗi giờ'}</dd>
+                <dd>{selected === 'fpt' ? 'Mỗi phiên' : 'Mỗi ngày'}</dd>
               </div>
               <div>
                 <dt>Lịch sử dùng để dự báo</dt>
                 <dd>
-                  {d.protocol.lookback} <span>{selected === 'amazon' ? 'phiên' : 'giờ'}</span>
+                  {d.protocol.lookback} <span>{selected === 'fpt' ? 'phiên' : 'ngày'}</span>
                 </dd>
               </div>
             </dl>
@@ -322,7 +322,7 @@ function DatasetExplorer({
             models={mode === 'overview' ? ['actual'] : visible}
             unit={d.unit}
             label={`${d.title}: ${mode === 'overview' ? 'quan sát theo thời gian' : 'dự báo trên tập test'}`}
-            time={selected !== 'amazon'}
+            time={selected !== 'fpt'}
           />
           <div className="chart-footnote">
             <span>
@@ -350,7 +350,7 @@ function DatasetExplorer({
                 <tbody>
                   {chartPoints.slice(-8).map((p) => (
                     <tr key={p.timestamp}>
-                      <td>{formatDate(p.timestamp, selected !== 'amazon')}</td>
+                      <td>{formatDate(p.timestamp, selected !== 'fpt')}</td>
                       {(mode === 'overview' ? ['actual'] : visible).map((k) => (
                         <td key={k}>
                           {typeof p[k] === 'number' ? formatNumber(p[k] as number, 3) : '—'}
@@ -521,14 +521,14 @@ function Results({
             <BookOpen size={23} strokeWidth={1.6} />
           </span>
           <h3>
-            {selected === 'amazon'
-              ? 'Amazon: chưa có cải thiện rõ ràng'
-              : 'Retailrocket: RNN có sai số thấp nhất'}
+            {selected === 'fpt'
+              ? 'FPT: chưa có cải thiện rõ ràng'
+              : 'Shopee Thailand: cần so với cách đoán đơn giản'}
           </h3>
           <p>
-            {selected === 'amazon'
-              ? 'GRU có MAE thấp hơn một chút so với cách dùng giá phiên trước, nhưng RMSE cao hơn. Kết quả chưa cho thấy RNN hoặc GRU tốt hơn một cách nhất quán.'
-              : 'RNN có MAE và RMSE thấp hơn GRU và hai cách dự báo đơn giản trong lần thử này.'}
+            {selected === 'fpt'
+              ? 'RNN và GRU đều có MAE và RMSE cao hơn cách dùng giá phiên trước trên 389 phiên kiểm tra. Kết quả này chưa cho thấy lợi thế so với cách đơn giản đó.'
+              : 'Trên 216 ngày test, RNN và GRU có MAE cao hơn cách lặp lại số đơn hôm trước, dù RMSE thấp hơn một chút. Kết quả chỉ mô tả dữ liệu mô phỏng này.'}
           </p>
           <div className="metric-explanation">
             <strong>{metric.toUpperCase()} là gì?</strong>
@@ -617,11 +617,11 @@ function Results({
   );
 }
 
-export default function App({ initialDataset = 'retailrocket' }: { initialDataset?: DatasetId }) {
+export default function App({ initialDataset = 'shopee' }: { initialDataset?: DatasetId }) {
   const [data, setData] = useState<DataMap>({});
   const [errors, setErrors] = useState<ErrorMap>({});
   const [selected, setSelected] = useState<DatasetId>(
-    datasetChoices.some(({ id }) => id === initialDataset) ? initialDataset : 'retailrocket',
+    datasetChoices.some(({ id }) => id === initialDataset) ? initialDataset : 'shopee',
   );
   const [menu, setMenu] = useState(false);
   const [retry, setRetry] = useState(0);

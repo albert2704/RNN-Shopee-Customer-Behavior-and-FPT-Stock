@@ -1,0 +1,221 @@
+.investment-outlook {
+  padding: 24px 26px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--accent-soft) 0%, var(--surface) 65%);
+}
+.investment-outlook-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+.investment-outlook-eyebrow {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+}
+.investment-outlook-heading h2 {
+  margin: 5px 0;
+  font-size: 22px;
+  line-height: 1.35;
+}
+.investment-outlook-heading p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+.investment-outlook-anchor {
+  flex: none;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  background: var(--surface);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.investment-horizon-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0 14px;
+}
+.investment-horizon-tabs button,
+.investment-outlook-status button {
+  min-height: 44px;
+  padding: 9px 17px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--muted);
+  background: var(--surface);
+  font-weight: 600;
+}
+.investment-horizon-tabs button.selected {
+  border-color: var(--accent);
+  color: var(--surface);
+  background: var(--accent);
+}
+.investment-horizon-tabs button:focus-visible,
+.investment-outlook-status button:focus-visible,
+.investment-outlook a:focus-visible,
+.investment-outlook summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+.investment-outlook-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  color: var(--muted);
+  background: var(--accent-soft);
+  font-size: 14px;
+}
+.investment-outlook-status button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: none;
+  color: var(--accent);
+}
+.investment-outlook-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.investment-outlook-result > div > span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+}
+.investment-outlook-result strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--accent);
+  font-size: clamp(28px, 4vw, 38px);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.035em;
+}
+.investment-outlook-result strong small {
+  font-size: 14px;
+  font-weight: 550;
+}
+.investment-outlook-result > div > p {
+  margin-top: 2px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+.investment-outlook-experiment {
+  max-width: 460px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+.investment-outlook-stale {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--accent-soft);
+  font-size: 13px;
+}
+.investment-outlook-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 14px;
+}
+.investment-outlook-actions > a,
+.investment-outlook-details a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: none;
+}
+.investment-outlook-actions details {
+  color: var(--muted);
+  font-size: 13px;
+}
+.investment-outlook-actions summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.investment-outlook-details {
+  max-width: 800px;
+  padding-top: 9px;
+}
+.investment-outlook-details p {
+  margin: 6px 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+.investment-company-sources {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+}
+.investment-company-sources summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+.investment-company-sources ul {
+  display: grid;
+  gap: 12px;
+  margin: 12px 0 0;
+  padding-left: 20px;
+}
+.investment-company-sources li > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+  font-weight: 650;
+  text-decoration: none;
+}
+.investment-company-sources li > span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.investment-company-sources li > p,
+.investment-company-empty {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+@media (max-width: 680px) {
+  .investment-outlook {
+    padding: 20px 16px;
+  }
+  .investment-outlook-heading,
+  .investment-outlook-result {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .investment-outlook-anchor {
+    align-self: flex-start;
+  }
+  .investment-outlook-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

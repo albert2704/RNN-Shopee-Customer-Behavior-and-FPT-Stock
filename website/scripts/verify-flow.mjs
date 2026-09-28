@@ -33,7 +33,7 @@ const datasetButton = name => datasets().getByRole('button', {name: new RegExp(n
 const workspace = data => page.getByRole('region', {name: `Hoạt ảnh ${data.title}`, exact: true});
 const chart = data => workspace(data).getByRole('img', {name: new RegExp(`^${data.title}:`)});
 const focusPanel = (data, phase) => workspace(data).getByRole('complementary', {name: phase, exact: true});
-const metricAmount = (data, value) => `${number(value, data.id === 'amazon' ? 4 : 2)} ${data.unit}`;
+const metricAmount = (data, value) => `${number(value, data.id === 'fpt' ? 4 : 2)} ${data.unit}`;
 const screenshot = name => page.screenshot({path: fileURLToPath(new URL(`${name}.png`, output))});
 
 async function noHorizontalOverflow() {
@@ -69,11 +69,11 @@ try {
   const response = await context.request.get(`${url}/data/demo.json`);
   assert.equal(response.status(), 200);
   const {datasets: data} = await response.json();
-  assert.deepEqual(data.map(item => item.id), ['retailrocket', 'amazon']);
+  assert.deepEqual(data.map(item => item.id), ['shopee', 'fpt']);
   // These fixtures protect the source examples, not merely UI/JSON agreement.
   const fixtures = [
-    {id: 'retailrocket', name: 'Retailrocket', question: 'Giờ tới có bao nhiêu sự kiện giao dịch?', lookback: 24, inputSize: 7, timestamp: '2015-08-28T13:00:00+00:00', actual: 13, prediction: 1.162278763348847, count: 491},
-    {id: 'amazon', name: 'Amazon', question: 'Giá điều chỉnh phiên tới là bao nhiêu?', lookback: 30, inputSize: 1, timestamp: '2019-12-17T00:00:00+00:00', actual: 89.532997, prediction: 88.55347474242303, count: 999},
+    {id: 'shopee', name: 'Shopee Thailand', question: 'Ngày mai có bao nhiêu đơn hàng?', lookback: 30, inputSize: 5, timestamp: '2025-05-30T00:00:00+00:00', actual: 301, prediction: 289.59562641358286, count: 216},
+    {id: 'fpt', name: 'FPT', question: 'Giá đóng cửa phiên tới là bao nhiêu?', lookback: 30, inputSize: 1, timestamp: '2021-12-07T00:00:00+00:00', actual: 96000.0, prediction: 94550.50834396304, count: 389},
   ];
   for (const fixture of fixtures) {
     const item = data.find(value => value.id === fixture.id);
@@ -89,7 +89,7 @@ try {
     assert.ok(item.verification.manualRecurrenceMaximumAbsoluteError < 1e-6);
     assert.ok(item.context.every(point => point.normalizedInput.length === fixture.inputSize && point.hiddenState.length === 32));
   }
-  pass('Both examples retain the verified first test target and correct 24/30-step input windows');
+  pass('Both examples retain the verified first test target and correct 30-step input windows');
 
   await page.goto(`${url}/#talk/1`);
   await expect(page).toHaveURL(/#demo$/);
@@ -143,7 +143,7 @@ try {
     await fitsProjector();
     pass(`${item.title}: playback and pause work; all 32 current and previous state values match consecutive checkpoint steps`);
 
-    if (item.id === 'retailrocket') {
+    if (item.id === 'shopee') {
       await page.getByRole('button', {name: 'Tiếp tục', exact: true}).click();
       await page.getByRole('button', {name: 'Dữ liệu & phép tính', exact: true}).click();
       const dialog = page.getByRole('dialog');
@@ -174,8 +174,8 @@ try {
       await expect(dialog.getByRole('tabpanel')).toContainText('Giữ nguyên trọng số');
       await fitsQuickAnswer();
       await topics.getByRole('tab', {name: 'Đầu vào', exact: true}).click();
-      await expect(dialog.getByRole('tabpanel')).toContainText('24 × 7');
-      await expect(dialog.getByRole('tabpanel')).toContainText('Biểu đồ chỉ vẽ số sự kiện giao dịch.');
+      await expect(dialog.getByRole('tabpanel')).toContainText('30 × 5');
+      await expect(dialog.getByRole('tabpanel')).toContainText('Biểu đồ vẽ số đơn hàng.');
       await fitsQuickAnswer();
       await topics.getByRole('tab', {name: 'Huấn luyện', exact: true}).click();
       await expect(dialog.getByRole('tabpanel')).toContainText('độc lập với hai mô hình thật');
@@ -273,10 +273,10 @@ try {
   await expect(page.getByRole('heading', {name: 'Cùng là RNN, hiệu quả khác nhau.', exact: true})).toBeVisible();
   await expect(page.getByRole('button', {name: 'Về demo', exact: true})).toBeVisible();
   await expect(page.getByRole('article')).toHaveCount(2);
-  const amazonSummary = page.getByRole('article').filter({has: page.getByRole('heading', {name: 'Amazon', exact: true})});
-  await expect(amazonSummary).toContainText('2,2687');
-  await expect(amazonSummary).toContainText('2,2623');
-  await expect(amazonSummary).toContainText('RNN chưa tốt hơn');
+  const fptSummary = page.getByRole('article').filter({has: page.getByRole('heading', {name: 'FPT', exact: true})});
+  await expect(fptSummary).toContainText('1.059,9227');
+  await expect(fptSummary).toContainText('1.053,7275');
+  await expect(fptSummary).toContainText('RNN chưa tốt hơn');
   await fitsProjector();
   await screenshot('desktop-summary');
   pass('Each dataset stops at prediction; truth and evaluation need separate clicks; restart preserves the selected dataset');

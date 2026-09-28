@@ -15,23 +15,26 @@ export const DATASET_COPY: Record<
     baselineExplanation: string;
   }
 > = {
-  retailrocket: {
-    name: 'Retailrocket',
-    baselineLabel: 'Đoán như giờ trước',
-    baselineExplanation: 'Lấy số giao dịch giờ trước để đoán giờ tới.',
-    subject: 'Hành vi khách hàng',
-    question: 'Giờ tới có bao nhiêu sự kiện giao dịch?',
-    inputDescription: '24 giờ: lượt xem, thêm vào giỏ, giao dịch và thời gian.',
-    caseTakeaway: 'Thực tế tăng lên 13 sự kiện. RNN dự đoán thấp và bỏ lỡ mức tăng này.',
+  shopee: {
+    name: 'Shopee Thailand',
+    baselineLabel: 'Đoán như hôm trước',
+    baselineExplanation: 'Lấy số đơn hôm trước để đoán ngày mai.',
+    subject: 'Hành vi khách hàng · mô phỏng',
+    question: 'Ngày mai có bao nhiêu đơn hàng?',
+    inputDescription:
+      '30 ngày: lượt truy cập, thăm trang sản phẩm, giỏ hàng, thanh toán và số đơn. Dữ liệu mô phỏng.',
+    caseTakeaway:
+      'So dự đoán với số đơn được ghi nhận ở ngày này. Một ngày chưa đủ để kết luận về mô hình.',
   },
-  amazon: {
-    name: 'Amazon',
+  fpt: {
+    name: 'FPT',
     baselineLabel: 'Đoán như phiên trước',
     baselineExplanation: 'Lấy giá phiên trước để đoán phiên tới.',
     subject: 'Chứng khoán',
-    question: 'Giá điều chỉnh phiên tới là bao nhiêu?',
-    inputDescription: '30 phiên: mức thay đổi giá theo log. Biểu đồ hiển thị giá USD.',
-    caseTakeaway: 'Ở phiên này, RNN gần thực tế hơn cách giữ nguyên giá phiên trước.',
+    question: 'Giá đóng cửa phiên tới là bao nhiêu?',
+    inputDescription: '30 phiên: mức thay đổi giá theo log. Biểu đồ hiển thị giá VND.',
+    caseTakeaway:
+      'So độ lệch của RNN và cách giữ giá phiên trước ở mẫu này. Một phiên chưa đủ kết luận về toàn bộ mô hình.',
   },
 };
 
@@ -41,12 +44,12 @@ export const PHASE_LABELS = ['Đọc chuỗi', 'Dự đoán', 'Thực tế', 'To
 
 /** Linear tạo số đã chuẩn hóa; bước hoàn nguyên mới tạo đơn vị trên biểu đồ. */
 export const OUTPUT_COPY: Record<DemoDatasetId, { conversion: string; explanation: string }> = {
-  retailrocket: {
-    conversion: 'Đổi về số sự kiện',
+  shopee: {
+    conversion: 'Đổi về số đơn hàng',
     explanation: 'Bỏ chuẩn hóa → hoàn tác log(1 + x) → chặn giá trị âm về 0.',
   },
-  amazon: {
-    conversion: 'Đổi thành giá USD',
+  fpt: {
+    conversion: 'Đổi thành giá VND',
     explanation: 'Bỏ chuẩn hóa → lợi suất log → nhân giá cuối với exp(lợi suất).',
   },
 };
@@ -54,12 +57,10 @@ export const formatAmount = (data: DemoDataset, value: number) =>
   `${formatNumber(value, 2)} ${data.unit}`;
 
 export function timeLabel(data: DemoDataset, timestamp: string) {
-  return data.id === 'amazon'
-    ? `${timestamp.slice(8, 10)}/${timestamp.slice(5, 7)}`
-    : timestamp.slice(11, 16);
+  return `${timestamp.slice(8, 10)}/${timestamp.slice(5, 7)}`;
 }
 
-/** So sánh MAE trên CÙNG tập và CÙNG đơn vị; không so USD với số sự kiện. */
+/** So sánh MAE trên CÙNG tập và CÙNG đơn vị; không so VND với số đơn hàng. */
 export function compareText(data: DemoDataset) {
   if (data.metrics.rnnMae < data.metrics.baselineMae) {
     const improvement = (1 - data.metrics.rnnMae / data.metrics.baselineMae) * 100;
@@ -70,9 +71,9 @@ export function compareText(data: DemoDataset) {
 
 /** Màu chỉ mã hóa dấu/độ lớn của h; không gán ý nghĩa “xu hướng” cho một ô. */
 export function stateColor(value: number) {
-  if (value === 0) return '#e2e8f0';
+  if (value === 0) return '#E9E5DC';
   const opacity = 0.2 + Math.abs(value) * 0.8;
-  return value > 0 ? `rgba(54,94,235,${opacity})` : `rgba(170,114,67,${opacity})`;
+  return value > 0 ? `rgba(210,70,42,${opacity})` : `rgba(111,106,96,${opacity})`;
 }
 
 interface CaptionContext {

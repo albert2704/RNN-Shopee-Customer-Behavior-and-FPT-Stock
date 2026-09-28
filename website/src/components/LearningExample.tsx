@@ -268,7 +268,7 @@ export default function LearningExample({ onFocus }: { onFocus?: () => void }) {
           <p>
             <b>Liên hệ với thực nghiệm:</b> hai mô hình RNN có 32 giá trị trạng thái, dùng Adam và
             MSE để học. Ví dụ một trạng thái với SGD và hệ số ½ ở đây chỉ giúp nhìn rõ một lần cập
-            nhật; kết quả của nó không phải dự báo trên Retailrocket hay Amazon.
+            nhật; kết quả của nó không phải dự báo trên Shopee Thailand hay FPT.
           </p>
         </div>
       </details>

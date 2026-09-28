@@ -1,5 +1,5 @@
 // Kiểu dữ liệu và định dạng của phụ lục phân tích; schema của demo chính nằm ở demoTypes.ts.
-export type DatasetId = 'retailrocket' | 'amazon';
+export type DatasetId = 'shopee' | 'fpt';
 export type Point = {
   timestamp: string;
   actual: number;
@@ -48,8 +48,7 @@ export const modelLabels: Record<string, string> = {
   rnn: 'RNN',
   gru: 'GRU',
   persistence: 'Giá trị trước',
-  seasonal: 'Cùng giờ tuần trước',
-  seasonal24: 'Cùng giờ hôm trước',
+  seasonal: 'Cùng thứ tuần trước',
   train_mean: 'Trung bình train',
 };
 export const colors: Record<string, string> = {
@@ -58,7 +57,6 @@ export const colors: Record<string, string> = {
   gru: '#c67239',
   persistence: '#9b54a5',
   seasonal: '#718a3d',
-  seasonal24: '#718a3d',
   train_mean: '#718a3d',
 };
 export const formatNumber = (n: number, digits = 2) =>

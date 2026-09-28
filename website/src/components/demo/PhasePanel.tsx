@@ -24,9 +24,9 @@ export default function PhasePanel({
   onCalculate: () => void;
   onCode: () => void;
 }) {
-  const metricDigits = data.id === 'amazon' ? 4 : 2;
+  const metricDigits = 2;
   return (
-    <aside className="stage-focus-panel" aria-label={phases[phase]}>
+    <aside className="stage-focus-panel" data-unit={data.unit} aria-label={phases[phase]}>
       <div key={`${data.id}-${phase}`} className="stage-focus-content">
         {phase === 0 ? (
           <>
@@ -40,9 +40,7 @@ export default function PhasePanel({
         ) : phase === 1 ? (
           <>
             <h2>Đọc đủ chuỗi → dự đoán</h2>
-            <p className="stage-prediction-date">
-              Mốc dự báo: {formatDate(data.target.timestamp, data.id !== 'amazon')}
-            </p>
+            <p className="stage-prediction-date">Mốc dự báo: {formatDate(data.target.timestamp)}</p>
             <div className="stage-forecast-hero">
               <span>Dự đoán RNN</span>
               <strong>{n(data.target.prediction, 2)}</strong>
@@ -105,12 +103,26 @@ export default function PhasePanel({
                 <dd>
                   {n(data.metrics.baselineMae, metricDigits)} <small>{data.unit}</small>
                 </dd>
+                <div className="editorial-bar">
+                  <i
+                    style={{
+                      width: `${(data.metrics.baselineMae / Math.max(data.metrics.baselineMae, data.metrics.rnnMae, 1)) * 100}%`,
+                    }}
+                  />
+                </div>
               </div>
               <div>
                 <dt>RNN</dt>
                 <dd>
                   {n(data.metrics.rnnMae, metricDigits)} <small>{data.unit}</small>
                 </dd>
+                <div className="editorial-bar">
+                  <i
+                    style={{
+                      width: `${(data.metrics.rnnMae / Math.max(data.metrics.baselineMae, data.metrics.rnnMae, 1)) * 100}%`,
+                    }}
+                  />
+                </div>
               </div>
             </dl>
             <p className="stage-takeaway">{compareText(data)}</p>

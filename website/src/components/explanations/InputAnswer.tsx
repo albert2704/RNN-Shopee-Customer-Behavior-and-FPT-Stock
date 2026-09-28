@@ -8,34 +8,34 @@ interface InputDescription {
 }
 
 // Tách nội dung theo tập để phân biệt đại lượng trên biểu đồ với đầu vào
-// thật của mạng. Đặc biệt, biểu đồ Amazon là giá nhưng mạng đọc log return.
+// thật của mạng. Đặc biệt, biểu đồ FPT là giá nhưng mạng đọc log return.
 const inputContent: Record<DemoDatasetId, InputDescription> = {
-  retailrocket: {
+  shopee: {
     description:
-      'Mỗi giờ, RNN nhận số lượt xem, thêm vào giỏ, giao dịch và thông tin giờ, thứ. Biểu đồ chỉ vẽ số sự kiện giao dịch.',
-    features: ['Lượt xem', 'Thêm vào giỏ', 'Giao dịch', 'Giờ và thứ: 4 giá trị sin/cos'],
+      'Mỗi ngày, RNN nhận số lượt truy cập, thăm trang sản phẩm, giỏ hàng, thanh toán và số đơn đã ghi nhận. Biểu đồ vẽ số đơn hàng.',
+    features: ['Lượt truy cập', 'Thăm sản phẩm', 'Thăm giỏ hàng', 'Thăm thanh toán', 'Đơn hàng'],
     limitation:
-      'Đếm sự kiện giao dịch, không phải số đơn hàng duy nhất hay xác suất mua. Dự đoán có thể là số thập phân.',
+      'Mô phỏng Shopee Thailand, không phải dữ liệu chính thức hoặc khách Việt Nam. Lượt thăm trang giỏ không phải hành động thêm giỏ. Dự đoán số đơn có thể là số thập phân.',
   },
-  amazon: {
+  fpt: {
     description:
-      'Biểu đồ hiển thị giá đóng cửa điều chỉnh bằng USD. RNN nhận mức thay đổi giá giữa hai phiên, tính bằng log(Pₜ/Pₜ₋₁).',
+      'Biểu đồ hiển thị giá đóng cửa bằng VND. RNN nhận mức thay đổi giá giữa hai phiên, tính bằng log(Pₜ/Pₜ₋₁).',
     features: ['1 giá trị: mức thay đổi giá theo log'],
     limitation:
-      'Đầu ra được đổi từ mức thay đổi về giá USD. Dữ liệu là giá lịch sử đã điều chỉnh; kết quả này không phải kiểm thử chiến lược giao dịch.',
+      'Đầu ra được đổi từ mức thay đổi về giá VND. Nguồn FPT chỉ có Close, không cung cấp Adj Close hay phương pháp điều chỉnh.',
   },
 };
 
 export default function InputAnswer({ data }: { data: DemoDataset }) {
-  const retail = data.id === 'retailrocket';
-  const amazon = data.id === 'amazon';
+  const retail = data.id === 'shopee';
+  const fpt = data.id === 'fpt';
   const { description, features, limitation } = inputContent[data.id];
 
   return (
     <>
       <h3>
-        {data.title}: {data.lookback} {data.stepUnit} trước để dự đoán {amazon ? 'phiên' : 'giờ'}{' '}
-        tiếp theo
+        {data.title}: {data.lookback} {data.stepUnit} trước để dự đoán {fpt ? 'phiên' : 'ngày'} tiếp
+        theo
       </h3>
       <p className="quick-lead">{description}</p>
 
@@ -64,13 +64,13 @@ export default function InputAnswer({ data }: { data: DemoDataset }) {
         </div>
         <ArrowRight className="quick-flow-arrow" aria-hidden="true" />
         <div>
-          <strong>{amazon ? 'Phiên tới' : 'Giờ tới'}</strong>
+          <strong>{fpt ? 'Phiên tới' : 'Ngày mai'}</strong>
           <span>Đổi về {data.unit}</span>
         </div>
       </div>
 
       <p className="quick-note">
-        {retail && 'Ba loại số đếm được biến đổi bằng log(1 + x) trước khi chuẩn hóa. '}
+        {retail && 'Năm loại số đếm được biến đổi bằng log(1 + x) trước khi chuẩn hóa. '}
         {limitation}
       </p>
       <p className="quick-source-note">

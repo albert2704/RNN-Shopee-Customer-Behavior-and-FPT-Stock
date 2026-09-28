@@ -33,7 +33,7 @@ export default function DatasetDetails({
         </div>
         <div>
           <dt>Mốc dự đoán</dt>
-          <dd>{formatDate(data.target.timestamp, data.id !== 'amazon')}</dd>
+          <dd>{formatDate(data.target.timestamp)}</dd>
         </div>
       </dl>
       <h3>Phép tính ở bước {read}</h3>

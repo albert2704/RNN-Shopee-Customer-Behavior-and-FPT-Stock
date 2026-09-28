@@ -8,16 +8,16 @@ const bundle = JSON.parse(
   readFileSync(new URL('../public/data/demo.json', import.meta.url), 'utf8'),
 );
 const original = JSON.stringify(bundle);
-const expected = { retailrocket: [24, 7, 3], amazon: [30, 1, 1] };
+const expected = { shopee: [30, 5, 5], fpt: [30, 1, 1] };
 
 // Tính độc lập bằng số double của JavaScript. Checkpoint/kernel PyTorch dùng
 // float32 và có thể cộng theo thứ tự khác, nên không yêu cầu trùng từng bit.
 const FLOAT32_TOLERANCE = 1e-6;
-function assertClose(actual, expectedValue, description) {
+function assertClose(actual, expectedValue, description, tolerance = FLOAT32_TOLERANCE) {
   assert.ok(Number.isFinite(actual), `${description}: kết quả phải hữu hạn`);
   assert.ok(Number.isFinite(expectedValue), `${description}: đối chiếu phải hữu hạn`);
   assert.ok(
-    Math.abs(actual - expectedValue) <= FLOAT32_TOLERANCE,
+    Math.abs(actual - expectedValue) <= tolerance,
     `${description}: ${actual} khác ${expectedValue}`,
   );
 }
@@ -32,10 +32,10 @@ function dot(weights, values) {
   return weights.reduce((sum, weight, index) => sum + weight * values[index], 0);
 }
 
-test('Bản demo chỉ có Retailrocket và Amazon, đúng thứ tự trình bày', () => {
+test('Bản demo chỉ có Shopee Thailand và FPT, đúng thứ tự trình bày', () => {
   assert.deepEqual(
     bundle.datasets.map((data) => data.id),
-    ['retailrocket', 'amazon'],
+    ['shopee', 'fpt'],
   );
 });
 
@@ -104,12 +104,27 @@ for (const data of bundle.datasets) {
     const transformed =
       standardized * data.normalization.targetScale + data.normalization.targetMean;
     assertClose(transformed, data.target.predictedTransformed, 'Đảo chuẩn hóa bằng thống kê train');
-    // Retail: mục tiêu log1p(số giao dịch); Amazon: log return của phiên sau.
+    // Retail: mục tiêu log1p(số đơn); FPT: log return của phiên sau.
     const originalUnits =
-      data.id === 'retailrocket'
+      data.id === 'shopee'
         ? Math.max(0, Math.expm1(transformed))
         : finalPoint.value * Math.exp(transformed);
-    assertClose(originalUnits, data.target.prediction, 'Dự báo ở đơn vị gốc');
+    // VND prices amplify tiny float32/double differences. 0.0001 VND is
+    // still far below any displayed price or forecast error.
+    assertClose(
+      originalUnits,
+      data.target.prediction,
+      'Dự báo ở đơn vị gốc',
+      data.id === 'fpt' ? 1e-4 : 1e-3,
+    );
+    const savedTransformed =
+      data.target.predictedStandardized * data.normalization.targetScale +
+      data.normalization.targetMean;
+    const savedUnits =
+      data.id === 'shopee'
+        ? Math.max(0, Math.expm1(savedTransformed))
+        : finalPoint.value * Math.exp(savedTransformed);
+    assertClose(savedUnits, data.target.prediction, 'Hoàn nguyên đầu ra checkpoint');
   });
 
   test(`${data.id}: chưa đọc không lộ số liệu hoặc timestamp của quan sát đầu`, () => {
@@ -149,14 +164,17 @@ for (const data of bundle.datasets) {
       assert.ok(point.normalizedInput.every(Number.isFinite));
       assert.deepEqual(point.input, inputBefore);
       assert.deepEqual(point.normalizedInput, normalizedBefore);
-      const timestamp =
-        data.id === 'amazon'
-          ? `${point.timestamp.slice(8, 10)}/${point.timestamp.slice(5, 7)}`
-          : point.timestamp.slice(11, 16);
+      const timestamp = `${point.timestamp.slice(8, 10)}/${point.timestamp.slice(5, 7)}`;
       assert.equal(view.timestamp, timestamp);
 
-      if (data.id === 'retailrocket') {
-        for (const [index, feature] of ['log_view', 'log_addtocart', 'log_transaction'].entries()) {
+      if (data.id === 'shopee') {
+        for (const [index, feature] of [
+          'log_sessions',
+          'log_product_visits',
+          'log_cart_visits',
+          'log_checkout_visits',
+          'log_orders',
+        ].entries()) {
           const rawCount = Math.expm1(point.input[data.featureNames.indexOf(feature)]);
           const item = view.items[index];
           assert.ok(Number.isInteger(item.value));
@@ -164,8 +182,8 @@ for (const data of bundle.datasets) {
           assert.ok(Math.abs(item.value - rawCount) < 1e-9);
           assert.equal(item.digits, 0);
         }
-        assert.equal(view.items[2].value, point.value);
-      } else if (data.id === 'amazon') {
+        assert.equal(view.items[4].value, point.value);
+      } else if (data.id === 'fpt') {
         const item = view.items[0];
         assert.equal(item.label, 'Lợi suất log');
         assert.equal(item.unit, '%');
@@ -174,17 +192,9 @@ for (const data of bundle.datasets) {
         assert.notEqual(
           item.value,
           point.value,
-          'Giá USD của biểu đồ không phải đầu vào log return',
+          'Giá VND của biểu đồ không phải đầu vào log return',
         );
         assert.equal(view.extra, '1 giá trị mỗi phiên');
-      }
-      if (data.id !== 'amazon') {
-        const temporal = ['hour_sin', 'hour_cos', 'weekday_sin', 'weekday_cos'];
-        for (const feature of temporal) {
-          const value = point.input[data.featureNames.indexOf(feature)];
-          assert.ok(Number.isFinite(value) && Math.abs(value) <= 1);
-        }
-        assert.match(view.extra, /4.*sin\/cos/);
       }
       assert.match(view.preprocessing, /tập học/);
     }
@@ -214,10 +224,7 @@ test('Đồng hồ nguồn được giữ nguyên, không đổi theo múi giờ
       ...data,
       context: [{ ...data.context[0], timestamp: '2024-03-05T23:45:00-07:00' }],
     };
-    assert.equal(
-      getInputReadout(sourceClock, 1).timestamp,
-      data.id === 'amazon' ? '05/03' : '23:45',
-    );
+    assert.equal(getInputReadout(sourceClock, 1).timestamp, '05/03');
   }
 });
 
@@ -226,4 +233,25 @@ test('Helper không sửa JSON đầu vào, trạng thái hoặc kết quả mô
     for (let read = 0; read <= data.lookback; read++) getInputReadout(data, read);
   }
   assert.equal(JSON.stringify(bundle), original);
+});
+
+test('Shopee giữ lịch ngày liên tiếp và chỉ dùng lịch sử trước ngày đích', () => {
+  const data = bundle.datasets.find((d) => d.id === 'shopee');
+  assert.equal(data.stepUnit, 'ngày');
+  assert.match(data.notes.limitation, /mô phỏng.*không phải dữ liệu chính thức/i);
+  for (let i = 0; i < data.context.length; i++) {
+    const day = Date.parse(data.context[i].timestamp);
+    assert.ok(day < Date.parse(data.target.timestamp));
+    if (i > 0) assert.equal(day - Date.parse(data.context[i - 1].timestamp), 86400000);
+  }
+  assert.equal(
+    Date.parse(data.target.timestamp) - Date.parse(data.context.at(-1).timestamp),
+    86400000,
+  );
+  const readout = getInputReadout(data, 1);
+  assert.deepEqual(
+    readout.items.map((item) => item.label),
+    ['Lượt truy cập', 'Thăm sản phẩm', 'Thăm giỏ hàng', 'Thăm thanh toán', 'Đơn hàng'],
+  );
+  assert.match(readout.extra, /không đồng nghĩa/);
 });

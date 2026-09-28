@@ -6,6 +6,8 @@ import { advanceReplay, getFrameDuration, getReplayPhase } from '../domain/demo/
 interface PlaybackOptions {
   datasets: DemoDataset[];
   active: boolean;
+  initialIndex?: number;
+  onNextChapter?: () => void;
   blocked: boolean; // Hộp thoại đang mở: không để đồng hồ tự chạy phía sau.
 }
 
@@ -14,8 +16,14 @@ interface PlaybackOptions {
  * Cần giải thích RNN tính h_t? Mở RecurrentMechanism và scripts/export_demo.py;
  * cần giải thích học trọng số? Mở mã PyTorch, không phải hook này.
  */
-export function useDemoPlayback({ datasets, active, blocked }: PlaybackOptions) {
-  const [index, setIndex] = useState(0);
+export function useDemoPlayback({
+  datasets,
+  active,
+  blocked,
+  initialIndex = 0,
+  onNextChapter,
+}: PlaybackOptions) {
+  const [index, setIndex] = useState(initialIndex);
   const [frame, setFrame] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [begun, setBegun] = useState(false);
@@ -67,6 +75,7 @@ export function useDemoPlayback({ datasets, active, blocked }: PlaybackOptions) 
   const toggle = useCallback(() => {
     if (playing) return pause();
     if (summary) return setSummary(false);
+    if (timeline.evaluated && onNextChapter) return onNextChapter();
     if (!begun || timeline.evaluated) return restartCurrent();
     if (timeline.predicted) {
       const next = advanceReplay({ index, frame }, length, true);
@@ -83,6 +92,7 @@ export function useDemoPlayback({ datasets, active, blocked }: PlaybackOptions) 
     begun,
     restartCurrent,
     timeline.evaluated,
+    onNextChapter,
     timeline.predicted,
     index,
     frame,
@@ -102,15 +112,18 @@ export function useDemoPlayback({ datasets, active, blocked }: PlaybackOptions) 
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [active, blocked, data, toggle]);
 
-  function choose(datasetIndex: number) {
-    pause();
-    setRestart((value) => value + 1);
-    setSnapshot(false);
-    setIndex(datasetIndex);
-    setFrame(0);
-    setBegun(true);
-    setSummary(false);
-  }
+  const choose = useCallback(
+    (datasetIndex: number, nextFrame = 0) => {
+      pause();
+      setRestart((value) => value + 1);
+      setSnapshot(false);
+      setIndex(datasetIndex);
+      setFrame(nextFrame);
+      setBegun(true);
+      setSummary(false);
+    },
+    [pause],
+  );
 
   function seek(nextFrame: number) {
     setRestart((value) => value + 1);
@@ -133,7 +146,8 @@ export function useDemoPlayback({ datasets, active, blocked }: PlaybackOptions) 
   let playLabel = 'Tiếp tục';
   if (playing) playLabel = 'Tạm dừng';
   else if (summary) playLabel = 'Về demo';
-  else if (timeline.evaluated) playLabel = 'Chạy lại tập này';
+  else if (timeline.evaluated)
+    playLabel = onNextChapter ? (index === 0 ? 'Sang FPT' : 'Tổng kết') : 'Chạy lại tập này';
   else if (timeline.revealed) playLabel = 'Xem toàn tập';
   else if (timeline.predicted) playLabel = 'Xem thực tế';
   else if (frame === 0) playLabel = 'Chạy tập này';

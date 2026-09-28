@@ -42,7 +42,7 @@ for (const lookback of [24, 30]) {
   });
 }
 
-for (const [index, lookback] of [24, 30].entries()) {
+for (const [index, lookback] of [30, 30].entries()) {
   test(`Tập ${index}: tự chạy đến dự đoán rồi dừng, giữ nguyên tập đang chọn`, () => {
     let state = { index, frame: 0, playing: true, summary: false };
     const visited = [];

@@ -19,11 +19,7 @@ export function getInputReadout(data: DemoDataset, read: number): InputReadout {
     completed > 0
       ? data.context[Math.min(completed, data.lookback, data.context.length) - 1]
       : undefined;
-  const timestamp = !point
-    ? ''
-    : data.id === 'amazon'
-      ? `${point.timestamp.slice(8, 10)}/${point.timestamp.slice(5, 7)}`
-      : point.timestamp.slice(11, 16);
+  const timestamp = point ? `${point.timestamp.slice(8, 10)}/${point.timestamp.slice(5, 7)}` : '';
 
   function valueOf(feature: string, transform = (value: number) => value) {
     const index = data.featureNames.indexOf(feature);
@@ -32,17 +28,19 @@ export function getInputReadout(data: DemoDataset, read: number): InputReadout {
   }
 
   const common = { timestamp, featureCount: data.featureNames.length };
-  if (data.id === 'retailrocket') {
+  if (data.id === 'shopee') {
     // input chứa log1p(count); expm1 và làm tròn khôi phục số đếm để đọc.
     const count = (feature: string) => valueOf(feature, (value) => Math.round(Math.expm1(value)));
     return {
       ...common,
       items: [
-        { label: 'Lượt xem', value: count('log_view'), unit: '', digits: 0 },
-        { label: 'Thêm giỏ', value: count('log_addtocart'), unit: '', digits: 0 },
-        { label: 'Giao dịch', value: count('log_transaction'), unit: '', digits: 0 },
+        { label: 'Lượt truy cập', value: count('log_sessions'), unit: '', digits: 0 },
+        { label: 'Thăm sản phẩm', value: count('log_product_visits'), unit: '', digits: 0 },
+        { label: 'Thăm giỏ hàng', value: count('log_cart_visits'), unit: '', digits: 0 },
+        { label: 'Thăm thanh toán', value: count('log_checkout_visits'), unit: '', digits: 0 },
+        { label: 'Đơn hàng', value: count('log_orders'), unit: '', digits: 0 },
       ],
-      extra: '+ 4 giá trị thời gian: sin/cos giờ và thứ.',
+      extra: 'Lượt thăm giỏ không đồng nghĩa thêm sản phẩm vào giỏ.',
       preprocessing: 'Số đếm qua log1p; chuẩn hóa theo tập học.',
     };
   }

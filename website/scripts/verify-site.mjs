@@ -26,7 +26,7 @@ try {
   await page.screenshot({path:fileURLToPath(new URL('desktop-top.png',output))});
   await page.screenshot({path:fileURLToPath(new URL('desktop-full.png',output)),fullPage:true});
   await noOverflow('Desktop has no page overflow');
-  for(const [id,name] of [['retailrocket','Retailrocket'],['amazon','Amazon']]){
+  for(const [id,name] of [['shopee','Shopee Thailand'],['fpt','FPT']]){
     await page.getByRole('tab',{name:new RegExp(name)}).click();
     const d=await (await context.request.get(`${url}/data/${id}.json`)).json();
     await expect(page.locator('#dataset-panel h3')).toBeVisible();
@@ -43,11 +43,11 @@ try {
     await expect(scrubber).toHaveValue('0');
     check(`${name}: data, forecast range, readout and table work`);
   }
-  await page.locator('#datasets').screenshot({path:fileURLToPath(new URL('desktop-amazon.png',output))});
+  await page.locator('#datasets').screenshot({path:fileURLToPath(new URL('desktop-fpt.png',output))});
   await page.getByRole('button',{name:'RMSE',exact:true}).click();
   await expect(page.locator('.metric-subtitle')).toContainText('Căn bậc hai');
-  await page.getByLabel('Chọn dữ liệu so sánh').selectOption('amazon');
-  await expect(page.locator('.result-interpretation')).toContainText('Amazon: chưa có cải thiện rõ ràng');
+  await page.getByLabel('Chọn dữ liệu so sánh').selectOption('fpt');
+  await expect(page.locator('.result-interpretation')).toContainText('FPT: chưa có cải thiện rõ ràng');
   check('Dataset selection and MAE/RMSE comparisons work');
   const lab=page.locator('.rnn-lab');
   await lab.getByRole('button',{name:'Đặt lại',exact:true}).click();

@@ -17,6 +17,7 @@ export default function DemoSummary({
   return (
     <section className="stage-summary" aria-labelledby="summary-title">
       <div>
+        <span className="editorial-eyebrow">03 — TỔNG KẾT · TOÀN TẬP KIỂM TRA</span>
         <h1 id="summary-title">Cùng là RNN, hiệu quả khác nhau.</h1>
         <p>
           Mỗi dự đoán lệch thực tế bao nhiêu? Các số dưới đây là độ lệch trung bình (MAE), càng nhỏ
@@ -27,18 +28,33 @@ export default function DemoSummary({
         {datasets.map((data, index) => (
           <article key={data.id}>
             <h2>{DATASET_COPY[data.id].name}</h2>
-            <span>{formatNumber(data.metrics.testCount, 0)} dự đoán</span>
+            <span>
+              {formatNumber(data.metrics.testCount, 0)} dự đoán · {data.unit}
+            </span>
             <dl>
               <div>
                 <dt>{DATASET_COPY[data.id].baselineLabel}</dt>
-                <dd>{formatNumber(data.metrics.baselineMae, data.id === 'amazon' ? 4 : 2)}</dd>
+                <dd>{formatNumber(data.metrics.baselineMae, 2)}</dd>
+                <div className="editorial-bar">
+                  <i
+                    style={{
+                      width: `${(data.metrics.baselineMae / Math.max(data.metrics.baselineMae, data.metrics.rnnMae, 1)) * 100}%`,
+                    }}
+                  />
+                </div>
               </div>
               <div>
                 <dt>RNN</dt>
                 <dd>
-                  {formatNumber(data.metrics.rnnMae, data.id === 'amazon' ? 4 : 2)}{' '}
-                  <small>{data.unit}</small>
+                  {formatNumber(data.metrics.rnnMae, 2)} <small>{data.unit}</small>
                 </dd>
+                <div className="editorial-bar">
+                  <i
+                    style={{
+                      width: `${(data.metrics.rnnMae / Math.max(data.metrics.baselineMae, data.metrics.rnnMae, 1)) * 100}%`,
+                    }}
+                  />
+                </div>
               </div>
             </dl>
             <p>{compareText(data)}</p>

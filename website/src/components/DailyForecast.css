@@ -1,0 +1,335 @@
+.daily-page {
+  min-height: 100vh;
+  background: #fff;
+  color: var(--ink, #1e293b);
+}
+.daily-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 18px max(22px, calc((100vw - 1280px) / 2));
+}
+.daily-nav button,
+.daily-nav a,
+.daily-nav > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.daily-nav button {
+  border: 0;
+  background: transparent;
+  color: #475569;
+  cursor: pointer;
+}
+.daily-nav > span {
+  font-weight: 750;
+}
+.daily-nav a {
+  color: #3658f5;
+  text-decoration: none;
+}
+.daily-main {
+  max-width: 1280px;
+  margin: auto;
+  padding: 38px 24px 60px;
+}
+.daily-main > .investment-outlook {
+  margin: 28px 0;
+}
+.daily-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.daily-eyebrow {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  font-weight: 700;
+  color: #64748b;
+}
+.daily-title h1 {
+  font-size: clamp(26px, 3vw, 38px);
+  line-height: 1.2;
+  margin: 10px 0;
+  letter-spacing: -0.035em;
+}
+.daily-title p {
+  color: #475569;
+  margin: 0;
+}
+.daily-refresh {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 14px 18px;
+  background: #3658f5;
+  color: white;
+  border: 0;
+  border-radius: 9px;
+  font-weight: 650;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.daily-refresh:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+.daily-dateline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: #64748b;
+  font-size: 13px;
+  margin: 20px 0 12px;
+}
+.daily-dateline span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.daily-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(300px, 1fr);
+  border: 1px solid #dfe5f0;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.daily-chart-panel {
+  min-width: 0;
+  padding: 22px;
+}
+.daily-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.daily-panel-heading h2 {
+  font-size: 16px;
+  margin: 0;
+}
+.daily-panel-heading > span {
+  font-size: 12px;
+  color: #64748b;
+}
+.daily-chart {
+  width: 100%;
+  display: block;
+  margin-top: 20px;
+}
+.daily-chart text {
+  font-family: inherit;
+  font-size: 12px;
+  fill: #64748b;
+}
+.daily-legend {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: #475569;
+}
+.daily-legend span:last-child {
+  color: #3658f5;
+}
+.daily-readout {
+  padding: 30px 26px;
+  border-left: 1px solid #dfe5f0;
+  background: #f8faff;
+}
+.daily-readout > span {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+}
+.daily-readout > strong {
+  display: block;
+  font-size: clamp(27px, 3.2vw, 44px);
+  color: #3658f5;
+  margin-top: 14px;
+  letter-spacing: -0.03em;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.daily-readout strong small {
+  font-size: 15px;
+  font-weight: 500;
+}
+.daily-readout .daily-direction {
+  font-size: 16px;
+  color: #1e293b;
+  margin: 10px 0 25px;
+}
+.daily-readout dl {
+  border-top: 1px solid #dfe5f0;
+  padding-top: 18px;
+}
+.daily-readout dl > div {
+  margin-bottom: 16px;
+}
+.daily-readout dt {
+  color: #64748b;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+.daily-readout dd {
+  font-weight: 600;
+  margin: 0;
+}
+.daily-readout > p:last-child {
+  font-size: 12px;
+  line-height: 1.65;
+  color: #64748b;
+  margin: 20px 0 0;
+}
+.daily-evidence {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  padding: 32px 0;
+}
+.daily-evidence h2 {
+  font-size: 23px;
+  letter-spacing: -0.025em;
+  margin: 10px 0;
+}
+.daily-evidence p {
+  color: #64748b;
+  line-height: 1.65;
+  font-size: 14px;
+}
+.daily-evidence .daily-verdict {
+  color: #1e293b;
+  font-weight: 600;
+}
+.daily-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.daily-metrics > div {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 17px;
+  min-width: 0;
+}
+.daily-metrics span {
+  color: #64748b;
+  font-size: 12px;
+  display: block;
+  min-height: 36px;
+}
+.daily-metrics strong {
+  font-size: 23px;
+  display: block;
+  margin-top: 9px;
+  overflow-wrap: anywhere;
+}
+.daily-metrics small {
+  font-size: 12px;
+  font-weight: 500;
+}
+.daily-details {
+  border-top: 1px solid #e2e8f0;
+  padding: 18px 0;
+}
+.daily-details summary {
+  font-weight: 600;
+  cursor: pointer;
+}
+.daily-details p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #475569;
+}
+.daily-details a {
+  color: #3658f5;
+}
+.daily-details code {
+  overflow-wrap: anywhere;
+}
+.daily-message,
+.daily-warning {
+  padding: 14px 18px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.daily-warning {
+  background: #fff7ed;
+  color: #9a3412;
+}
+.daily-table-wrap {
+  overflow-x: auto;
+  padding-top: 15px;
+}
+.daily-details table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+.daily-details th,
+.daily-details td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  min-width: 125px;
+}
+.daily-details th {
+  color: #64748b;
+  font-weight: 500;
+}
+.daily-page :focus-visible {
+  outline: 3px solid #97aaff;
+  outline-offset: 4px;
+}
+@media (max-width: 850px) {
+  .daily-overview {
+    grid-template-columns: 1fr;
+  }
+  .daily-readout {
+    border-left: 0;
+    border-top: 1px solid #dfe5f0;
+  }
+  .daily-evidence {
+    gap: 24px;
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .daily-main {
+    padding: 26px 16px 40px;
+  }
+  .daily-nav {
+    padding: 16px;
+    font-size: 13px;
+  }
+  .daily-nav > span {
+    display: none;
+  }
+  .daily-title {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .daily-chart-panel {
+    padding: 16px 8px;
+  }
+  .daily-panel-heading,
+  .daily-legend {
+    padding: 0 8px;
+  }
+  .daily-readout {
+    padding: 24px;
+  }
+}

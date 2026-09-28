@@ -41,10 +41,6 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
 .stage-brand svg {
   color: #365eeb;
 }
-.stage-header-caption {
-  font-size: 14px;
-  color: #475569;
-}
 .stage-header > div {
   display: flex;
   align-items: center;
@@ -1004,9 +1000,6 @@ body:has(.demo-stage-shell):not(:has(.explorer-return)) {
   .stage-header {
     padding-left: 18px;
     padding-right: 18px;
-  }
-  .stage-header-caption {
-    display: none;
   }
   .stage-heading {
     grid-template-columns: minmax(0, 1fr) auto;

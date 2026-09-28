@@ -3,7 +3,7 @@ import { ChevronDown, Pause, Play } from 'lucide-react';
 import { formatNumber as n, type Dataset } from '../types';
 import LearningExample from './LearningExample';
 
-/** Phụ lục: ví dụ SGD riêng và biểu đồ loss đã ghi lại của thí nghiệm Retailrocket. */
+/** Phụ lục: ví dụ SGD riêng và biểu đồ loss đã ghi lại của thí nghiệm Shopee Thailand. */
 export default function TrainingHistory({ data, onFocus }: { data: Dataset; onFocus: () => void }) {
   // epoch chỉ chọn hàng trong lịch sử đã lưu, không chạy optimizer trong trình duyệt.
   const [epoch, setEpoch] = useState(1),
@@ -38,7 +38,7 @@ export default function TrainingHistory({ data, onFocus }: { data: Dataset; onFo
       <LearningExample onFocus={onFocus} />
       <details className="recorded-training">
         <summary>
-          Xem lịch sử huấn luyện RNN trên Retailrocket <ChevronDown size={17} />
+          Xem lịch sử huấn luyện RNN trên Shopee Thailand <ChevronDown size={17} />
         </summary>
         <div className="learning-layout">
           <div className="training-explainer">
@@ -53,7 +53,7 @@ export default function TrainingHistory({ data, onFocus }: { data: Dataset; onFo
               </div>
               <div>
                 <dt>Khi dự đoán</dt>
-                <dd>Trọng số giữ nguyên; trạng thái thay đổi sau mỗi giờ.</dd>
+                <dd>Trọng số giữ nguyên; trạng thái thay đổi sau mỗi ngày.</dd>
               </div>
             </dl>
             <details>
@@ -68,9 +68,9 @@ export default function TrainingHistory({ data, onFocus }: { data: Dataset; onFo
                 <br />W và b: các trọng số được học.
               </p>
               <p>
-                Mô hình Retailrocket dùng 7 đầu vào: log1p của số lượt xem, thêm vào giỏ và giao
-                dịch, cùng 4 giá trị sin/cos biểu diễn giờ và thứ trong tuần. Mỗi trạng thái có 32
-                giá trị.
+                Mô hình Shopee Thailand dùng 5 đầu vào mỗi ngày: log1p của số lượt truy cập, thăm
+                trang sản phẩm, giỏ hàng, thanh toán và số đơn. Dữ liệu là mô phỏng. Mỗi trạng thái
+                có 32 giá trị.
               </p>
             </details>
           </div>
@@ -95,7 +95,7 @@ export default function TrainingHistory({ data, onFocus }: { data: Dataset; onFo
             <svg
               viewBox="0 0 780 280"
               role="img"
-              aria-label={`Loss RNN trên Retailrocket đến lượt ${epoch}. Đây là kết quả đã lưu, không huấn luyện lại.`}
+              aria-label={`Loss RNN trên Shopee Thailand đến lượt ${epoch}. Đây là kết quả đã lưu, không huấn luyện lại.`}
             >
               {[0, 1, 2, 3, 4]
                 .map((i) => (i * max) / 4)
@@ -178,8 +178,7 @@ export default function TrainingHistory({ data, onFocus }: { data: Dataset; onFo
             </div>
             <p className="flow-fineprint">
               Mỗi lượt (epoch) đi qua tập học một lần. Loss là MSE trên mục tiêu log1p đã chuẩn hóa,
-              không có đơn vị số lượt giao dịch. Mô hình được chọn ở lượt{' '}
-              {data.models.rnn.bestEpoch}.
+              không có đơn vị số đơn hàng. Mô hình được chọn ở lượt {data.models.rnn.bestEpoch}.
             </p>
           </div>
         </div>

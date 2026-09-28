@@ -8,7 +8,14 @@ export default function DemoHeading({ data, phase }: { data: DemoDataset; phase:
   const copy = DATASET_COPY[data.id];
   return (
     <div className="stage-heading">
-      <h1>{copy.question}</h1>
+      <div className="stage-topic">
+        <span className="editorial-eyebrow">
+          {data.id === 'shopee'
+            ? '01 — SHOPEE THAILAND · HÀNH VI KHÁCH HÀNG · MÔ PHỎNG'
+            : '02 — FPT · CHỨNG KHOÁN'}
+        </span>
+        <h1>{copy.question}</h1>
+      </div>
       <ol className="stage-phases" aria-label="Giai đoạn demo">
         {PHASE_LABELS.map((label, i) => (
           <li
