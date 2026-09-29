@@ -1,20 +1,8 @@
-# Sequence · Demo RNN
+# Website demo RNN
 
-Website tiếng Việt dùng sau khi nhóm hoàn thành bài thuyết trình bằng slide riêng. Retailrocket và Amazon phát lại dự đoán từ checkpoint thật. Bấm **Chạy tập này** để chạy tập đang chọn đến Dự đoán. Bấm **Xem thực tế**, rồi **Xem toàn tập** khi sẵn sàng. Chọn tab Amazon để chạy tập thứ hai; mở **Tổng kết** bằng tay.
+Website giới thiệu hai bài toán: **Shopee Thailand (mô phỏng)** dự báo số đơn ngày mai, và **FPT** dự báo giá đóng cửa phiên sau. Mỗi tập có RNN và GRU được huấn luyện riêng. Hoạt ảnh chính phát lại hai RNN từ checkpoint; website không học thêm hoặc chạy PyTorch trong trình duyệt.
 
-## Mở code để trả lời giảng viên
-
-Bắt đầu ở [CODE_MAP_VI.md](../models/CODE_MAP_VI.md): sáu điểm mở code và bảng câu hỏi → file → hàm. `DemoStage.tsx` chỉ ghép giao diện; `hooks/useDemoPlayback.ts` giữ phát/dừng; `hooks/useReplayClock.ts` dùng một đồng hồ chung cho biểu đồ và trạng thái. `domain/demo/replayTimeline.ts` quy định bốn giai đoạn của demo; `domain/demo/stateHandover.ts` chia chuyển động bên trong một bước, tính đường truyền vector và cộng thời gian đã phát. `components/demo/` chứa từng phần màn hình. Ví dụ forward/BPTT/SGD độc lập nằm ở `domain/learning/scalarRnn.ts`; huấn luyện thật nằm trong `../models/src/`.
-
-[RecurrentMechanism.tsx](src/components/demo/RecurrentMechanism.tsx) giữ sơ đồ đầu vào → RNN → trạng thái trong lượt đọc. Từ pha Dự đoán, sơ đồ thu lại để ưu tiên kết quả. **Xem phép tính** mở hộp thoại tại đúng bước và tạm dừng hoạt ảnh. [RNNCalculation.tsx](src/components/demo/RNNCalculation.tsx) giữ phép tính ô 1; [PredictionReadout.tsx](src/components/demo/PredictionReadout.tsx) giữ phép bỏ chuẩn hóa và đổi đơn vị, chỉ hiện khi đã đến pha dự đoán. Đóng hộp thoại không tự phát tiếp.
-
-Các liên kết **Code dữ liệu**, **Code mô hình**, **Code huấn luyện** và **Code đánh giá** mở đúng file Python trên GitHub trong tab mới và tạm dừng demo. Chúng là đường dẫn đến repository hiện có, cần Internet. Khi trình bày ngoại tuyến, mở các file tương ứng trong `models/src/` trước buổi demo.
-
-Code có chú thích tiếng Việt tại các phép tính/quyết định quan trọng. Định dạng thống nhất bằng `npm run format`; kiểm tra bằng `npm run format:check`, `npm run test:logic`, `npm run build`. `test:logic` dùng Node.js 22.18+ để đọc module TypeScript trực tiếp. ZIP source tải về có hai thư mục `models/` và `website/`, gồm mã nguồn, checkpoint, dữ liệu đã xử lý, kết quả và hướng dẫn đọc code. Hai hướng dẫn Markdown tải riêng trong mục tham khảo dùng cùng nội dung với các file gốc trong repo.
-
-## Chạy cục bộ
-
-Mở **[http://127.0.0.1:4173/#demo](http://127.0.0.1:4173/#demo)**. Nếu máy chủ đã dừng, chạy từ thư mục website:
+## Chạy
 
 ```sh
 npm ci
@@ -22,86 +10,78 @@ npm run build
 npm run preview -- --port 4173 --strictPort
 ```
 
-Node.js 20.19+ hoặc 22.12+; bản build trước được tạo bằng Node.js 26.8.1. Máy chủ chỉ nghe trên máy này; `Ctrl+C` để dừng. Khi chỉnh giao diện, dùng `npm run dev` tại cổng 5173.
+Mở [demo](http://127.0.0.1:4173/#demo). Có thể dùng `npm run dev -- --port 4173 --strictPort` khi sửa mã. Chỉ chạy một server trên cùng cổng.
 
-Không cần tài khoản hay khóa API. Sau khi cài đặt, dữ liệu, font và tài liệu tải về được phục vụ cục bộ. Liên kết Kaggle và tài liệu bên ngoài cần Internet.
+## Giao diện và luồng trình bày
 
-## Dùng sau phần slide
+Thiết kế theo bản bàn giao trong [DESIGN.md](DESIGN.md), với kiểu chữ sans-serif theo yêu cầu mới: IBM Plex Sans cho tiêu đề, số liệu, logo và nội dung, nền giấy, đường kẻ mảnh và điểm nhấn đỏ cam. Màn hình từ 900 px dùng sân khấu 1600 × 900, thu phóng đồng đều để vừa khung trình chiếu. Màn hình nhỏ hơn chuyển sang bố cục cuộn dọc.
 
-Đọc [hướng dẫn demo](PRESENTATION_GUIDE.md) và [kịch bản dành cho người demo/mở code](DEMO_BRIEFING_VI.md) trước buổi nói. Luồng tự chạy là:
+Thanh chương đi theo thứ tự **01 Shopee Thailand → 02 FPT → 03 Tổng kết → 04 Hỏi đáp**. **Phụ lục** chứa dữ liệu lịch sử, cách chia tập và kết quả mô hình. Các địa chỉ tương ứng là `#demo`, `#fpt`, `#tong-ket`, `#hoi-dap` và `#phu-luc`. Các địa chỉ cũ `#du-bao`, `#fpt-daily` và `#chat` chuyển tới Hỏi đáp; `#explore-*` chuyển tới Phụ lục.
 
-1. **Retailrocket:** đọc 24 giờ hành vi đã tổng hợp, dự đoán số sự kiện giao dịch giờ tới.
-2. **Amazon:** đọc lợi suất log của 30 phiên, dự đoán phiên tới rồi đổi về giá đóng cửa điều chỉnh.
-3. **Tổng kết:** đối chiếu kết quả của hai thí nghiệm. Có thể mở sớm bằng nút **Tổng kết**; chọn **Xem lại demo** để về đầu một tập.
+Bấm **Chạy tập này** để đọc lịch sử của tập đang chọn. Hai quan sát đầu giữ nhịp chậm để giải thích dữ liệu mới, trạng thái trước và trạng thái mới. Từ quan sát 3, các giá trị cập nhật nhanh. Demo tự dừng ở **Dự đoán**.
 
-Ở mỗi tập, biểu đồ giữ nguyên vị trí; bảng bên cạnh đổi nội dung theo bốn giai đoạn: **Đọc chuỗi → Dự đoán → Thực tế và nhận xét ví dụ → MAE toàn tập kiểm tra**. Dự đoán chỉ xuất hiện sau khi đọc đủ cửa sổ. Sai số của một ví dụ và sai số trung bình của toàn tập được trình bày ở hai giai đoạn riêng để dễ phân biệt. Mỗi tập tự dừng ở Dự đoán. Hai pha cuối chỉ mở khi người trình bày bấm nút; website không tự chuyển tập.
+Bấm **Xem thực tế**, rồi **Xem toàn tập** bằng tay. Sau đó, nút chính chuyển từ Shopee sang FPT ở bước 0 và tạm dừng, hoặc từ FPT sang Tổng kết. Chọn chương dữ liệu trên thanh đầu trang luôn đặt lại tập đó. Nút quay lại **02 FPT** ở Tổng kết khôi phục màn hình kết quả toàn tập.
 
-Bảng **Đầu vào** hiện đúng quan sát đang đọc. Retailrocket có **7 giá trị**: lượt xem, thêm giỏ, giao dịch và 4 giá trị thời gian sin/cos. Amazon có **1 giá trị**: lợi suất log, hiển thị dưới dạng %. Bảng hiện các phép đo trước chuẩn hóa để dễ đọc; số đếm Retailrocket được khôi phục từ log1p. Trước bước 1, các ô chỉ hiện “—”. Giờ/ngày giữ nguyên đồng hồ nguồn; bảng không lấy nhãn tương lai hoặc sửa vector chuẩn hóa vào mô hình.
+**Space** phát/dừng trong pha đọc và mở pha tiếp theo ở pha kết quả. Ở các chương khác, **Space** hoặc **→** sang chương sau, **←** về chương trước. Các phím này không can thiệp khi đang nhập chat, điều khiển nút/thanh tua hoặc mở hộp thoại. Thanh thời gian chỉ tua tới dự đoán; hai pha kết quả cần bấm nút. Tua lùi ẩn dự đoán và đáp án. Đổi tốc độ giữ phần đã chạy. Nút chạy lại chỉ chạy tập đang chọn.
 
-Sơ đồ cho thấy **trạng thái trước + đầu vào hiện tại → RNN → trạng thái mới**. Hai bước đầu lần lượt nhấn vào đầu vào, phần cập nhật, trạng thái vừa tạo và đường truyền trạng thái sang bước kế tiếp. Từ bước 3, bỏ chuyển động truyền vector và đổi pha nhấn sáng; biểu đồ và các giá trị vẫn cập nhật theo từng quan sát. Đầu vào cuối giữ lại trạng thái cuối để tạo dự đoán; không truyền sang một bước lịch sử thứ 25 hoặc thứ 31.
+Các hộp thoại **Giải thích nhanh** và **Xem phép tính** tạm dừng hoạt ảnh. Đóng hộp thoại giữ đúng bước và trạng thái dừng. Phụ lục có thể mở phần dữ liệu và công thức chi tiết. Trạng thái mới trở thành trạng thái trước ở bước kế tiếp; cùng trọng số được dùng ở mọi bước suy luận. Hai bước đầu hiển thị đường chuyển vector trạng thái; chế độ giảm chuyển động giữ các giá trị tĩnh đầy đủ.
 
-Màn hình chính ưu tiên ba câu hỏi: input là gì, dự đoán bao nhiêu, và sai số có tốt hơn baseline không. Pha Dự đoán hiện số lớn theo đơn vị gốc; pha Thực tế đặt **RNN / Thực tế / Giữ nguyên** cạnh nhau. Pha Toàn tập giữ MAE riêng với sai số của một mẫu. Phép nhân, bias, tanh và đổi đơn vị nằm trong **Xem phép tính**, dùng khi có câu hỏi. Các giá trị và checkpoint giữ nguyên.
+## Dữ liệu thật của mô hình
 
-Ở tốc độ 1×, mỗi tập mở đầu 1,2 giây. Hai bước đầu giữ 4,4 giây mỗi bước để giải thích cơ chế. Từ bước 3 đến hết cửa sổ, mỗi bước chỉ 0,25 giây. Hoạt ảnh tự dừng ở Dự đoán; bấm **Xem thực tế**, rồi **Xem toàn tập** để mở từng phần khi sẵn sàng. Không có bộ đếm thời gian ở các pha kết quả.
+`public/data/demo.json` chứa cửa sổ test đầu tiên, các vector x và h, trọng số cho phép tính, dự đoán, nhãn và MAE/RMSE toàn test. `scripts/export_demo.py` kiểm tra checkpoint SHA, NPZ, CSV, từng trạng thái và phép hoàn nguyên trước khi xuất.
 
-- **Chạy tập này** chỉ chạy tập đang chọn. **Xem thực tế** và **Xem toàn tập** mở từng pha bằng tay.
-- **Tạm dừng / Tiếp tục** hoặc **Space** giữ cả vị trí đang chạy bên trong bước hiện tại; tiếp tục không bắt đầu lại toàn bộ thời lượng của bước. Space không thay thế thao tác bàn phím của ô nhập hay các điều khiển đang có focus.
-- Thanh thời gian cho phép xem lại bước đã chọn; thay đổi thanh sẽ tạm dừng và hiện trạng thái hoàn tất tại bước đó. Bấm phát sẽ tiếp tục từ bước được chọn; chỉ bước 1 và 2 có chuyển động truyền trạng thái. Kéo lùi trước đầu ra sẽ ẩn lại kết quả tương lai.
-- Đổi tốc độ giữ nguyên phần đã chạy. Chọn tab đưa tập đó về đầu và dừng. **Chạy lại tập này** hoặc nút biểu tượng **Chạy lại tập này từ đầu** chỉ chạy lại tập đang chọn.
-- **Giải thích nhanh** mở bốn chủ đề: **Trạng thái, Trọng số, Huấn luyện, Đầu vào**. Mỗi chủ đề có một lời giải thích và hình minh họa ngắn; **Đọc giải thích đầy đủ** mở phần tham khảo có sẵn. Ví dụ học một trạng thái với chuỗi ba bước dùng phép tính riêng, không cập nhật hai mô hình thực.
-- **Xem phép tính** và **Xem cách đổi đơn vị** mở chi tiết tại bước đang xem, đồng thời tạm dừng. Các số của dự báo cuối chỉ hiện sau khi đến pha **Dự đoán**, và ẩn lại khi tua lùi.
-- **Giải thích nhanh** và **Dữ liệu & phép tính** tạm dừng hoạt ảnh. Đóng hộp thoại để về đúng tập và bước đang xem, vẫn ở trạng thái dừng; chỉ tiếp tục khi chủ động bấm phát.
+Shopee: 30 ngày × 5 số đếm qua log1p, gồm session bắt đầu, thăm trang sản phẩm, giỏ, thanh toán và đơn hàng. Cả 5 số được chuẩn hóa bằng train. Giữ ngày nguồn; múi giờ không được publisher ghi rõ. Đây là 100% mô phỏng Thailand từ một tác giả độc lập, không phải dữ liệu chính thức hay dữ liệu Việt Nam. Lượt thăm trang giỏ không phải sự kiện thêm sản phẩm vào giỏ.
 
-Phần phân tích chi tiết vẫn có sẵn khi cần trả lời câu hỏi. Đây là phụ lục tùy chọn, không thuộc đường đi bắt buộc của demo. **Về demo** quay lại sân khấu chính.
+FPT: 30 phiên × 1 log return chuẩn hóa. Biểu đồ vẽ giá VND; đầu ra đổi về giá bằng giá phiên cuối × exp(log return). Nguồn có Close, không có Adj Close hay phương pháp điều chỉnh.
 
-## Những gì hoạt ảnh thể hiện
+Trạng thái có 32 thành phần, bắt đầu bằng 0 ở mỗi cửa sổ. Các ô màu mã hóa dấu và độ lớn, không được đặt nghĩa như “xu hướng”. Linear dùng trạng thái cuối để tạo một số chuẩn hóa. Shopee bỏ chuẩn hóa rồi dùng expm1 và chặn âm; FPT hoàn nguyên lợi suất rồi đổi về giá.
 
-Trình duyệt **phát lại phép tính từ mô hình đã huấn luyện**, không huấn luyện mới. Đầu vào chuẩn hóa, trạng thái 32 chiều và dự báo phải khớp checkpoint. Trạng thái thay đổi sau mỗi quan sát; trọng số giữ nguyên trong lượt dự đoán. Trong cách triển khai của thí nghiệm này, mỗi cửa sổ bắt đầu từ trạng thái 0; đây không phải yêu cầu chung cho mọi RNN. Chú giải **Âm · 0 · Dương** giải thích dấu của từng thành phần trạng thái; độ đậm biểu diễn độ lớn. Màu không được gán thành “xu hướng”, “mùa vụ” hoặc chất lượng mô hình.
+## Kết quả và nguồn
 
-Sau trạng thái cuối, **Linear · 32 → 1** tạo một số đã chuẩn hóa. Hộp thoại phép tính hiện số này và bước đổi về đơn vị gốc: Retailrocket bỏ chuẩn hóa, hoàn tác log1p rồi chặn âm; Amazon bỏ chuẩn hóa lợi suất log rồi nhân giá cuối với exp(lợi suất). [CurrentInputs.tsx](src/components/demo/CurrentInputs.tsx) và [inputReadout.ts](src/domain/demo/inputReadout.ts) trình bày đầu vào; [PredictionReadout.tsx](src/components/demo/PredictionReadout.tsx) cùng `OUTPUT_COPY` trong [demoCopy.ts](src/domain/demo/demoCopy.ts) trình bày đường ra.
+| Tập | Test | MAE RNN | MAE giữ nguyên | Đơn vị |
+| --- | ---: | ---: | ---: | --- |
+| Shopee Thailand, mô phỏng | 216 | 309,75 | 141,56 | đơn/ngày |
+| FPT | 389 | 1.059,92 | 1.053,73 | VND/cổ phiếu |
 
-Một dự đoán chỉ minh họa cách mô hình xử lý chuỗi. Chất lượng được đánh giá bằng MAE/RMSE trên toàn test. Từ pha Dự đoán, sơ đồ được thu lại để nhường chỗ cho kết quả; nút xem phép tính và liên kết code vẫn sẵn có. Không so trực tiếp MAE giữa hai tập vì đơn vị khác nhau. Giữ nguyên giá trị gần nhất là cách dự báo đối chứng, không phải kết quả của RNN.
+RNN chưa tốt hơn cách giữ nguyên về MAE trên cả hai tập. Không so trực tiếp MAE khác đơn vị. Một trường hợp tốt chưa đủ kết luận. Kết quả thuộc một seed và một split; không chỉnh cấu hình theo test.
 
-Retailrocket và Amazon là hai tập trong demo A6. Mỗi tập có một RNN và một GRU được huấn luyện riêng, tổng cộng bốn mạng; hoạt ảnh chính phát lại hai RNN. Retailrocket dự báo **số sự kiện giao dịch theo giờ**, không phải số đơn hàng hay hành vi của một người. Amazon dùng lợi suất làm đầu vào dù biểu đồ có thể hiển thị giá điều chỉnh.
+Nguồn: [Shopee Thailand](https://www.kaggle.com/datasets/hninshwezinhlaing/shopee-th-customer-journey-and-operations-dataset), Hnin Shwe Zin Hlaing, CC BY-SA 4.0; [FPT](https://www.kaggle.com/datasets/thangtranquang/stock-vn30-vietnam), Thang Tran, CC0. ZIP giữ nguồn và giấy phép; chỉ chứa dữ liệu tổng hợp, không chứa CSV gốc hoặc ID khách hàng.
 
-## Dữ liệu và phụ lục
+`public/data/shopee.json` và `public/data/fpt.json` phục vụ phân tích chi tiết. Lịch sử RNN Shopee có 19 epoch, checkpoint ở epoch 11. Thanh epoch chỉ xem lịch sử đã lưu. Ví dụ scalar ba bước và SGD là phần minh họa độc lập.
 
-Demo chính đọc `public/data/demo.json`, chứa cửa sổ, đầu vào, trạng thái, dự báo và chỉ số toàn test của Retailrocket và Amazon; kiểu dữ liệu ở `src/demoTypes.ts`. `scripts/export_demo.py` khôi phục checkpoint, chạy lại dự đoán và kiểm chứng kết quả trước khi xuất, không huấn luyện thêm. Phần phân tích chi tiết dùng `public/data/retailrocket.json` và `public/data/amazon.json`, xuất từ `../models/results/`. Phần tham khảo đọc lịch sử huấn luyện RNN của Retailrocket từ `public/data/retailrocket.json`: 40 epoch đã chạy, checkpoint chọn ở epoch 34. Loss ở thang mục tiêu log1p đã chuẩn hóa, không phải số sự kiện.
-
-Các lệnh tái xuất dữ liệu từ thư mục `assignment6`:
+Tái xuất từ thư mục repository:
 
 ```sh
-python website/scripts/export_data.py retailrocket amazon
+python website/scripts/export_data.py shopee fpt
 python website/scripts/export_demo.py
 python website/scripts/package_source.py
 ```
 
-Phụ lục giữ nguồn, xử lý dữ liệu, split theo thời gian, biểu đồ dự báo, MAE/RMSE, lịch sử loss, mã PyTorch và ZIP thí nghiệm. Ví dụ RNN một chiều với SGD là **minh họa riêng**, khác với các mạng 32 chiều trong hoạt ảnh. Kéo epoch chỉ xem loss đã lưu, không thay checkpoint hay huấn luyện mô hình trên trình duyệt.
+Sau khi thay dữ liệu hoặc ZIP, build lại để `dist/` chứa bản mới.
 
-Retailrocket tổng hợp theo giờ UTC. Amazon giữ các phiên giao dịch, không tạo giá cho cuối tuần hoặc ngày nghỉ.
+## Kiểm tra
 
-Các thí nghiệm dự báo từng bước với lịch sử đã quan sát, không tự dự báo toàn bộ tương lai. Kết quả thuộc một seed/một split; Amazon chưa có lợi thế nhất quán so với giữ nguyên giá gần nhất. Chỉ chuẩn hóa bằng tập học. Biểu đồ phụ lục có thể lấy mẫu thưa; chỉ số luôn dùng toàn test. Cửa sổ của hoạt ảnh giữ đủ các bước liên tiếp.
+```sh
+npm run test:logic
+npm run build
+npm run format:check
+```
 
-Nguồn: [Retailrocket](https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset) — CC BY-NC-SA 4.0; [Amazon](https://www.kaggle.com/datasets/henryshan/amazon-com-inc-amzn) — Apache 2.0. JSON và ZIP giữ chi tiết nguồn/giấy phép; ZIP không chứa bản ghi khách hàng cá nhân hay thông tin sinh viên. ZIP, website và kịch bản trình bày dùng Retailrocket và Amazon.
+45 kiểm tra logic bao gồm điều khiển, đầu vào, phép tính checkpoint, kết nối chat, đối chiếu nguồn dự báo dài hạn và định tuyến chương. Kiểm toán Python riêng xác nhận mọi cửa sổ, dự đoán, metric và phép tổng hợp CSV gốc. `npm run test:flow` và `npm run test:ui` chạy bộ kiểm tra trình duyệt cho giao diện mới trên server đang hoạt động ở cổng 4173 (hoặc `SITE_URL`). Bộ kiểm tra trình duyệt chưa được chạy cho bản thiết kế này. Không dùng báo cáo UI của phiên bản cũ để xác nhận bản mới.
 
-## Kiểm tra và thiết kế
+Các liên kết code giữ URL repository GitHub hiện có. Chỉ phản ánh mã mới sau khi push. IBM Plex Sans và IBM Plex Mono được lưu cục bộ cùng giấy phép OFL trong `public/fonts/editorial/`, nên không cần tải font từ Internet khi trình bày. Font Be Vietnam Pro của phần tham khảo cũ vẫn có giấy phép tại `public/fonts/OFL.txt`.
 
-Bản điều khiển ngày 02/10/2026: 34/34 kiểm tra logic đạt, gồm dừng tại dự đoán, mở từng pha bằng tay, không tự chuyển tập và nhịp nhanh từ bước 3. Build và định dạng đạt. Kịch bản `verify-flow.mjs` đã cập nhật cho luồng mới và kiểm tra cú pháp; các ghi nhận tự chạy cả hai tập bên dưới thuộc bản cũ.
+## Chat đầu tư
 
-Giao diện dùng nền trắng, chữ xám và điểm nhấn xanh dương. Sơ đồ có bốn vị trí đánh số (dữ liệu → RNN → trạng thái → dự báo); nhấn sáng và lời dẫn thay đổi theo pha đang phát. Khi truyền trạng thái, vị trí nhận ở bước kế tiếp được nhấn sáng. Đường truyền nằm trong vùng sơ đồ riêng để không đi qua nút mã nguồn. Màu sắc và lời dẫn không thay đổi dữ liệu, checkpoint hoặc nhịp phát.
+Chương **04 Hỏi đáp** mở `#hoi-dap`. Đây là cuộc trò chuyện cho người đang cân nhắc đầu tư cổ phiếu, dùng dữ liệu FPT, Neo4j và OpenAI API để trả lời có nguồn. Mặc định giải thích dự báo, ngày giá tham chiếu và ý nghĩa một phiên bằng tiếng Việt thông thường; chỉ hỏi thêm một thông tin liên quan khi cần. Không tự hiện MAE, bảng vốn/tiền dư hoặc kịch bản giảm giá. Không thay thế bằng câu trả lời soạn sẵn khi thiếu key. Thiết lập từ `models/` theo [hướng dẫn chat](../models/chat/README.md); dùng `chat/requirements.txt` cho API có cả dự báo và chat. Key nằm ở `models/.env`, không ở browser hoặc ZIP.
 
-**Bản tập trung vào trình diễn, 01/10/2026.** 32/32 kiểm tra logic đạt. Kiểm tra trực tiếp trên trình duyệt: tự chạy 2× qua Retailrocket → Amazon → tổng kết; tua lùi; hộp thoại phép tính giữ đúng bước, không hiện dự báo sớm và đóng bằng Escape; kết quả RNN/thực tế/giữ nguyên; khung hiệu dụng 1280×720, 1024×600 và điện thoại 390×844. Không có cuộn ngang hoặc lỗi console. Các liên kết mã nguồn trỏ tới file Python hiện có trên GitHub. `verify-flow.mjs` đã cập nhật và kiểm tra cú pháp; bộ Playwright độc lập chưa chạy.
+Trên Mac, sau khi build, có thể giữ website và API chạy bằng `.venv/bin/python -m chat.local_site start` từ `models/`; dùng `status` để kiểm tra và `stop` để dừng hai dịch vụ. Không cần giữ terminal tạm mở. Launcher không tự khởi động lúc đăng nhập hoặc bật máy. Nếu API không phản hồi, UI ghi **chưa xác nhận** cho key/Neo4j; chỉ ghi thiếu cấu hình khi nhận được kết quả kiểm tra thật.
 
-**Lịch sử kiểm tra trước bản giao diện hiện tại.**
+Hội thoại được giữ khi chuyển giữa các chương; reload hoặc **Cuộc trò chuyện mới** sẽ xóa khỏi bộ nhớ. Khi có câu trả lời mới, khung chat cuộn tới đầu câu trả lời đó. API chỉ nhận các tin gần đây trong giới hạn. Với câu “Tôi có 200 triệu, nên đầu tư như thế nào?”, số vốn là ngữ cảnh, không tự kích hoạt máy tính. Chỉ câu hỏi rõ số cổ phiếu mua được mới dùng phép tính Decimal; câu hỏi kỹ thuật vẫn có thể xem chỉ số test và baseline. **Nguồn & cách tìm câu trả lời** mặc định thu gọn để mở đối chiếu khi cần. Bộ mã nguồn đi kèm chứa `models/chat/` và `StockChat.tsx`.
 
-Bản giải thích cụ thể ngày 28/09/2026: **32/32 kiểm tra logic và hợp đồng số học đạt**. Sáu kiểm tra mới dựng lại phép nhân, tổng bias và tanh của ô 1 trên đủ 54 bước; đối chiếu Linear với trạng thái cuối, rồi bỏ chuẩn hóa và đổi về đơn vị gốc. Bộ xuất kiểm tra với checkpoint; các dự báo, trạng thái gốc và chỉ số giữ nguyên, chỉ bổ sung dữ liệu giải thích.
+Các kết quả kiểm tra trước điều chỉnh giao diện chat không xác nhận luồng khách hàng mới. Nghiệm thu bổ sung phải kiểm tra trả lời thông thường không có MAE/phép tính tự động, câu hỏi tính toán và kỹ thuật được phân biệt đúng, cùng khả năng nhớ thông tin đã trao đổi; xem yêu cầu tại `../models/docs/specs/0002-fpt-chat.md`.
 
-Kiểm tra giao diện bản giải thích trực tiếp: bỏ ba nút mở giải thích trong sơ đồ; ô 1 hiển thị tổng có trọng số, bias và tanh, còn pha dự đoán hiện phép bỏ chuẩn hóa và đổi đơn vị. Đã xem ở khung hiệu dụng 953×849, 832×849, 1024×600 và chiều rộng 390px; không có cuộn ngang. Lượt tự chạy 2× đi hết Retailrocket → Amazon → tổng kết, không có lỗi console trong trang kiểm tra mới. Kịch bản `verify-flow.mjs` đã cập nhật và kiểm tra cú pháp; chưa chạy bộ Playwright độc lập.
 
-Bản hai tập ngày 28/09/2026: 26/26 kiểm tra logic/đầu vào đạt; build và định dạng đạt. Đối chiếu với bản trước xác nhận mọi đầu vào, trạng thái, dự báo và chỉ số của Retailrocket/Amazon giữ nguyên. Kiểm tra trình duyệt trực tiếp: lượt tự chạy 2× đi từ Retailrocket qua Amazon rồi dừng ở tổng kết; hai tab phân tích và bộ chọn kết quả chỉ còn hai tập; lịch sử Retailrocket phát hết 40 epoch và ghi checkpoint tốt nhất ở epoch 34; không có lỗi console. Tổng kết vừa khung 1024×600, ở 390px không cuộn ngang. Kịch bản Playwright độc lập đã kiểm tra cú pháp, chưa chạy lại.
+## Dữ liệu dự báo dùng cho chat
 
-Đã kiểm tra trực tiếp chuyển từ bước 2 sang bước 3: vector và đường quay lại biến mất, trạng thái không còn đổi pha nhấn sáng, nội dung giải thích giữ ổn định.
-
-Trước khi trình bày, build và kiểm tra luồng tự chạy, pause/resume giữa một chuyển động, đổi tốc độ, kéo lùi, chuyển tập, kết thúc tổng kết, hộp thoại và quay về từ phụ lục. Kiểm tra khung desktop ở độ phân giải máy chiếu và mức zoom đang dùng; điện thoại được phép xếp nội dung theo chiều dọc để giữ chữ dễ đọc. Chỉ các kết quả QA khớp revision hiện tại mới xác nhận giao diện mới; các báo cáo cũ không chứng minh luồng này đã được kiểm tra.
-
-Font Be Vietnam Pro lưu cục bộ với giấy phép OFL trong `public/fonts/OFL.txt`.
+Giao diện chỉ có hai demo, Tổng kết, Hỏi đáp và Phụ lục. Dịch vụ Python và các mô hình dự báo FPT vẫn cung cấp ngữ cảnh cho chatbot: dự báo phiên kế tiếp và ba mốc 21/63/126 phiên (xấp xỉ 1/3/6 tháng). Xem `../models/daily/README.md` và `../models/outlook/README.md` để cập nhật dữ liệu hoặc huấn luyện. Cả ba mô hình dài hạn hiện chưa tốt hơn cách giữ nguyên giá trong lần kiểm tra đã lưu. Python API chạy trên `127.0.0.1:8006`; Vite dev/preview proxy `/api` đến đó. Chat không hoạt động chỉ bằng GitHub Pages.

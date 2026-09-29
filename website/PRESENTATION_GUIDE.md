@@ -1,120 +1,77 @@
-# Hướng dẫn demo sau phần thuyết trình
+# Kịch bản demo Shopee Thailand và FPT
 
-Hoàn thành phần slide rồi mở [website](http://127.0.0.1:4173/#demo). Bấm **Chạy tập này** để chạy tập đang chọn đến Dự đoán. Bấm **Xem thực tế**, rồi **Xem toàn tập** khi sẵn sàng. Chọn tab Amazon để chạy tập thứ hai; mở **Tổng kết** bằng tay.
-
-## Chuẩn bị
-
-Kiểm tra trên chính màn hình và mức zoom sẽ dùng khi trình chiếu. Có thể bật toàn màn hình để biểu đồ dễ nhìn hơn. Chạy thử cả hai tập trước buổi nói, sau đó tải lại để trở về đầu.
-
-Dữ liệu, font và tài liệu có sẵn trên máy. Các liên kết nguồn bên ngoài mới cần Internet. Hoạt ảnh phát lại mô hình đã được huấn luyện; máy không phải huấn luyện lại trong buổi trình bày.
+Dùng phần này sau khi nhóm đã giải thích RNN qua slide. Hai demo đầu phát lại checkpoint đã huấn luyện, không học hoặc chạy dự đoán mới trong trình duyệt. Sau Tổng kết là phần Hỏi đáp với dữ liệu FPT.
 
 ## Mở đầu
 
-> Phần vừa rồi đã giải thích cách RNN hoạt động. Bây giờ nhóm sẽ cho mô hình đọc dữ liệu thật trên hai bài toán. Mọi người chú ý hai việc: trạng thái thay đổi khi đọc chuỗi, và kết quả có tốt hơn cách đoán đơn giản hay không.
+> Sau phần lý thuyết, em sẽ minh họa cách RNN đọc dữ liệu theo thời gian rồi tạo một dự đoán. Có hai bài toán: dự báo số đơn ngày mai từ dữ liệu mô phỏng Shopee Thailand, và dự báo giá đóng cửa phiên sau của FPT. Hai tập có mô hình được huấn luyện riêng. Website phát lại phép tính đã xuất từ Python để mình nhìn rõ từng bước.
 
-Bấm **Chạy tập này** để chạy tập đang chọn đến Dự đoán. Bấm **Xem thực tế**, rồi **Xem toàn tập** khi sẵn sàng. Chọn tab Amazon để chạy tập thứ hai; mở **Tổng kết** bằng tay.
+Nói rõ **mô phỏng Shopee Thailand**, không gọi là dữ liệu chính thức từ Shopee hay dữ liệu khách Việt Nam.
 
-Ở tốc độ 1×, mỗi tập mở đầu 1,2 giây. Hai bước đầu giữ 4,4 giây mỗi bước để giải thích cơ chế. Từ bước 3 đến hết cửa sổ, mỗi bước chỉ 0,25 giây. Hoạt ảnh tự dừng ở Dự đoán; bấm **Xem thực tế**, rồi **Xem toàn tập** để mở từng phần khi sẵn sàng. Không có bộ đếm thời gian ở các pha kết quả.
+## Shopee: đọc lịch sử
 
-## 1. Retailrocket
+Chọn Shopee Thailand, bấm **Chạy tập này**.
 
-> Đầu tiên là dữ liệu hành vi trên một website bán hàng. Nhóm tổng hợp số lượt xem, thêm giỏ và sự kiện giao dịch theo từng giờ. Mục tiêu là dự đoán số sự kiện giao dịch trong giờ tiếp theo.
->
-> Mô hình đọc 24 giờ đã quan sát. Ở mỗi bước, dữ liệu giờ hiện tại và trạng thái trước được dùng để tính trạng thái mới. Trạng thái mới tiếp tục được đưa sang bước sau.
+> Nhóm tổng hợp dữ liệu thành từng ngày. Một ngày gồm năm số: lượt truy cập, thăm trang sản phẩm, giỏ hàng, thanh toán và số đơn. RNN đọc 30 ngày trước để đoán số đơn ngày tiếp theo. Lượt thăm giỏ là thăm trang, không nhất thiết là thao tác thêm sản phẩm vào giỏ.
 
-Chỉ vào dấu đang chạy trên biểu đồ, hai khối trạng thái và mũi tên vòng. Ở bước đầu, trạng thái trước là 32 số 0; sang bước hai, trạng thái mới vừa tính trở thành trạng thái trước. Đây là cách khởi tạo theo từng cửa sổ của thí nghiệm này, không phải quy tắc bắt buộc với mọi RNN.
+Chỉ bảng đầu vào và sơ đồ. Dừng ở bước 1 hoặc 2 nếu cần:
 
-Trong lượt demo chính, chỉ cần nói: **trạng thái thay đổi theo dữ liệu, trọng số đã học giữ nguyên**. Không cần giảng lại tanh, BPTT hoặc từng phép nhân sau phần lý thuyết của nhóm.
+> Trạng thái bắt đầu bằng 32 số 0. RNN kết hợp năm đầu vào mới với trạng thái trước, qua trọng số và tanh để tạo 32 số mới. Sang ngày kế tiếp, trạng thái vừa tạo trở thành trạng thái trước. Trạng thái thay đổi, còn trọng số đã học giữ nguyên.
 
-Nếu được hỏi cách tính, mở **Xem phép tính**. Hộp thoại tạm dừng ở đúng bước, trình bày các tổng có trọng số và tanh của ô 1. Khi đã đến pha Dự đoán, phần bên cạnh giải thích Linear, bỏ chuẩn hóa và đổi về đơn vị gốc. Đóng hộp thoại rồi chủ động bấm **Tiếp tục**.
+> 32 là số thành phần của trạng thái, không phải 32 ngày hay 32 loại hành vi. Mỗi ô màu biểu diễn một giá trị số; nhóm chưa gán cho từng ô một nghĩa cụ thể như xu hướng mua sắm.
 
-Nếu được hỏi đầu vào, nói mô hình có bảy giá trị ở mỗi giờ: ba số đếm sự kiện qua `log1p` và bốn giá trị sin/cos biểu diễn giờ, thứ trong tuần; cả bảy được chuẩn hóa bằng thống kê train. Không cần mở hộp thoại để nói hết các chi tiết này trong lượt chạy chính.
+Từ bước 3, để hoạt ảnh chạy nhanh. Demo sẽ tự dừng ở Dự đoán.
 
-Khi dự đoán và thực tế tự hiện, đọc các số đang hiển thị thay vì ghi nhớ một kết quả mẫu trong hướng dẫn.
+## Shopee: dự đoán và đối chiếu
 
-> Trong giờ này, thực tế là 13 sự kiện giao dịch nhưng RNN dự đoán khoảng 1,16. Mô hình vẫn bỏ lỡ mức tăng này.
+> Sau 30 ngày, Linear dùng trạng thái cuối để tạo một đầu ra. Nhóm bỏ chuẩn hóa và hoàn tác log1p để có số đơn dự đoán. Ngày test đầu tiên là 30/05/2025, RNN dự đoán khoảng 289,60 đơn.
 
-Khi bảng bên cạnh chuyển sang đánh giá toàn tập:
+Bấm **Xem thực tế**:
 
-> MAE là độ lệch tuyệt đối trung bình trên toàn tập kiểm tra. Trên tập này, RNN có MAE thấp hơn cách lấy số giao dịch của giờ trước làm dự đoán, dù ví dụ vừa xem vẫn lệch khá nhiều.
+> Dữ liệu ghi nhận 301 đơn, nên RNN lệch khoảng 11,40 đơn. Cách đoán đơn giản lấy số đơn hôm trước là 300, chỉ lệch 1 đơn. Đây là một ví dụ, chưa đại diện toàn bộ mô hình.
 
-Không gọi sự kiện giao dịch là số đơn hàng. Đây là dữ liệu tổng hợp, không phải dự đoán một khách hàng cụ thể sẽ mua gì.
+Bấm **Xem toàn tập**:
 
-## 2. Amazon
+> Nhóm kiểm tra 216 ngày. MAE là lấy độ lệch tuyệt đối ở từng ngày rồi tính trung bình. RNN lệch khoảng 309,75 đơn/ngày, còn cách đoán như hôm trước lệch 141,56. RNN chưa tốt hơn về MAE trong lần thử này. Đây là dữ liệu mô phỏng, nên kết quả cũng không chứng minh hiệu quả trên Shopee thực tế.
 
-Chọn tab **Amazon**, rồi bấm **Chạy tập này**. Giữ cách quan sát giống tập trước.
+Nếu được hỏi RMSE: RNN 589,76, giữ hôm trước 599,14. RMSE phạt sai số lớn mạnh hơn, nên thứ hạng có thể khác MAE. Không chọn một chỉ số để khẳng định mô hình tốt hơn ở mọi mặt.
 
-> Với Amazon, một bước là một phiên giao dịch. Mô hình đọc 30 phiên thay đổi giá, được biểu diễn bằng lợi suất log. Sau khi dự đoán lợi suất phiên tới, nhóm đổi kết quả về giá đóng cửa điều chỉnh để dễ đối chiếu.
->
-> Biểu đồ giá giúp mình nhìn diễn biến. Nó không có nghĩa mô hình được đưa trực tiếp 30 giá gốc vào.
+## FPT
 
-Khi kết quả xuất hiện:
+Bấm **Sang FPT**, rồi **Chạy tập này**. Giữ phần giải thích ngắn vì cơ chế RNN đã được minh họa:
 
-> Ở phiên này, dự đoán của RNN gần thực tế hơn một chút so với việc lấy giá phiên trước. Nhưng khi nhìn MAE trên toàn tập kiểm tra, RNN vẫn chưa tốt hơn cách đơn giản đó. Một ví dụ tốt chưa chứng minh cả mô hình tốt.
+> Cách cập nhật trạng thái giống nhau, nhưng dữ liệu và trọng số được học riêng. Mỗi phiên có một log return, tức mức thay đổi giá theo log. RNN đọc 30 phiên. Đường biểu đồ vẫn hiển thị giá VND để dễ hiểu.
 
-Chỉ nói thêm về GRU nếu được hỏi hoặc mở phân tích đầy đủ: GRU giảm MAE rất ít nhưng RMSE lại cao hơn, nên chưa có lợi thế nhất quán.
+Ở Dự đoán:
 
-Không dùng demo này để khẳng định khả năng kiếm lời. Thí nghiệm chưa đánh giá chiến lược hoặc chi phí giao dịch.
+> Nhóm hoàn nguyên lợi suất dự đoán rồi nhân giá phiên cuối với exp của lợi suất đó. Dự báo đầu tiên khoảng 94.550,51 VND.
 
-## 3. Tổng kết
+Bấm **Xem thực tế**, rồi **Xem toàn tập**:
 
-Bấm **Tổng kết** khi đã trình bày xong hai tập.
+> Thực tế là 96.000 VND. Sai số ví dụ này khoảng 1.449,49 VND. Nhưng trên 389 phiên test, MAE RNN khoảng 1.059,92 VND, cao hơn cách giữ giá phiên trước là 1.053,73 VND. Vì vậy nhóm chưa thấy lợi thế về MAE trên lần thử này.
 
-> Cả hai bài toán dùng cùng nguyên tắc: đọc dữ liệu theo thứ tự, cập nhật trạng thái, rồi dự đoán từ trạng thái cuối. Nhưng hiệu quả khác nhau theo dữ liệu. Trong thí nghiệm này, RNN cải thiện MAE trên Retailrocket; với Amazon thì chưa tốt hơn cách giữ nguyên giá.
->
-> Vì vậy, nhóm không chỉ xem một hoạt ảnh hoặc một dự đoán đẹp. Nhóm đánh giá trên dữ liệu kiểm tra và luôn so với một cách dự báo đơn giản.
+## Tổng kết và mở code
 
-Không so trực tiếp các con số MAE giữa hai tập: đơn vị khác nhau. Kết quả thuộc một lần huấn luyện và một cách chia dữ liệu.
+Mở **Tổng kết** bằng tay:
 
-## Điều khiển khi bị hỏi ngắt
+> Hai ví dụ cho thấy cách RNN xử lý chuỗi và cách kiểm tra một dự báo. Mô hình phức tạp không tự động tốt hơn cách đoán đơn giản. Nhóm dùng test theo thời gian và so với baseline; không so trực tiếp số MAE giữa các tập khác đơn vị.
 
-- **Tạm dừng / Tiếp tục** hoặc **Space:** dừng hoạt ảnh trong pha đọc. Ở pha kết quả, Space mở bước tiếp theo giống nút chính. Khi đang chọn một nút, thanh trượt hoặc ô nhập, dùng đúng thao tác bàn phím của điều khiển đó.
-- **Thanh thời gian:** chọn một bước để giải thích; thao tác này tạm dừng. Kéo về trước đầu ra sẽ ẩn lại dự đoán và đáp án.
-- **Tab dữ liệu:** chọn một tập cụ thể, trở về đầu tập đó và tạm dừng. Bấm **Chạy tập này** để chạy riêng tập đã chọn.
-- **Tốc độ:** chọn 0,5×, 1× hoặc 2×. **Chạy lại tập này từ đầu** chỉ chạy lại tập đang chọn. Chọn tab để đổi dữ liệu; bấm **Tổng kết** để mở kết quả chung.
-- **Giải thích nhanh:** chọn **Trạng thái, Trọng số, Huấn luyện** hoặc **Đầu vào** để trả lời đúng chủ đề đang hỏi. Mỗi chủ đề có một lời giải thích ngắn kèm hình. Phần đầu vào dùng đúng tập đang xem. **Đọc giải thích đầy đủ** mở tài liệu tham khảo dài hơn nếu cần.
-- **Xem phép tính** mở chi tiết trạng thái và phép đổi đơn vị. Số của dự báo cuối chỉ hiện khi đến pha Dự đoán và ẩn lại nếu tua lùi.
-- Mở hộp thoại sẽ tạm dừng. Đóng hộp thoại quay về đúng tập và bước cũ, vẫn đang dừng; bấm **Tiếp tục** khi sẵn sàng.
-- **Xem phép tính:** xem các phép nhân của bước hiện tại; **Code mô hình / Code huấn luyện / Code đánh giá** mở Python trên GitHub và tạm dừng.
-- **Dữ liệu & phép tính:** xem dữ liệu đầu vào, trạng thái hoặc công thức. Phân tích chi tiết và mã nguồn là phụ lục tùy chọn, không phải bước tiếp theo bắt buộc của demo.
+Chỉ mở code khi được hỏi. Bản đồ đầy đủ nằm ở [CODE_MAP_VI.md](../models/CODE_MAP_VI.md):
 
-## Những câu cần trả lời rõ
+| Câu hỏi | Mở code |
+| --- | --- |
+| Chuẩn bị dữ liệu Shopee ở đâu? | `models/src/preprocessing.py`, `prepare_shopee`, `daily_count`, `prepare_data` |
+| Tạo RNN/GRU và hidden size ở đâu? | `models/src/models.py`, `RecurrentForecaster`; `config.py` |
+| Chỗ mô hình học? | `models/src/training.py`, `fit_model`, `backward`, `optimizer.step` |
+| “Toàn tập” tính ở đâu? | `models/src/evaluation.py`, `metrics`, `evaluate` |
+| Các trạng thái trong hoạt ảnh lấy ở đâu? | `website/scripts/export_demo.py`, `replay_recurrence`, `export_dataset` |
 
-**Đây có phải mô hình đang học không?**
+Hai tập không tự chạy nối tiếp. Các pha Thực tế và Toàn tập cần bấm tay. Mở hộp thoại tạm dừng; đóng giữ nguyên bước. Thanh thời gian cho phép tua để giải thích; tua lùi sẽ ẩn dự đoán và đáp án.
 
-Không. Hai mô hình thật đã học xong; hoạt ảnh chính phát lại tính toán từ checkpoint. Trong một lượt dự đoán, trọng số giữ nguyên, trạng thái thay đổi sau mỗi bước. Chủ đề **Huấn luyện** trong **Giải thích nhanh** tính một lần cập nhật SGD của mô hình minh họa riêng.
+## Hỏi đáp
 
-**Ví dụ “Huấn luyện” tính những gì?**
+Từ Tổng kết, bấm **04 Hỏi đáp**:
 
-Nó dùng chuỗi ba bước [0,20; −0,10; 0,40], một giá trị trạng thái và đáp án 0,300. Dự đoán ban đầu khoảng 0,470; loss = ½(dự đoán − đáp án)² ≈ 0,014445. Gradient là đạo hàm của loss theo từng tham số. Với tốc độ học 0,1, wₓ đổi từ 0,5 thành 0,492691. Cả năm tham số đều được cập nhật, dù màn hình chỉ trình bày phép tính cho wₓ. Chạy lại cùng chuỗi từ h₀ = 0 cho dự đoán khoảng 0,351, loss ≈ 0,001323. Những số này không phải kết quả của hai mô hình trạng thái 32 chiều.
+> Người xem có thể hỏi bằng tiếng Việt, ví dụ “Tôi có 200 triệu, nên đầu tư như thế nào?”. Chat dùng dữ liệu mô hình và tài liệu FPT để giải thích theo câu hỏi. Mình có thể mở nguồn của câu trả lời để đối chiếu.
 
-**Mỗi tập có dùng cùng một mô hình không?**
-
-Chúng dùng cùng loại kiến trúc RNN, nhưng mỗi tập được huấn luyện riêng với số đầu vào và cửa sổ phù hợp. Retailrocket: 24 × 7; Amazon: 30 × 1. Cả hai có trạng thái 32 chiều.
-
-**RNN có nhớ toàn bộ dữ liệu trước không?**
-
-Không. Trạng thái là 32 giá trị được cập nhật, không phải bản sao của toàn chuỗi. Một cửa sổ mới trong thí nghiệm bắt đầu với trạng thái bằng 0; đây là cách triển khai ở bài này, không phải đặc điểm bắt buộc của mọi RNN. Không có ý nghĩa được xác nhận riêng cho từng ô như “nhớ xu hướng”.
-
-**Có dùng thông tin tương lai không?**
-
-Dữ liệu được chia theo thời gian; chỉ tập học được dùng để tính tham số chuẩn hóa. Mỗi dự báo dùng lịch sử đã quan sát đứng trước mục tiêu. Đây là dự báo từng bước, không phải tự dự báo nhiều tháng tương lai từ một điểm xuất phát.
-
-**Tại sao cần cách giữ nguyên giá trị trước?**
-
-Đó là mốc so sánh đơn giản. Nếu RNN không tốt hơn mốc này trên tập kiểm tra, độ phức tạp của mô hình chưa mang lại lợi ích rõ ràng trong thí nghiệm.
-
-## Nguồn và số liệu
-
-Demo chính đọc cả dữ liệu hoạt ảnh lẫn chỉ số toàn test từ `public/data/demo.json`, xuất bằng `scripts/export_demo.py` từ checkpoint thật và các kết quả đã lưu. Đọc số của từng mẫu trực tiếp trong demo; không thay bằng số minh họa. `public/data/retailrocket.json` và `public/data/amazon.json` phục vụ phần phân tích chi tiết.
-
-Khi cần mở code chứng minh phép tính: `replay_recurrence` tính lại toàn vector trạng thái để đối chiếu PyTorch; `trace_first_component` xuất riêng từng tích của hàng 0 để giải thích ô 1. JSON còn chứa hàng trọng số đó, đủ trọng số/bias đầu ra Linear và thống kê chuẩn hóa mục tiêu từ train. `components/demo/RNNCalculation.tsx` trình bày phép tính trạng thái trong hộp thoại; `PredictionReadout.tsx` trình bày phép bỏ chuẩn hóa và đổi đơn vị khi đã đến pha Dự đoán. Website không học thêm khi phát các phép tính này.
-
-| Tập dữ liệu | Số mục tiêu test | MAE RNN | MAE giữ nguyên | Đơn vị |
-|---|---:|---:|---:|---|
-| Retailrocket | 491 | 2,512 | 3,458 | Sự kiện giao dịch / giờ |
-| Amazon | 999 | 2,269 | 2,262 | USD / cổ phiếu điều chỉnh |
-
-Retailrocket tổng hợp theo giờ UTC. Amazon dùng phiên giao dịch và giá điều chỉnh hồi cứu.
-
-Nguồn: [Retailrocket](https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset), [Amazon](https://www.kaggle.com/datasets/henryshan/amazon-com-inc-amzn). Kịch bản theo phần lý thuyết và câu hỏi mở code nằm trong [DEMO_BRIEFING_VI.md](DEMO_BRIEFING_VI.md).
+Chat cần API và cấu hình kết nối. Khi trả lời xong, màn hình cuộn tới đầu câu trả lời mới. Chuyển chương vẫn giữ hội thoại. **Phụ lục** luôn có trên thanh đầu trang để mở dữ liệu lịch sử, cách chia tập và mã nguồn khi được hỏi.

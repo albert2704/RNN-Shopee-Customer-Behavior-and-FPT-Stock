@@ -33,27 +33,47 @@ def build():
         "website/vite.config.ts",
         "website/index.html",
         "website/README.md",
+        "website/DESIGN.md",
         "website/PRESENTATION_GUIDE.md",
         "website/DEMO_BRIEFING_VI.md",
         "website/.prettierrc.json",
         "website/.gitignore",
         "website/public/favicon.svg",
         "website/public/data/demo.json",
-        "website/public/data/retailrocket.json",
-        "website/public/data/amazon.json",
+        "website/public/data/shopee.json",
+        "website/public/data/fpt.json",
+        "website/public/data/fpt-daily.json",
+        "website/public/data/fpt-outlook.json",
+        "models/daily/README.md",
+        "models/daily/requirements.txt",
+        "models/daily/requirements-test.txt",
+        "models/docs/specs/0001-fpt-daily.md",
+        "models/docs/specs/0002-fpt-chat.md",
+        "models/docs/specs/0003-fpt-investment-outlook.md",
+        "models/.env.example",
+        "models/chat/README.md",
+        "models/chat/requirements.txt",
+        "models/chat/company_evidence.json",
+        "models/chat/company_evidence.md",
+        "models/outlook/README.md",
         "website/public/downloads/guide-trinh-bay.md",
         "website/public/downloads/demo-briefing-vi.md",
     ]
+    files.extend(str(path.relative_to(PROJECT)) for path in sorted((PROJECT / "models/daily").glob("*.py")))
+    files.extend(str(path.relative_to(PROJECT)) for path in sorted((PROJECT / "models/chat").glob("*.py")))
+    files.extend(str(path.relative_to(PROJECT)) for path in sorted((PROJECT / "models/outlook").glob("*.py")))
     for folder, suffixes in [
         ("models/src", {".py"}),
         ("models/results/provenance", {".py", ".json"}),
         ("models/data/processed", {".csv", ".npz"}),
         ("models/checkpoints", {".pt"}),
-        ("models/results/retailrocket", {".csv", ".json"}),
-        ("models/results/amazon", {".csv", ".json"}),
+        ("models/daily/artifacts", {".py", ".json", ".csv", ".pt"}),
+        ("models/outlook/artifacts", {".py", ".json", ".csv", ".pt"}),
+        ("models/results/shopee", {".csv", ".json"}),
+        ("models/results/fpt", {".csv", ".json"}),
         ("website/src", {".ts", ".tsx", ".css"}),
         ("website/scripts", {".py", ".mjs"}),
-        ("website/public/fonts", {".ttf", ".txt"}),
+        ("website/public/fonts", {".ttf", ".woff", ".woff2", ".txt"}),
     ]:
         files.extend(
             str(path.relative_to(PROJECT))
@@ -71,7 +91,7 @@ def build():
         summary, indent=2, ensure_ascii=False
     ).encode()
     manifest = {
-        "description": "RNN Lab: models and website; aggregate results, no raw data",
+        "description": "RNN Lab: classroom models, daily FPT pipeline and website; evaluation evidence, no raw market datasets",
         "files": [
             {"path": path, "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
             for path, data in sorted(contents.items())
@@ -98,6 +118,7 @@ def build():
         for path in archive.namelist():
             parts = PurePosixPath(path).parts
             assert "raw" not in parts and "node_modules" not in parts, path
+            assert "runtime" not in parts and ".env" not in parts, path
             assert not path.endswith((".pdf", ".docx", ".ipynb")), path
             assert parts[1] in {"README.md", ".gitignore", "PACKAGE_MANIFEST.json", "models", "website"}, path
         for item in manifest["files"]:

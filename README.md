@@ -1,53 +1,56 @@
-# RNN - Retailrocket and Amazon Stock
+# RNN: Shopee Thailand và cổ phiếu FPT
 
-Assignment 6 · Recurrent Neural Networks
+Assignment 6 gồm hai phần: [`models/`](models/) là mã Python, checkpoint và kết quả; [`website/`](website/) là website demo bằng tiếng Việt.
 
-Thí nghiệm dự báo chuỗi thời gian bằng PyTorch và website giải thích trực quan bằng tiếng Việt. Hai bộ dữ liệu **Retailrocket** và **Amazon AMZN** có một RNN và một GRU được huấn luyện riêng cho mỗi tập: **bốn mạng đã huấn luyện**. Website phát lại phép tính từ hai checkpoint RNN.
+Shopee Thailand dùng **dữ liệu mô phỏng**, không phải dữ liệu chính thức từ Shopee hay khách hàng Việt Nam. Mỗi tập Kaggle có RNN và GRU được huấn luyện riêng. Màn hình `#demo` phát lại phép tính từ hai checkpoint RNN. Màn hình **Dự báo FPT** dùng một thí nghiệm RNN riêng, lấy giá qua KBS/Vnstock và gọi Python để dự báo phiên kế tiếp.
 
-| Thư mục | Nội dung |
-|---|---|
-| [models/](models/README.md) | Mã Python, checkpoint, dữ liệu đã xử lý, dự đoán và kiểm chứng |
-| [website/](website/README.md) | Demo React/TypeScript, biểu đồ, phép tính trạng thái và hướng dẫn trình bày |
+## Dự báo FPT từ dữ liệu cập nhật
 
-Đọc [bản đồ code](models/CODE_MAP_VI.md) để tìm câu hỏi → hàm → tệp. Bắt đầu với [mô hình](models/src/models.py), [chuẩn bị dữ liệu](models/src/preprocessing.py) và [vòng lặp huấn luyện](models/src/training.py).
+Xem [cách chạy Python, lấy dữ liệu, huấn luyện và kiểm chứng](models/daily/README.md). Website có nút **Dự báo FPT** để mở `#fpt-daily`; nút **Cập nhật & dự báo** lấy dữ liệu mới bằng mô hình đã lưu. Cần chạy Python API ở cổng 8006 cùng website ở 4173. Nếu API chưa chạy, website ghi rõ đang xem bản đã lưu. Không tự đặt lịch cập nhật hoặc tự huấn luyện.
 
-**Code cho Phần 5 (slide 20–25):** dùng trực tiếp [training.py](models/src/training.py), [toy_rnn.py](models/src/toy_rnn.py) và [models.py](models/src/models.py). [Bản đồ theo slide](models/CODE_MAP_VI.md#phần-5--slide-2025) chỉ đúng hàm cần mở.
+Run ngày 07/10/2026 dùng 1.935 phiên KBS từ 2019 đến 06/10/2026. Trên 287 mục tiêu test, RNN có MAE 1.184,56 VND, baseline giữ giá có MAE 1.174,18 VND. Website hiển thị cả hai, không tuyên bố RNN tốt hơn. Dữ liệu gốc và cache nằm ngoài Git; checkpoint và bằng chứng đánh giá nằm trong `models/daily/artifacts/`.
 
 ## Chạy website
 
-Cần Node.js 22.18+ và npm. Từ thư mục repository:
+Dùng Node.js 22 trở lên. Từ thư mục `website/`:
 
 ```sh
-cd website
 npm ci
 npm run build
 npm run preview -- --port 4173 --strictPort
 ```
 
-Mở [demo cục bộ](http://127.0.0.1:4173/#demo), bấm **Chạy cả 2 demo** để xem Retailrocket → Amazon → tổng kết. Website dùng dữ liệu đã xuất sẵn; không cần chạy Python hay huấn luyện lại.
+Mở [demo cục bộ](http://127.0.0.1:4173/#demo). Chạy tập đang chọn, đọc chuỗi rồi dừng ở Dự đoán. Bấm **Xem thực tế** và **Xem toàn tập** khi sẵn sàng. Chọn FPT để chạy tập thứ hai. **Tổng kết** mở bằng tay; hai tập không chạy cùng lúc.
 
-## Kiểm chứng và huấn luyện
+## Đọc và chạy Python
 
-Cần Python 3.12. Từ thư mục repository:
+[Bản đồ code](models/CODE_MAP_VI.md) chỉ từng hàm và code cho Phần 5 của bài thuyết trình. [Hướng dẫn mô hình](models/README.md) ghi cách cài Python và kiểm chứng kết quả.
+
+Từ thư mục `models/`, sau khi cài `requirements.txt`:
 
 ```sh
-cd models
-python3.12 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
 python src/experiments.py --verify-only --no-write
 python scripts/independent_audit.py --skip-raw --no-write
 ```
 
-Để tải CSV gốc, kiểm toán cả bước xử lý dữ liệu hoặc huấn luyện lại:
+Tải CSV gốc và huấn luyện lại khi cần:
 
 ```sh
 python scripts/download_data.py
-python scripts/independent_audit.py --no-write
-python src/experiments.py --dataset retailrocket
-python src/experiments.py --dataset amazon
+python src/experiments.py --dataset shopee
+python src/experiments.py --dataset fpt
 ```
 
-Hai lệnh cuối ghi lại checkpoint, dự đoán và kết quả tương ứng. [Hướng dẫn mô hình](models/README.md) giải thích dữ liệu, các hàm và giao thức đánh giá.
+| Bài toán | Đầu vào | Mục tiêu | Số mục tiêu test |
+| --- | --- | --- | ---: |
+| Shopee Thailand, mô phỏng | 30 ngày × 5 số đếm hành vi qua log1p | Số đơn ngày tiếp theo | 216 |
+| FPT | 30 phiên × 1 lợi suất log | Giá đóng cửa phiên tiếp theo | 389 |
 
-Retailrocket dùng 24 giờ trước để dự báo số sự kiện giao dịch giờ tới; Amazon dùng 30 lợi suất log trước để dự báo phiên tới rồi đổi về giá điều chỉnh. Kết quả đã lưu cho thấy RNN tốt hơn baseline giữ nguyên trên Retailrocket; Amazon chưa có lợi thế nhất quán. Đây là dự báo một bước với một seed và một split theo thời gian.
+Ở Shopee, RNN có MAE 309,75 đơn/ngày, cao hơn cách đoán như hôm trước (141,56). Trên FPT, RNN cũng chưa tốt hơn cách giữ giá phiên trước. Kết quả chỉ thuộc một seed và một lần chia theo thời gian; không chứng minh ưu thế thực tế.
+
+Nguồn: [Shopee Thailand simulation](https://www.kaggle.com/datasets/hninshwezinhlaing/shopee-th-customer-journey-and-operations-dataset), Hnin Shwe Zin Hlaing, version 1, CC BY-SA 4.0; [FPT](https://www.kaggle.com/datasets/thangtranquang/stock-vn30-vietnam), Thang Tran, version 1, CC0. Hash và schema nằm trong [source_manifest.json](models/data/source_manifest.json). CSV gốc không được đưa vào Git hoặc ZIP; dữ liệu tổng hợp và checkpoint đã có sẵn.
+
+Các phiên bản Amazon và Retailrocket cũ được lưu ngoài Assignment 6 trong `assignment6_archive/`. Repo GitHub hiện giữ URL cũ cho đến khi chủ động đổi tên.
+# Chat đầu tư FPT
+
+Website có màn hình **Chat đầu tư** tại `#chat`, dùng API ngôn ngữ + Neo4j/RAG để giải thích dữ liệu FPT và tính kịch bản vốn. Cài đặt, cấu hình key ngoài Git và demo: [models/chat/README.md](models/chat/README.md). Chat cần Python API và Neo4j chạy cục bộ, không hoạt động chỉ bằng static hosting.

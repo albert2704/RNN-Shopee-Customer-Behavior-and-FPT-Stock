@@ -1,252 +1,76 @@
-# Kịch bản riêng cho người phụ trách demo website và giải thích code
+# Hướng dẫn người demo website và giải thích code
 
-Kịch bản cập nhật ngày 28/09/2026 cho luồng Retailrocket → Amazon → tổng kết, dựa trên mã PyTorch và dữ liệu `public/data/demo.json`. File JSON này cung cấp cả hoạt ảnh và chỉ số toàn test của demo chính.
+Bản giao diện ngày 08/10/2026: **Shopee Thailand (mô phỏng) → FPT → Tổng kết → Hỏi đáp**, cùng **Phụ lục** dữ liệu lịch sử. Kịch bản nói theo từng màn hình ở [PRESENTATION_GUIDE.md](PRESENTATION_GUIDE.md); các hàm, câu hỏi và code đưa lên slide ở [CODE_MAP_VI.md](../models/CODE_MAP_VI.md).
 
-Tài liệu đầu vào: [Script Thuyết Trình — Recurrent Neural Network (RNN)](https://docs.google.com/document/d/1XzmpjDG1ly2LY6barHGWkF--25o2sgfc6W-s4spbvio/edit?tab=t.0). Bản đã đối chiếu có 25 slide về lý thuyết; chưa có phần demo hai tập dữ liệu. Kịch bản dưới đây nối tiếp phần đó, không thay nội dung trong Google Docs.
+## Vai trò phần demo
 
-## 1. Mục đích phần của bạn
+Nhóm đã trình bày lý thuyết RNN. Phần của bạn nối lý thuyết với một đầu vào cụ thể, trạng thái thay đổi, dự đoán và cách đánh giá. Không cần giảng lại cả slide. Có thể dành 3–4 phút cho hai demo, mở code khi được hỏi.
 
-Sau phần lý thuyết, người xem cần nhận ra được bốn việc trên dữ liệu thật:
+Nói ngay từ đầu: hai demo đầu **phát lại phép tính từ checkpoint đã huấn luyện**. Không chạy PyTorch trong trình duyệt, không cập nhật trọng số khi bấm phát. Shopee là **100% dữ liệu mô phỏng Thailand**, không phải dữ liệu chính thức hoặc khách Việt Nam. Chat dùng dữ liệu FPT cập nhật từ dịch vụ Python và ghi ngày nguồn; không nhầm các con số này với ví dụ Kaggle cố định ở chương FPT.
 
-1. Một đầu vào `x_t` cụ thể gồm những gì.
-2. Trạng thái `h_t` thay đổi ra sao, còn trọng số được giữ nguyên khi dự đoán.
-3. Trạng thái cuối được đổi thành một dự báo như thế nào.
-4. Dự báo được đánh giá bằng cách nào và có tốt hơn cách giữ giá trị cuối không.
+## Những điểm cần khớp với slide
 
-Không cần giảng lại cả 25 slide. Dành khoảng 3–4 phút cho demo chính nếu chỉ dừng ngắn để giải thích; câu hỏi và mở code tính riêng. Đây là thời lượng đề xuất, không phải yêu cầu đã được nhóm xác nhận. Lời giải thích dài cần một điểm dừng có chủ đích.
-
-Điều phải nói ngay từ đầu: **website phát lại các đầu vào, trạng thái và dự báo đã xuất từ mô hình PyTorch được huấn luyện trước. Bấm phát không chạy PyTorch, không huấn luyện và không tạo một dự báo mới trong trình duyệt.**
-
-## 2. Chỗ cần thống nhất với người trình bày lý thuyết
-
-| Trong tài liệu | Điều cần nói chính xác để khớp demo |
+| Chủ đề | Cách triển khai trong Assignment 6 |
 | --- | --- |
-| Slide 16 mô tả `g` là Softmax/Sigmoid | Đó là các lựa chọn cho phân loại. Hai bài toán trong demo là hồi quy: dùng lớp `Linear`, không có Softmax/Sigmoid sau lớp đó. Đầu ra còn phải bỏ chuẩn hóa và đảo biến đổi. |
-| Slide 17 dùng many-to-one để phân loại câu | Many-to-one là dạng quan hệ đầu vào/đầu ra, không chỉ dành cho phân loại. Demo dùng nhiều mốc lịch sử để hồi quy một giá trị ở mốc tiếp theo. |
-| Slide 20 nói loss của chuỗi là tổng loss ở mọi bước | Chỉ phù hợp khi bài toán đặt đầu ra/nhãn ở những bước đó. Ở code này, một cửa sổ chỉ có một mục tiêu; MSE được lấy trung bình trên các dự báo trong batch. |
-| Slide 21 mô tả tính `y_t`, `L_t` tại mọi bước | Ở demo: tính đủ các trạng thái, lấy trạng thái cuối qua Linear, rồi tính một loss cho mỗi cửa sổ. Loss ở cuối vẫn truyền gradient qua các trạng thái trước bằng BPTT. |
-| Slide 25 kết thúc bằng lời cảm ơn | Người nói cuối nên chuyển lời sang demo trước khi nhóm kết thúc buổi trình bày. |
+| Many-to-one | Một cửa sổ nhiều ngày/phiên cho một đầu ra; không có nhãn đầu ra ở mọi timestep. |
+| Hàm đầu ra | Linear, không Softmax/Sigmoid. Sau Linear còn bỏ chuẩn hóa và hoàn nguyên đơn vị. |
+| Loss | MSE trên mục tiêu đã biến đổi, chuẩn hóa; trung bình trên batch. |
+| BPTT | Loss cuối cửa sổ truyền gradient qua mọi bước. `loss.backward()` dùng autograd. |
+| Cập nhật | `optimizer.step()` dùng Adam sau mỗi batch, không phải sau mỗi bước của hoạt ảnh. |
+| Gradient clipping | Giới hạn norm gradient ở 1.0; không khôi phục gradient đã biến mất. |
+| GRU | Mô hình so sánh có cổng; hoạt ảnh chính giải thích RNN thường. |
 
-Câu nối để xử lý khác biệt many-to-many / many-to-one:
+Ví dụ scalar ba bước với SGD và loss ½(ŷ−y)² là minh họa riêng, không phải checkpoint Shopee/FPT. Không gọi tanh là phép lấy trung bình. Không gán ý nghĩa cụ thể cho một ô hidden state chưa được phân tích.
 
-> Ở phần lý thuyết, nhóm vừa trình bày cả trường hợp có đầu ra ở nhiều bước. Trong thí nghiệm này, nhóm dùng dạng many-to-one: đọc hết cửa sổ quá khứ và chỉ dự báo một mốc tiếp theo. Vì vậy, nhóm tính loss ở đầu ra cuối; gradient vẫn truyền ngược qua toàn bộ cửa sổ.
+## Dữ liệu và mẫu minh họa
 
-Không gọi hàm `tanh` là phép lấy trung bình. “Zero-centered” nói về miền giá trị có cả âm và dương quanh 0; không bảo đảm trung bình của các trạng thái quan sát được đúng bằng 0. Cũng không nói mạng truyền thẳng hoàn toàn không thể dùng thứ tự: vị trí các đầu vào cố định có thể mang thông tin thứ tự; điểm khác ở đây là cơ chế trạng thái truy hồi và chia sẻ tham số.
+Shopee có 500.000 session, 2.696.481 activity, 300.000 đơn. Chuỗi giữ 1.461 ngày trong 2022–2025. 58 activity bắt đầu vào ngày 01/01/2026 được loại vì không có ngày mục tiêu đầy đủ. Nguồn không chỉ định múi giờ; giữ ngày nguồn, UTC trong CSV chỉ lưu nhãn.
 
-## 3. Kịch bản demo theo màn hình
+Năm đầu vào mỗi ngày là số session bắt đầu, lượt thăm `/products`, `/cart`, `/checkout` và số đơn. Dùng log1p rồi chuẩn hóa train. Chỉ đưa **ngày đã kết thúc trước ngày mục tiêu** vào cửa sổ. Không lấy order link hoặc lượt thăm trang ngày đích để đoán chính ngày đó. Thăm `/cart` là thăm trang giỏ, không phải thao tác thêm sản phẩm.
 
-### 3.1. Trước khi bấm phát
+| Tập | Shape x | Train / validation / test | Mẫu test đầu tiên |
+| --- | --- | --- | --- |
+| Shopee, mô phỏng | `(B, 30, 5)` | 1.001 / 214 / 216 | 30/05/2025: RNN 289,60; thực tế 301; hôm trước 300 đơn |
+| FPT | `(B, 30, 1)` | 1.810 / 388 / 389 | 07/12/2021: RNN 94.550,51; thực tế 96.000; phiên trước 94.500 VND |
 
-Mở [website demo](http://127.0.0.1:4173/#demo), chọn Retailrocket và tốc độ 1×. Bấm **Chạy tập này** để bắt đầu. Mở sẵn các file ở mục 4 trong editor, nhưng giữ website trên màn hình trình chiếu.
+Mẫu chọn cố định là test đầu tiên theo thời gian, không tìm mẫu có dự đoán đẹp. Hidden state có 32 thành phần, được reset về 0 ở mỗi cửa sổ độc lập. Mỗi tập có RNN/GRU học riêng, tổng cộng bốn checkpoint.
 
-Người trình bày trước có thể nói:
+## Mở Python từ đầu đến cuối
 
-> Phần tiếp theo, nhóm sẽ đối chiếu các khái niệm vừa trình bày với hai thí nghiệm cụ thể trên website.
+1. `experiments.main` nhận tên tập và seed, nối các bước.
+2. `prepare_shopee` đọc ba CSV, kiểm tra ID và liên kết, đếm theo ngày, tạo log1p. `prepare_fpt` làm sạch FPT Close và tạo log return.
+3. `prepare_data` chia theo ngày đích 70/15/15. Scaler chỉ fit train. Mỗi x là `[t−30, t)`, y thuộc t.
+4. `RecurrentForecaster` tạo RNN hoặc GRU, lấy trạng thái cuối qua `Linear(32, 1)`.
+5. `fit_model` dùng DataLoader batch 64, MSE, Adam 0,001. `zero_grad` → forward/loss → backward → clip → step. Validation chọn checkpoint; patience 8, tối đa 40 epoch.
+6. `evaluate` chốt checkpoint rồi dự báo validation/test, đổi về đơn vị gốc, tính MAE/RMSE và baseline trên cùng ngày đích.
+7. `verify_saved_outputs` và `independent_audit.py` kiểm tra scaler, mọi cửa sổ, raw transformations, dự đoán, checkpoint và nguồn mã.
+8. `export_demo.py` nạp RNN, lấy trạng thái từng bước, kiểm tra công thức truy hồi và đầu ra Linear rồi xuất JSON.
+9. React đọc JSON và điều khiển phần được hiển thị. Trọng số không đổi khi phát.
 
-Bạn nói:
+RNN: hₜ = tanh(Wₓxₜ + bₓ + Wₕhₜ₋₁ + bₕ). Wₓ có shape 32×5 ở Shopee hoặc 32×1 ở FPT; Wₕ là 32×32. Linear có 32 trọng số và một bias.
 
-> Em sẽ minh họa hai bài toán: số sự kiện giao dịch theo giờ của Retailrocket và giá cổ phiếu Amazon. Mỗi bài toán dùng một mô hình được huấn luyện riêng. Website phát lại các phép tính đã được xuất từ mô hình, để mình nhìn rõ từng bước; đây không phải quá trình học trực tiếp.
->
-> Mọi người chú ý hai phần: trạng thái thay đổi khi mô hình đọc dữ liệu, và dự đoán có tốt hơn cách giữ nguyên giá trị gần nhất hay không.
+Shopee hoàn nguyên bằng max(0, expm1(z×σ_train+μ_train)). FPT dùng P_trước×exp(r̂). Số đơn dự đoán có thể là số thập phân vì đầu ra là hồi quy.
 
-Bấm **Chạy tập này** để chạy tập đang chọn đến Dự đoán. Bấm **Xem thực tế**, rồi **Xem toàn tập** khi sẵn sàng. Chọn tab Amazon để chạy tập thứ hai; mở **Tổng kết** bằng tay.
+## Kết quả cần nói đúng
 
-Sơ đồ chính chỉ giữ dữ liệu mới, RNN và 32 giá trị trạng thái. Khi đến pha dự đoán, tập trung vào kết quả, rồi đối chiếu với thực tế và cách giữ nguyên giá trị cuối. Nếu được hỏi cách tính, mở **Xem phép tính**: hộp thoại giữ phép tính ô trạng thái đầu tiên và bước đổi đơn vị bằng số thật từ checkpoint. Phần đổi đơn vị chỉ hiện sau khi đã đến pha dự đoán.
+| Tập / mô hình | MAE | RMSE | Epoch đã chạy / chọn |
+| --- | ---: | ---: | --- |
+| Shopee RNN | 309,7479 đơn | 589,7574 đơn | 19 / 11 |
+| Shopee GRU | 299,7403 đơn | 578,1637 đơn | 10 / 2 |
+| Shopee hôm trước | 141,5556 đơn | 599,1383 đơn | Không học |
+| Shopee cùng thứ tuần trước | 160,5972 đơn | 600,3748 đơn | Không học |
+| FPT RNN | 1.059,9227 VND | 2.014,8085 VND | 9 / 1 |
+| FPT GRU | 1.058,9405 VND | 2.002,0458 VND | 9 / 1 |
+| FPT giá trước | 1.053,7275 VND | 2.000,7261 VND | Không học |
 
-### 3.2. Retailrocket: dùng tập đầu để giải thích cơ chế
+“Toàn tập” nghĩa là tất cả mục tiêu **test**, không phải train + validation + test. MAE lấy trung bình độ lệch tuyệt đối sau khi đổi về đơn vị gốc. Một trường hợp tốt không chứng minh mô hình tốt.
 
-**Khi bắt đầu đọc dữ liệu:**
+RNN/GRU Shopee chưa tốt hơn baseline hôm trước về MAE, dù RMSE thấp hơn một chút. Hai chỉ số xếp hạng khác vì RMSE phạt lỗi lớn mạnh hơn. FPT cũng chưa có lợi thế về MAE/RMSE. Không chỉnh cấu hình theo kết quả test, không tuyên bố hidden size 32 tối ưu. Kết quả mô phỏng không chứng minh hiệu quả thực tế trên Shopee.
 
-> Đây là hoạt động đã tổng hợp theo giờ của một website bán hàng. Nhóm dùng 24 giờ quá khứ để dự đoán số sự kiện giao dịch trong giờ tiếp theo.
->
-> Một giờ không chỉ có số giao dịch trên biểu đồ. Mạng nhận bảy giá trị: ba loại hành vi là lượt xem, thêm giỏ, giao dịch; cùng bốn giá trị biểu diễn giờ và thứ trong tuần. Các giá trị được biến đổi và chuẩn hóa trước khi vào mạng.
+## Nguồn và bằng chứng
 
-Chỉ bảng **Đầu vào**, rồi chỉ sơ đồ phía dưới. Nếu dừng ở bước 2:
+[Shopee Thailand Customer Journey](https://www.kaggle.com/datasets/hninshwezinhlaing/shopee-th-customer-journey-and-operations-dataset): Hnin Shwe Zin Hlaing, version 1, 100% mô phỏng, CC BY-SA 4.0. [FPT](https://www.kaggle.com/datasets/thangtranquang/stock-vn30-vietnam): Thang Tran, version 1, CC0. FPT có Close, không có Adj Close hoặc phương pháp điều chỉnh.
 
-> Nhóm chọn trạng thái có 32 giá trị khi tạo mô hình. Ban đầu cả 32 giá trị bằng 0. Ở mỗi giờ, RNN nhân dữ liệu mới và trạng thái trước với các trọng số tương ứng, cộng các tích và độ lệch, rồi qua tanh để tính 32 giá trị mới. Sang giờ thứ hai, nhóm số vừa tính được dùng làm trạng thái trước.
->
-> Đây là ý nghĩa của mũi tên truyền trạng thái. Cùng một bộ trọng số được dùng ở các bước. Các ô màu là giá trị số của trạng thái, không phải mỗi ô được đặt tên sẵn là xu hướng hay thói quen khách hàng.
+Hash CSV, schema và caveat nằm trong `models/data/source_manifest.json`. Checkpoint, dự đoán và lịch sử nằm trong `models/results/`. Bản mã thực thi của từng tập nằm trong `models/results/provenance/<id>/`. Website và ZIP chỉ xuất dữ liệu tổng hợp, không xuất các ID khách hàng trong CSV gốc.
 
-Nếu giảng viên chỉ vào bảng đầu vào ở giờ đầu: **361 lượt xem, 3 thêm giỏ, 0 giao dịch**. Số 0 trên đường giao dịch không có nghĩa cả vector đầu vào bằng 0. Bảng hiển thị số đếm dễ đọc; đầu vào mạng đã qua `log1p` và chuẩn hóa.
-
-**Khi chạy tiếp từ bước 3:**
-
-> Các giờ còn lại lặp lại cùng phép tính. Website bỏ chuyển động truyền trạng thái từ bước 3 để dễ theo dõi; mô hình vẫn xử lý đủ 24 giờ.
-
-**Khi hiện dự đoán:**
-
-> Đọc đủ 24 giờ, nhóm lấy trạng thái cuối qua lớp Linear. Mỗi giá trị trạng thái được nhân với một trọng số; cộng 32 tích rồi thêm độ lệch sẽ tạo một số đã chuẩn hóa. Sau khi đổi về đơn vị gốc, dự báo là khoảng 1,16 sự kiện giao dịch.
-
-Đầu ra chuẩn hóa của mẫu này là khoảng −0,8521; đó chưa phải số sự kiện âm. Bỏ chuẩn hóa rồi hoàn tác log mới có dự báo 1,16.
-
-**Khi hiện thực tế:**
-
-> Thực tế là 13 sự kiện. Dự báo này thấp hơn nhiều; mô hình đã bỏ lỡ mức tăng. Nhóm vẫn hiển thị mẫu này vì đây là mẫu test đầu tiên theo thời gian, không chọn mẫu đẹp nhất.
-
-**Khi hiện MAE toàn tập:**
-
-> Một trường hợp chưa đủ đánh giá mô hình. Trên 491 dự báo kiểm tra, MAE của RNN là khoảng 2,51 sự kiện, còn cách giữ giá trị giờ trước là 3,46. Trong lần thí nghiệm này, RNN tốt hơn cách đối chứng trên toàn tập, dù mẫu vừa xem vẫn sai khá nhiều.
-
-### 3.3. Amazon: dùng tập thứ hai để giải thích cách đánh giá
-
-> Với Amazon, một bước là một phiên giao dịch. Mạng nhận 30 lợi suất log đã chuẩn hóa, mỗi phiên một giá trị. Đường trên biểu đồ là giá USD để người xem dễ đọc, còn đầu vào thực tế của mô hình là mức thay đổi giá theo log.
->
-> RNN dự đoán lợi suất phiên tiếp theo. Nhóm đổi kết quả về giá bằng giá phiên cuối nhân với exp của lợi suất dự báo.
-
-Khi so mẫu: RNN khoảng **88,55 USD**, thực tế **89,53 USD**, giữ giá trước khoảng **88,46 USD**.
-
-> Ở mẫu này, RNN gần thực tế hơn một chút. Nhưng MAE trên 999 phiên test là khoảng 2,269 USD, cao hơn 2,262 USD của cách giữ giá cũ. Vì vậy, nhóm chưa có bằng chứng RNN tốt hơn cách đơn giản đó trên tập này.
-
-Đây là điểm mạnh của cách trình bày: không dùng một mẫu đẹp để khẳng định mô hình tốt. Không gọi giá điều chỉnh hồi cứu là dữ liệu giao dịch thời gian thực.
-
-### 3.4. Khi website dừng ở tổng kết
-
-> Cả hai bài toán đều đọc dữ liệu theo thứ tự, cập nhật trạng thái rồi dự báo từ trạng thái cuối. Hiệu quả phụ thuộc dữ liệu: RNN cải thiện MAE ở Retailrocket, nhưng chưa vượt cách giữ giá ở Amazon trong lần thực nghiệm này.
->
-> Nhóm đánh giá trên dữ liệu kiểm tra và so với một phương pháp đơn giản. Các chỉ số có đơn vị khác nhau nên không dùng độ lớn MAE để xếp hạng hai tập với nhau.
-
-Sau đó chuyển sang câu hỏi. Chỉ mở code khi cần chứng minh một điểm cụ thể.
-
-### 3.5. Mở chi tiết khi có câu hỏi
-
-Nếu cần nói kỹ một phép tính, bấm **Xem phép tính**. Hoạt ảnh tạm dừng tại đúng bước:
-
-| Giảng viên chỉ vào | Vị trí trên màn hình | Nội dung để trả lời |
-| --- | --- | --- |
-| “32 là gì?” | Dòng định nghĩa và các ô trạng thái | Nhóm chọn `hidden_size=32`. Cả 32 giá trị được tính lại sau mỗi bước; 7/1 là số đặc trưng, 24/30 là độ dài chuỗi. |
-| “Khối RNN thực sự tính gì?” | Hộp thoại Xem phép tính, phần trạng thái | Dữ liệu mới và trạng thái trước được nhân với các trọng số tương ứng. Cộng các tích và hai độ lệch đã học, rồi qua tanh để ra giá trị mới của ô 1. 31 ô còn lại dùng cùng công thức với các hàng trọng số riêng. |
-| “Linear biến trạng thái thành dự đoán thế nào?” | Hộp thoại Xem phép tính, phần đổi đơn vị | 32 tích cộng một bias tạo số chuẩn hóa; phép tính bên cạnh bỏ chuẩn hóa bằng thống kê train, rồi đổi về số sự kiện hoặc USD. |
-
-Trọng số là hệ số nhân, độ lệch là số cộng thêm; cả hai được học khi huấn luyện và giữ nguyên trong lượt dự đoán. Các phép tính bằng số xuất hiện theo tiến trình: chưa đọc đầu vào thì chưa có ví dụ tính trạng thái, chưa đến pha **Dự đoán** thì chưa hiện các số của dự báo cuối. Tua lùi sẽ ẩn lại đầu ra. Sau câu trả lời, bấm **Tiếp tục** để chạy từ đúng vị trí; đóng hộp thoại trước khi tiếp tục.
-
-## 4. Mở code khi bị hỏi
-
-Các liên kết Code trên website mở trực tiếp file tương ứng trong tab GitHub mới và tạm dừng hoạt ảnh. Trả lời ngắn bằng lời trước, rồi chỉ các dòng liên quan. Nếu không có Internet, dùng các file local đã mở sẵn.
-
-Mở sẵn sáu file Python: `../models/src/models.py`, `../models/src/training.py`, `../models/src/preprocessing.py`, `../models/src/evaluation.py`, `../models/src/config.py`, `scripts/export_demo.py`. Có thể dùng [CODE_MAP_VI.md](../models/CODE_MAP_VI.md) để tìm thêm. Số dòng dưới đây ứng với bản đã đối chiếu; tên hàm/từ khóa giúp tìm lại nếu số dòng thay đổi.
-
-| Giảng viên hỏi | Mở file / dòng | Chỉ vào đâu và trả lời gì |
-| --- | --- | --- |
-| “Mạng RNN nằm ở đâu?” | [models.py](../models/src/models.py), dòng 14–33 | `self.recurrent` khai báo mạng; `nn.Linear(hidden_size, 1)` tạo đầu ra; `forward` đọc chuỗi và lấy trạng thái cuối. |
-| “Công thức tanh trên slide ở đâu trong code?” | [export_demo.py](scripts/export_demo.py), hàm `replay_recurrence` | Đầu vào nhân ma trận + trạng thái trước nhân ma trận + hai bias, rồi `torch.tanh`. Đây là hàm đối chiếu lượt thuận với PyTorch, không phải vòng huấn luyện thay thế. |
-| “Các phép nhân của ô 1 trên website từ đâu?” | Cùng file, hàm `trace_first_component`; [RNNCalculation.tsx](src/components/demo/RNNCalculation.tsx) | Script lấy hàng 0 của hai ma trận trọng số thật và trạng thái trước từ PyTorch, xuất từng tích, hai bias, tổng và kết quả tanh. Ô 1 là `h[0]`. Component trình bày các tổng và phép tanh trong hộp thoại; mô hình vẫn tính đủ 32 ô. |
-| “Phép bỏ chuẩn hóa có phải số minh họa?” | [export_demo.py](scripts/export_demo.py), hàm `export_dataset`, tìm `output_weights`, `normalization`; [PredictionReadout.tsx](src/components/demo/PredictionReadout.tsx) | Xuất đủ trọng số/bias của Linear và trung bình, độ lệch chuẩn mục tiêu từ manifest; đối chiếu đầu ra với PyTorch. Hộp thoại phép tính dùng các số thật để trình bày từ đầu ra chuẩn hóa đến đơn vị gốc sau khi đã đến pha Dự đoán. |
-| “Tại sao hai bias trong code mà slide chỉ có một?” | Cùng hàm `replay_recurrence`, tìm `bias_ih_l0` | PyTorch lưu `bias_ih_l0` và `bias_hh_l0`; trong công thức gộp có thể viết tổng của chúng thành `b`. |
-| “24 giờ hoặc 30 phiên được cắt ở đâu?” | [preprocessing.py](../models/src/preprocessing.py), dòng 206–209 | `scaled_x[t-lookback:t]` lấy quá khứ, bỏ cận phải `t`; `y` lấy tại `t`. |
-| “Đầu vào Retailrocket thật sự có gì?” | Cùng file, dòng 45–64 | Ba số đếm qua `log1p`, bốn đặc trưng thời gian sin/cos; thứ tự bảy cột được ghi rõ trong `features`. |
-| “Amazon có nhận trực tiếp giá không?” | Cùng file, dòng 132–136; tìm `return frame, ["log_return"]` | `np.log(frame.target / frame.target.shift(1))` tạo lợi suất log; danh sách đầu vào chỉ có `log_return`. |
-| “Chia dữ liệu và chuẩn hóa có nhìn tương lai không?” | Cùng file, dòng 182–209 | Chia theo thời điểm mục tiêu; thống kê x/y chỉ lấy từ train. Sau đó dùng lại cho validation/test; từng cửa sổ vẫn kết thúc trước nhãn. |
-| “Học trọng số ở dòng nào?” | [training.py](../models/src/training.py), dòng 59–68 | `zero_grad` xóa gradient cũ; `loss_fn(model(x), y)` tính dự đoán và loss; `backward` tính gradient; clipping giới hạn norm; `optimizer.step` mới cập nhật trọng số. |
-| “Chọn mô hình bằng test à?” | Cùng file, dòng 71–91 | Dùng validation MSE để lưu `best_state`, dừng sớm và khôi phục checkpoint tốt nhất. Test không tham gia chọn epoch. |
-| “Đầu ra Linear đổi thành giá/số sự kiện ở đâu?” | [evaluation.py](../models/src/evaluation.py), dòng 23–37 | `original_units`: bỏ chuẩn hóa; Retail dùng `expm1` và chặn âm; Amazon dùng giá cuối × `exp(return)`. |
-| “Sai số này tính như thế nào?” | [evaluation.py](../models/src/evaluation.py), dòng 40–48 | Hiệu dự báo − thực tế; MAE lấy trung bình trị tuyệt đối sau khi đổi về đơn vị gốc. Baseline giữ nguyên được tạo ở dòng 97–108. |
-| “Website có thực sự chạy mô hình không?” | [useDemoData.ts](src/hooks/useDemoData.ts), tìm `fetch`; [export_demo.py](scripts/export_demo.py), hàm `load_checkpoint` và `predict_saved_windows` | Browser đọc `demo.json`. Script Python nạp checkpoint và suy luận trước khi xuất; browser phát lại dữ liệu đó. |
-| “Làm sao biết các ô màu không phải số tự đặt?” | [export_demo.py](scripts/export_demo.py), hàm `export_dataset` | Kiểm tra hash checkpoint, khớp đầu vào chuẩn hóa, chạy lại mô hình, đối chiếu từng trạng thái và dự báo. Kiểm tra số liệu mới chứng minh nguồn của hình; màu chỉ là cách hiển thị. |
-
-## 5. Hai đoạn code phải tự giải thích được
-
-### 5.1. Đầu vào → trạng thái cuối → dự đoán
-
-Đoạn trích từ `models.py`:
-
-```python
-sequence, hidden = self.recurrent(x)
-return self.output(sequence[:, -1, :])
-```
-
-Cách đọc với Retailrocket, một batch đầy đủ:
-
-1. `x` có dạng `(64, 24, 7)`: 64 cửa sổ, mỗi cửa sổ 24 giờ, mỗi giờ 7 đặc trưng. Batch cuối có thể ít hơn 64.
-2. `sequence` có dạng `(64, 24, 32)`: lưu trạng thái ở cả 24 bước, mỗi trạng thái gồm 32 số.
-3. `sequence[:, -1, :]` nghĩa là lấy mọi cửa sổ, bước thời gian cuối, mọi thành phần trạng thái. Kết quả `(64, 32)`.
-4. `self.output` là Linear từ 32 thành 1; kết quả `(64, 1)`. Mỗi cửa sổ có một dự báo đã chuẩn hóa.
-
-Câu trả lời nói được trong khoảng 20 giây:
-
-> Dòng đầu cho RNN đọc toàn bộ chuỗi và trả trạng thái theo từng bước. Dòng thứ hai lấy trạng thái cuối của mỗi cửa sổ, đưa qua Linear để tạo một dự báo. 32 là số thành phần trạng thái, còn 24 là độ dài chuỗi; hai con số có vai trò khác nhau.
-
-`hidden` ở cấu hình một lớp, một chiều có dạng `(1, B, 32)` và chứa trạng thái cuối. Code hiện dùng `sequence[:, -1, :]`; không đưa trực tiếp toàn bộ `sequence` qua lớp dự đoán ở mọi bước. Không truyền `h0` vào lời gọi RNN thì PyTorch dùng trạng thái 0. Trong cách triển khai này, mỗi cửa sổ độc lập bắt đầu lại từ 0. Xem [tài liệu nn.RNN](https://docs.pytorch.org/docs/stable/generated/torch.nn.RNN.html).
-
-### 5.2. Tính gradient khác với cập nhật trọng số
-
-Đoạn trích từ `training.py`:
-
-```python
-optimizer.zero_grad(set_to_none=True)
-loss = loss_fn(model(x), y)
-loss.backward()
-nn.utils.clip_grad_norm_(model.parameters(), config["gradient_clip_norm"])
-optimizer.step()
-```
-
-Câu trả lời:
-
-> Mô hình dự đoán, rồi so với nhãn để tính loss. `backward` tính xem loss thay đổi theo từng tham số như thế nào; nó chưa sửa trọng số. Sau khi giới hạn norm gradient, `optimizer.step` dùng Adam để cập nhật tham số. Quá trình đó lặp qua các batch và epoch.
-
-Trong bài này, `nn.MSELoss()` dùng phép lấy trung bình. Mỗi cửa sổ có một đầu ra, nên loss của batch là trung bình bình phương sai số của các đầu ra đó, ở thang đã biến đổi và chuẩn hóa. Nó không phải MAE theo đơn vị gốc và không phải tổng 24 loss ở 24 giờ. Xem [tài liệu MSELoss](https://docs.pytorch.org/docs/stable/generated/torch.nn.MSELoss.html).
-
-## 6. Câu hỏi phụ dễ bị hỏi tiếp
-
-**Vì sao 32, 24 và 30?**
-
-32 là hidden size đã chọn; 24 giờ và 30 phiên là độ dài cửa sổ đã chọn cho thí nghiệm. 24 giờ bao phủ một ngày, 30 phiên bao phủ nhiều tuần giao dịch. Đây là lý do chọn cấu hình để thử nghiệm, không phải chứng minh tối ưu. Nhóm chưa có phép so sánh có kiểm soát giữa nhiều hidden size/lookback để kết luận các số này tốt nhất.
-
-**Mỗi ô màu là một neuron hay một giờ?**
-
-Mỗi ô là một thành phần của vector trạng thái tại một bước. Cả 32 ô được cập nhật sau mỗi giờ/phiên; không phải mỗi ô lưu riêng một giờ. Màu biểu diễn dấu và độ lớn của số, không có ý nghĩa nghiệp vụ được xác nhận cho từng ô.
-
-**Vì sao dự đoán 1,16 giao dịch, trong khi số sự kiện phải nguyên?**
-
-Mô hình đang làm hồi quy nên trả một ước lượng liên tục. Dữ liệu thực là số đếm nguyên. Website giữ giá trị chưa làm tròn thành số nguyên để phản ánh đúng đầu ra và phép đánh giá. Với biến đổi log rồi lấy mũ, không tự khẳng định đây là kỳ vọng số đếm không chệch.
-
-**Có phải đọc thêm một giờ là học thêm không?**
-
-Không. Khi suy luận, đầu vào mới làm trạng thái thay đổi, trọng số giữ nguyên. Huấn luyện cần nhãn, loss, gradient và bước cập nhật tham số. Ở website, ngay cả quá trình suy luận đã được tính trước; hoạt ảnh chỉ thay đổi phần kết quả được hiển thị.
-
-**Một loss ở cuối thì làm sao học từ đầu chuỗi?**
-
-Đầu ra phụ thuộc trạng thái cuối; trạng thái cuối lại phụ thuộc các trạng thái trước. Autograd đi ngược các quan hệ phụ thuộc đó. Vì tham số được dùng chung, gradient của một tham số nhận đóng góp từ nhiều lần tham số đó được dùng trong chuỗi.
-
-**Sao train dùng shuffle mà lại nói không đảo chuỗi?**
-
-`DataLoader` xáo thứ tự các cửa sổ thuộc train. Các giờ bên trong một cửa sổ vẫn giữ đúng thứ tự; train, validation, test đã chia theo thời gian trước đó.
-
-**Có dùng quan sát thuộc test làm đầu vào không?**
-
-Có thể dùng quan sát test đã xảy ra trước mục tiêu hiện tại. Đây là dự báo một bước cuốn chiếu: đến thời điểm mới, lịch sử mới đã biết. Không dùng nhãn hiện tại hay tương lai; cũng không nói đây là dự báo cả nhiều tháng chỉ từ dữ liệu ở đầu kỳ test.
-
-**Hai tập dùng chung một bộ trọng số à?**
-
-Không. Chúng dùng cùng loại kiến trúc, mỗi tập được huấn luyện riêng. Chia sẻ trọng số ở đây là giữa các bước thời gian trong cùng một mô hình. Số đặc trưng của Retailrocket là 7, của Amazon là 1.
-
-**Tại sao không dùng GRU/LSTM?**
-
-Demo chính nhằm giải thích RNN cơ bản. Thực nghiệm còn có GRU để so sánh. Không có kết quả LSTM trong phần này; không khẳng định LSTM sẽ tốt hơn nếu chưa thử trên cùng cách chia và đánh giá.
-
-**Nếu Amazon không tốt hơn baseline thì mô hình sai?**
-
-Không nhất thiết sai về cài đặt. Nó cho thấy cấu hình/thực nghiệm hiện tại chưa đem lại lợi thế dự báo theo chỉ số đang so. Không dùng kết quả đó để kết luận mọi RNN đều thất bại hoặc tự nhận ra nguyên nhân cụ thể khi chưa có thí nghiệm kiểm chứng.
-
-## 7. Cách xử lý khi bị ngắt để hỏi code
-
-1. Bấm **Tạm dừng** trước khi đổi cửa sổ. Nút này rõ ràng hơn Space nếu focus đang ở thanh trượt hoặc nút khác.
-2. Trả lời ý nghĩa bằng một câu, rồi mở đúng file chứng minh câu đó.
-3. Chỉ giải thích đoạn liên quan, thường 2–10 dòng. Chỉ rõ tensor vào, phép xử lý và tensor ra nếu được hỏi về mô hình.
-4. Quay lại website và bấm **Tiếp tục**. Không chạy lại cả hai tập chỉ vì vừa mở code.
-
-Nếu được yêu cầu chỉ nơi BPTT xảy ra, mở `loss.backward()` trước. Nếu được hỏi công thức truy hồi cho cả vector, mở `replay_recurrence`; nếu hỏi nguồn từng phép nhân của ô 1 trên website, mở `trace_first_component`. `RNNCalculation.tsx` trình bày phép tính trạng thái trong `DemoDialog.tsx`; `PredictionReadout.tsx` trình bày phép đổi đầu ra về đơn vị gốc; `useDemoPlayback.ts` điều khiển việc phát. Chọn đúng tầng mã giúp tránh giải thích giao diện khi câu hỏi đang hỏi thuật toán học.
-
-Nếu chưa có bằng chứng cho một câu hỏi, trả lời giới hạn cụ thể:
-
-> Ở phiên bản này, nhóm chưa làm phép so sánh đó. Em có thể chỉ ra cấu hình đang dùng và kết quả hiện có, nhưng chưa kết luận phương án kia sẽ tốt hơn.
-
-## 8. Tập trước buổi trình bày
-
-- Chạy một lượt chỉ nói các đoạn chính ở mục 3; thử trên đúng màn hình và mức zoom sẽ dùng.
-- Nhờ một người ngắt ở bước 2 và hỏi “32 ô là gì?”; dừng rồi tiếp tục đúng vị trí.
-- Tập mở `models.py` và giải thích hai dòng forward mà không đọc nguyên chú thích.
-- Tập mở `training.py` và phân biệt `backward` với `step`.
-- Tập chứng minh `x[t-lookback:t]` không chứa nhãn tại `t`.
-- Tập câu kết luận Amazon: mẫu đang xem tốt hơn, nhưng toàn test chưa tốt hơn baseline.
-
-Tra cứu đầy đủ hơn: [bản đồ code](../models/CODE_MAP_VI.md) và [hướng dẫn điều khiển demo](PRESENTATION_GUIDE.md). Không cần chạy lại huấn luyện trong buổi nói để chứng minh mô hình có thật; có thể mở checkpoint, script xuất và các phép đối chiếu đã lưu.
+Mã trên GitHub cập nhật sau khi push. Khi trình bày bản local chưa push, có thể mở trực tiếp file trong editor theo CODE_MAP.
