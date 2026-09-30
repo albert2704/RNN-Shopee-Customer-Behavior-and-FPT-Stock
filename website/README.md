@@ -1,5 +1,7 @@
 # Website demo RNN
 
+Cloud: [Vercel + Render + Neo4j Aura](../models/hosting/README.md). `VITE_API_BASE_URL` chỉ chứa địa chỉ API công khai; không đặt key trong frontend.
+
 Website giới thiệu hai bài toán: **Shopee Thailand (mô phỏng)** dự báo số đơn ngày mai, và **FPT** dự báo giá đóng cửa phiên sau. Mỗi tập có RNN và GRU được huấn luyện riêng. Hoạt ảnh chính phát lại hai RNN từ checkpoint; website không học thêm hoặc chạy PyTorch trong trình duyệt.
 
 ## Chạy

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import './StockChat.css';
 import { connectionLabels, isChatStatus, type ChatStatus } from '../domain/chat/connection';
+import { apiUrl, accessHeaders } from '../domain/chat/api';
 type Source = {
   citation_id: string;
   title: string;
@@ -79,7 +80,15 @@ function Evidence({ reply }: { reply: Reply }) {
               selected === source.citation_id ? 'stock-chat-source selected' : 'stock-chat-source'
             }
           >
-            <a href={source.source_url} target="_blank" rel="noreferrer">
+            <a
+              href={
+                source.source_url.startsWith('/api/')
+                  ? apiUrl(source.source_url)
+                  : source.source_url
+              }
+              target="_blank"
+              rel="noreferrer"
+            >
               {source.citation_id} · {source.title} <ArrowUpRight size={13} />
             </a>
             <details open={selected === source.citation_id}>
@@ -124,6 +133,10 @@ export default function StockChat({ active, onBack }: { active: boolean; onBack:
   const [input, setInput] = useState('');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
+  const [locked, setLocked] = useState(false);
+  const [codeInput, setCodeInput] = useState('');
+  const [accessError, setAccessError] = useState('');
+  const accessCode = useRef('');
   const end = useRef<HTMLDivElement>(null);
   const latestAnswer = useRef<HTMLElement>(null);
   const field = useRef<HTMLTextAreaElement>(null);
@@ -136,11 +149,28 @@ export default function StockChat({ active, onBack }: { active: boolean; onBack:
     const sequence = ++statusSequence.current;
     setChecking(true);
     try {
-      const response = await fetch('/api/chat/status', { signal: AbortSignal.timeout(12000) });
+      const response = await fetch(apiUrl('/api/chat/status'), {
+        headers: accessHeaders(accessCode.current),
+        signal: AbortSignal.timeout(12000),
+      });
+      if (response.status === 401) {
+        if (live.current && sequence === statusSequence.current) {
+          setLocked(true);
+          setStatus(null);
+          if (accessCode.current) setAccessError('Mã truy cập chưa đúng. Vui lòng kiểm tra lại.');
+          accessCode.current = '';
+        }
+        return;
+      }
       if (!response.ok) throw new Error('offline');
       const value: unknown = await response.json();
       if (!isChatStatus(value)) throw new Error('invalid_status');
-      if (live.current && sequence === statusSequence.current) setStatus(value);
+      if (live.current && sequence === statusSequence.current) {
+        setStatus(value);
+        setLocked(false);
+        setCodeInput('');
+        setAccessError('');
+      }
     } catch {
       if (live.current && sequence === statusSequence.current) setStatus(null);
     } finally {
@@ -172,12 +202,12 @@ export default function StockChat({ active, onBack }: { active: boolean; onBack:
     };
   }, [active]);
   useEffect(() => {
-    if (!active || status?.ready) return;
+    if (!active || status?.ready || locked) return;
     const timer = window.setInterval(() => {
       if (document.visibilityState === 'visible') void checkStatus();
     }, 15000);
     return () => window.clearInterval(timer);
-  }, [active, status?.ready]);
+  }, [active, status?.ready, locked]);
   useEffect(() => {
     if (!active || !turns.length) return;
     if (!pending && !error && turns.at(-1)?.role === 'assistant') {
@@ -188,7 +218,7 @@ export default function StockChat({ active, onBack }: { active: boolean; onBack:
   }, [turns, pending, error, active]);
 
   async function submit(text: string, retryTurns?: Turn[]) {
-    if (pending || !text.trim()) return;
+    if (pending || locked || !text.trim()) return;
     const next: Turn[] = retryTurns || [...turns, { role: 'user', content: text.trim() }];
     setTurns(next);
     setInput('');
@@ -200,13 +230,17 @@ export default function StockChat({ active, onBack }: { active: boolean; onBack:
     const recent = next.slice(-15).map(({ role, content }) => ({ role, content }));
     while (recent.reduce((sum, turn) => sum + turn.content.length, 0) > 24000) recent.shift();
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch(apiUrl('/api/chat'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...accessHeaders(accessCode.current) },
         body: JSON.stringify({ messages: recent }),
         signal: AbortSignal.any([request.current.signal, AbortSignal.timeout(70000)]),
       });
       const body = await response.json();
+      if (response.status === 401) {
+        setLocked(true);
+        accessCode.current = '';
+      }
       if (!response.ok)
         throw new Error(body.detail?.message || 'Chưa gửi được câu hỏi. Hãy thử lại.');
       const reply = body as Reply;
@@ -301,41 +335,40 @@ export default function StockChat({ active, onBack }: { active: boolean; onBack:
             Có mô hình thử nghiệm riêng cho khoảng 1, 3 và 6 tháng. Trao đổi dựa trên dữ liệu FPT
             hiện có; quyết định đầu tư còn tùy mục tiêu, thời hạn và tình hình tài chính của bạn.
           </p>
-          <details className="stock-chat-connection" open={!status?.ready}>
-            <summary>
-              {status?.ready
-                ? 'Đã kết nối'
-                : checking
-                  ? 'Đang kiểm tra kết nối…'
-                  : !status
-                    ? 'Chưa liên lạc được máy chủ'
-                    : 'Cần kiểm tra kết nối'}{' '}
-              {status?.ready && <Check size={14} />}
-            </summary>
-            <p>API key: {connection.key}</p>
-            <p>Neo4j: {connection.graph}</p>
-            {!status && !checking && (
-              <p>
-                Chưa thể kiểm tra API key và Neo4j vì máy chủ không phản hồi. Cấu hình đã lưu không
-                bị xóa. Khởi động từ models/: <code>python -m chat.local_site start</code>.
-              </p>
-            )}
-            {status && !status.api_key_configured && (
-              <p>
-                Thêm <code>OPENAI_API_KEY</code> vào <code>models/.env</code> trên máy chủ. Không
-                nhập key vào ô chat.
-              </p>
-            )}
-            {status && !status.graph_connected && (
-              <p>
-                Khởi động kho dữ liệu: <code>python -m chat.setup</code> từ models/.
-              </p>
-            )}
-            <button onClick={() => void checkStatus()} disabled={checking}>
-              <RefreshCw size={13} />
-              {checking ? 'Đang kiểm tra…' : 'Kiểm tra kết nối'}
-            </button>
-          </details>
+          {!locked && (
+            <details className="stock-chat-connection" open={!status?.ready}>
+              <summary>
+                {status?.ready
+                  ? 'Đã kết nối'
+                  : checking
+                    ? 'Đang kiểm tra kết nối…'
+                    : !status
+                      ? 'Chưa liên lạc được máy chủ'
+                      : 'Cần kiểm tra kết nối'}{' '}
+                {status?.ready && <Check size={14} />}
+              </summary>
+              <p>API key: {connection.key}</p>
+              <p>Neo4j: {connection.graph}</p>
+              {!status && !checking && (
+                <p>Máy chủ chưa phản hồi. Vui lòng thử kiểm tra kết nối lại sau ít phút.</p>
+              )}
+              {status && !status.api_key_configured && (
+                <p>
+                  Thêm <code>OPENAI_API_KEY</code> vào <code>models/.env</code> trên máy chủ. Không
+                  nhập key vào ô chat.
+                </p>
+              )}
+              {status && !status.graph_connected && (
+                <p>
+                  Khởi động kho dữ liệu: <code>python -m chat.setup</code> từ models/.
+                </p>
+              )}
+              <button onClick={() => void checkStatus()} disabled={checking}>
+                <RefreshCw size={13} />
+                {checking ? 'Đang kiểm tra…' : 'Kiểm tra kết nối'}
+              </button>
+            </details>
+          )}
         </aside>
         <section className="stock-chat-conversation" aria-label="Hội thoại đầu tư FPT">
           <div
@@ -344,6 +377,35 @@ export default function StockChat({ active, onBack }: { active: boolean; onBack:
             aria-live="polite"
             aria-relevant="additions"
           >
+            {locked && (
+              <form
+                className="stock-chat-access"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  accessCode.current = codeInput;
+                  setAccessError('');
+                  void checkStatus();
+                }}
+              >
+                <label htmlFor="demo-access">Mã truy cập bản demo</label>
+                <p>Nhập mã do nhóm cung cấp để mở phần hỏi đáp.</p>
+                <div>
+                  <input
+                    id="demo-access"
+                    type="password"
+                    autoComplete="off"
+                    value={codeInput}
+                    maxLength={128}
+                    required
+                    onChange={(event) => setCodeInput(event.target.value)}
+                  />
+                  <button type="submit" disabled={checking || !codeInput}>
+                    {checking ? 'Đang kiểm tra…' : 'Mở hỏi đáp'}
+                  </button>
+                </div>
+                {accessError && <p role="alert">{accessError}</p>}
+              </form>
+            )}
             {turns.length === 0 && (
               <div className="stock-chat-welcome">
                 <div className="stock-chat-welcome-heading">
@@ -457,7 +519,7 @@ export default function StockChat({ active, onBack }: { active: boolean; onBack:
                 maxLength={4000}
                 rows={2}
                 placeholder="Ví dụ: Tôi có 200 triệu, nên cân nhắc gì trước khi đầu tư FPT?"
-                disabled={pending}
+                disabled={pending || locked}
                 onChange={(event) => setInput(event.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
@@ -466,7 +528,11 @@ export default function StockChat({ active, onBack }: { active: boolean; onBack:
                   }
                 }}
               />
-              <button type="submit" aria-label="Gửi câu hỏi" disabled={pending || !input.trim()}>
+              <button
+                type="submit"
+                aria-label="Gửi câu hỏi"
+                disabled={pending || locked || !input.trim()}
+              >
                 <ArrowUp size={20} />
               </button>
             </div>

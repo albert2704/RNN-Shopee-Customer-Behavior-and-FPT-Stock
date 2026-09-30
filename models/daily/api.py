@@ -4,24 +4,22 @@ import threading
 import time
 
 from fastapi import FastAPI, HTTPException, Request
-from starlette.middleware.trustedhost import TrustedHostMiddleware
+from hosting.security import install, allowed_origin
 
 from . import pipeline
 from chat.api import router as chat_router
 from chat.investment import compatible_outlook, company_documents
 
 app = FastAPI(title="FPT daily forecast", docs_url=None, redoc_url=None)
-app.add_middleware(
-    TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"]
-)
+install(app)
 app.include_router(chat_router)
 refresh_lock = threading.Lock()
 last_attempt = 0.0
-ALLOWED_ORIGINS = {
-    f"http://{host}:{port}"
-    for host in ["127.0.0.1", "localhost"]
-    for port in [4173, 5173, 8006]
-}
+
+
+@app.get("/healthz")
+def health():
+    return {"status": "ok"}
 
 
 @app.get("/api/fpt/daily")
@@ -62,10 +60,10 @@ def refresh(request: Request):
     global last_attempt
     # Require a same-origin JSON action; no cross-site form-triggered refresh.
     if (
-        request.headers.get("origin") not in ALLOWED_ORIGINS
+        not allowed_origin(request)
         or request.headers.get("content-type", "").split(";")[0] != "application/json"
     ):
-        raise HTTPException(403, "Chỉ cập nhật từ website chạy cục bộ.")
+        raise HTTPException(403, "Nguồn gửi yêu cầu chưa được cho phép.")
     if not refresh_lock.acquire(blocking=False):
         raise HTTPException(409, "Đang cập nhật dữ liệu.")
     try:

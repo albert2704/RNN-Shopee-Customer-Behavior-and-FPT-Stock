@@ -29,7 +29,8 @@ from .core import (
 MODELS = Path(__file__).resolve().parents[1]
 RUNTIME = daily.RUNTIME / "outlook"
 ARTIFACTS = MODELS / "outlook/artifacts"
-PUBLIC = MODELS.parent / "website/public/data/fpt-outlook.json"
+BUNDLED_PUBLIC = MODELS.parent / "website/public/data/fpt-outlook.json"
+PUBLIC = daily.PUBLIC_DIR / "fpt-outlook.json"
 CONFIG = copy.deepcopy(daily.CONFIG)
 SOURCE_FIELDS = (
     "symbol",
@@ -64,7 +65,8 @@ def validate_source(frame, source, trained=None):
 def read_latest():
     """A complete atomic runtime bundle wins; public is the portable fallback."""
     path = RUNTIME / "latest.json"
-    value = daily.read_json(path if path.exists() else PUBLIC)
+    source = path if path.exists() else PUBLIC if PUBLIC.exists() else BUNDLED_PUBLIC
+    value = daily.read_json(source)
     if value.get("schema_version") != 1 or value.get("symbol") != "FPT":
         raise ValueError("Invalid outlook snapshot")
     if [item["sessions"] for item in value["horizons"]] != list(HORIZONS):

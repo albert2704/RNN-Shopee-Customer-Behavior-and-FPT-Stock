@@ -10,15 +10,11 @@ from openai import AuthenticationError, APIError, RateLimitError
 from daily import pipeline
 from . import graph, service
 from .config import settings
+from hosting.security import allowed_origin, reserve_chat
 
 router = APIRouter(prefix="/api/chat")
 chat_lock = threading.Lock()
 last_attempt = 0.0
-ORIGINS = {
-    f"http://{host}:{port}"
-    for host in ["localhost", "127.0.0.1"]
-    for port in [4173, 5173, 8006]
-}
 
 
 def fail(status, code, message):
@@ -54,10 +50,10 @@ def status():
 async def chat(request: Request):
     global last_attempt
     if (
-        request.headers.get("origin") not in ORIGINS
+        not allowed_origin(request)
         or request.headers.get("content-type", "").split(";")[0] != "application/json"
     ):
-        fail(403, "origin", "Chỉ gửi câu hỏi từ website chạy cục bộ.")
+        fail(403, "origin", "Nguồn gửi yêu cầu chưa được cho phép.")
     raw = bytearray()
     async for chunk in request.stream():
         raw.extend(chunk)
@@ -85,6 +81,7 @@ async def chat(request: Request):
         if time.monotonic() - last_attempt < 3:
             fail(429, "cooldown", "Đợi vài giây trước khi gửi câu hỏi tiếp theo.")
         last_attempt = time.monotonic()
+        reserve_chat(request.app.state.deployment)
         # Keep slow network and database calls out of the event loop.
         from starlette.concurrency import run_in_threadpool
 

@@ -17,6 +17,8 @@ def build():
     files = [
         "README.md",
         ".gitignore",
+        ".dockerignore",
+        "render.yaml",
         "models/README.md",
         "models/CODE_MAP_VI.md",
         "models/requirements.txt",
@@ -31,6 +33,8 @@ def build():
         "website/package-lock.json",
         "website/tsconfig.json",
         "website/vite.config.ts",
+        "website/vercel.json",
+        "website/.env.example",
         "website/index.html",
         "website/README.md",
         "website/DESIGN.md",
@@ -56,12 +60,16 @@ def build():
         "models/chat/company_evidence.json",
         "models/chat/company_evidence.md",
         "models/outlook/README.md",
+        "models/hosting/README.md",
+        "models/hosting/Dockerfile",
+        "models/docs/specs/0004-cloud-deployment.md",
         "website/public/downloads/guide-trinh-bay.md",
         "website/public/downloads/demo-briefing-vi.md",
     ]
     files.extend(str(path.relative_to(PROJECT)) for path in sorted((PROJECT / "models/daily").glob("*.py")))
     files.extend(str(path.relative_to(PROJECT)) for path in sorted((PROJECT / "models/chat").glob("*.py")))
     files.extend(str(path.relative_to(PROJECT)) for path in sorted((PROJECT / "models/outlook").glob("*.py")))
+    files.extend(str(path.relative_to(PROJECT)) for path in sorted((PROJECT / "models/hosting").glob("*.py")))
     for folder, suffixes in [
         ("models/src", {".py"}),
         ("models/results/provenance", {".py", ".json"}),
@@ -120,7 +128,7 @@ def build():
             assert "raw" not in parts and "node_modules" not in parts, path
             assert "runtime" not in parts and ".env" not in parts, path
             assert not path.endswith((".pdf", ".docx", ".ipynb")), path
-            assert parts[1] in {"README.md", ".gitignore", "PACKAGE_MANIFEST.json", "models", "website"}, path
+            assert parts[1] in {"README.md", ".gitignore", ".dockerignore", "render.yaml", "PACKAGE_MANIFEST.json", "models", "website"}, path
         for item in manifest["files"]:
             assert (
                 hashlib.sha256(archive.read(PREFIX + item["path"])).hexdigest()

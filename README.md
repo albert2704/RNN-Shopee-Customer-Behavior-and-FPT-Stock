@@ -2,7 +2,9 @@
 
 Assignment 6 gồm hai phần: [`models/`](models/) là mã Python, checkpoint và kết quả; [`website/`](website/) là website demo bằng tiếng Việt.
 
-Shopee Thailand dùng **dữ liệu mô phỏng**, không phải dữ liệu chính thức từ Shopee hay khách hàng Việt Nam. Mỗi tập Kaggle có RNN và GRU được huấn luyện riêng. Màn hình `#demo` phát lại phép tính từ hai checkpoint RNN. Màn hình **Dự báo FPT** dùng một thí nghiệm RNN riêng, lấy giá qua KBS/Vnstock và gọi Python để dự báo phiên kế tiếp.
+Triển khai Vercel, Render và Neo4j Aura: [hướng dẫn cloud](models/hosting/README.md).
+
+Shopee Thailand dùng **dữ liệu mô phỏng**, không phải dữ liệu chính thức từ Shopee hay khách hàng Việt Nam. Mỗi tập Kaggle có RNN và GRU được huấn luyện riêng. Màn hình `#demo` phát lại phép tính từ hai checkpoint RNN. Phần **Hỏi đáp** tham khảo các mô hình FPT riêng, dùng dữ liệu KBS/Vnstock và Python cho dự báo phiên kế tiếp cùng các thời hạn 1, 3 và 6 tháng.
 
 ## Dự báo FPT từ dữ liệu cập nhật
 

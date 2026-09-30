@@ -1,6 +1,22 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { connectionLabels, isChatStatus } from '../src/domain/chat/connection.ts';
+import { apiUrl, accessHeaders } from '../src/domain/chat/api.ts';
+
+test('cloud API URLs use an HTTPS origin while local calls keep the Vite proxy', () => {
+  assert.equal(apiUrl('/api/chat', ''), '/api/chat');
+  assert.equal(apiUrl('/api/chat', 'https://api.example/'), 'https://api.example/api/chat');
+  for (const value of [
+    'http://api.example',
+    'https://user:key@api.example',
+    'https://api.example/path',
+    'https://api.example?secret=1',
+  ]) {
+    assert.throws(() => apiUrl('/api/chat', value));
+  }
+  assert.deepEqual(accessHeaders(''), {});
+  assert.deepEqual(accessHeaders('demo-only'), { 'X-Demo-Access-Code': 'demo-only' });
+});
 
 test('API unreachable does not claim the saved key or Neo4j configuration is missing', () => {
   assert.deepEqual(connectionLabels(null, false), { key: 'chưa xác nhận', graph: 'chưa xác nhận' });

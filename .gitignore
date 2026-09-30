@@ -21,3 +21,4 @@ models/daily/runtime/
 .env
 .env.*
 !.env.example
+**/.vercel/

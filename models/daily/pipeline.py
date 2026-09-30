@@ -31,7 +31,9 @@ from models import RecurrentForecaster  # noqa: E402
 from training import fit_model  # noqa: E402
 
 RUNTIME = Path(os.environ.get("FPT_DAILY_HOME", MODELS / "daily/runtime"))
-PUBLIC = MODELS.parent / "website/public/data/fpt-daily.json"
+BUNDLED_PUBLIC = MODELS.parent / "website/public/data/fpt-daily.json"
+PUBLIC_DIR = Path(os.environ.get("A6_PUBLIC_DATA_DIR", BUNDLED_PUBLIC.parent))
+PUBLIC = PUBLIC_DIR / "fpt-daily.json"
 
 
 def digest(path):
@@ -394,7 +396,7 @@ def bootstrap():
     if (RUNTIME / "active.json").exists():
         print("An active local run already exists; left unchanged.")
         return
-    result = read_json(PUBLIC)
+    result = read_json(PUBLIC if PUBLIC.exists() else BUNDLED_PUBLIC)
     run_id = result["model"]["run_id"]
     if Path(run_id).name != run_id:
         raise ValueError("Invalid bundled run id")
