@@ -29,6 +29,7 @@ class Deployment:
     quota_path: Path
     daily_limit: int
     minute_limit: int
+    allow_refresh: bool
 
 
 def settings():
@@ -77,8 +78,11 @@ def settings():
     minute_limit = int(os.environ.get("CHAT_MINUTE_LIMIT", "5"))
     if not 1 <= minute_limit <= daily_limit <= 1000:
         raise ValueError("Chat limits must satisfy 1 <= minute <= daily <= 1000")
+    allow_refresh = os.environ.get("A6_ALLOW_REFRESH", "false" if production else "true")
+    if allow_refresh not in {"true", "false"}:
+        raise ValueError("A6_ALLOW_REFRESH must be true or false")
     return Deployment(production, origins, hosts, code, root / "chat-usage.sqlite3",
-                      daily_limit, minute_limit)
+                      daily_limit, minute_limit, allow_refresh == "true")
 
 
 def install(app):
@@ -123,6 +127,9 @@ def reserve_chat(config, now=None):
     if not config.code and not config.production:
         return
     now = now or datetime.now(timezone.utc)
+    if config.production:
+        from .quota import reserve
+        return reserve(config, now)
     day = now.astimezone(timezone(timedelta(hours=7))).date().isoformat()
     minute = int(now.timestamp()) // 60
     config.quota_path.parent.mkdir(parents=True, exist_ok=True)

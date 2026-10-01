@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+import uuid
 from unittest.mock import patch
 
 from fastapi import FastAPI, HTTPException, Request
@@ -82,7 +83,7 @@ class HostingTests(unittest.TestCase):
 
     def test_quota_survives_connections_and_resets_by_day(self):
         with tempfile.TemporaryDirectory() as folder, patch.dict(os.environ, ENV, clear=True):
-            config = replace(settings(), quota_path=Path(folder) / "usage.sqlite3",
+            config = replace(settings(), production=False, quota_path=Path(folder) / "usage.sqlite3",
                              minute_limit=1, daily_limit=2)
             now = datetime(2026, 10, 8, 12, tzinfo=timezone.utc)
             reserve_chat(config, now)
@@ -95,7 +96,7 @@ class HostingTests(unittest.TestCase):
 
     def test_concurrent_reservations_cannot_exceed_cap(self):
         with tempfile.TemporaryDirectory() as folder, patch.dict(os.environ, ENV, clear=True):
-            config = replace(settings(), quota_path=Path(folder) / "usage.sqlite3",
+            config = replace(settings(), production=False, quota_path=Path(folder) / "usage.sqlite3",
                              daily_limit=3, minute_limit=3)
             def attempt(_):
                 try:
@@ -129,6 +130,62 @@ class HostingTests(unittest.TestCase):
                     outlook.load_model(bundle, item, int(horizon))
                 outlook.publish(result)
                 self.assertTrue((root / "public/fpt-outlook.json").exists())
+
+    def test_production_requires_durable_quota(self):
+        from hosting import quota
+        with patch.dict(os.environ, ENV, clear=True), patch.object(
+            quota.graph, "driver", side_effect=RuntimeError("private-connection-details")
+        ):
+            with self.assertRaises(HTTPException) as failure:
+                reserve_chat(settings())
+            self.assertEqual(failure.exception.status_code, 503)
+            self.assertNotIn("private-connection", str(failure.exception.detail))
+
+    def test_hosted_refresh_is_disabled_before_provider_call(self):
+        from daily import api
+        with patch.dict(os.environ, ENV, clear=True), patch.object(
+            api.app.state, "deployment", settings()
+        ), patch.object(api.pipeline, "refresh") as provider:
+            # The module's middleware keeps its local test settings; the route
+            # consults the production deployment state before any provider work.
+            with TestClient(api.app) as client:
+                response = client.post("/api/fpt/daily/refresh", json={},
+                                       headers={"Origin": "https://sequence.example"})
+            self.assertEqual(response.status_code, 403)
+            provider.assert_not_called()
+
+    @unittest.skipUnless(os.environ.get("A6_TEST_NEO4J") == "1", "optional local graph integration")
+    def test_graph_quota_concurrency_persistence_and_boundaries(self):
+        from hosting import quota
+        scope = "quota-test-" + uuid.uuid4().hex
+        config = replace(settings(), daily_limit=4, minute_limit=3)
+        now = datetime(2026, 10, 8, 16, 58, 30, tzinfo=timezone.utc)
+        def attempt(_):
+            try:
+                quota.reserve(config, now, scope)
+                return True
+            except HTTPException as error:
+                self.assertEqual(error.status_code, 429)
+                return False
+        try:
+            with ThreadPoolExecutor(max_workers=6) as pool:
+                self.assertEqual(sum(pool.map(attempt, range(10))), 3)
+            # Independent connections preserve counts; minute rollover allows
+            # one more call, but cannot erase the previous minute's limit.
+            quota.reserve(config, now + timedelta(seconds=30), scope)
+            with self.assertRaises(HTTPException) as failure:
+                quota.reserve(config, now, scope)
+            self.assertEqual(failure.exception.status_code, 429)
+            quota.reserve(config, now + timedelta(days=1), scope)
+            # Previous day's remaining allowance is still enforced even when
+            # a delayed reservation arrives after the new day started.
+            with self.assertRaises(HTTPException) as failure:
+                quota.reserve(config, now + timedelta(minutes=1), scope)
+            self.assertEqual(failure.exception.status_code, 429)
+        finally:
+            with quota.graph.driver() as db:
+                db.execute_query("MATCH (q:A6Quota) WHERE q.scope=$scope OR q.id=$lock DELETE q",
+                                 scope=scope, lock=scope + ":lock", database_="neo4j")
 
 
 if __name__ == "__main__":

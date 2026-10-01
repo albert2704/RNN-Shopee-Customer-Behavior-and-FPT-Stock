@@ -1,19 +1,21 @@
 # Cloud deployment
 
-Use Vercel for `website/`, one Render Docker web service for the API, and a
-dedicated Neo4j Aura database. Startup checks the shipped models without
+Use Vercel for `website/`, one Render Free Docker web service for the API, and a
+dedicated Neo4j AuraDB Free database. Startup checks the shipped models without
 training or downloading new market data. Local defaults remain unchanged.
 
 ## Render API
 
-The root `render.yaml` describes one 2 GB Docker service and a 1 GB persistent
-disk. Review the current price before creating it. Build context is the repo
-root; Dockerfile is `models/hosting/Dockerfile`. Do not set Root Directory.
+The root `render.yaml` uses the Free plan (512 MB), with no paid disk. Build
+context is the repo root; Dockerfile is `models/hosting/Dockerfile`. Do not set
+Root Directory. Runtime files in `/tmp/sequence` are disposable: every new
+instance restores the same dated forecasts and checkpoints from the repository.
+`A6_ALLOW_REFRESH=false` prevents cloud refreshes that would be lost on restart.
+Prepare data updates locally, commit the public artifacts, then redeploy.
 
-The disk mounts at `/var/data`. `FPT_DAILY_HOME=/var/data/daily` holds runtime
-models, snapshots and usage counters. `A6_PUBLIC_DATA_DIR=/var/data/public`
-holds writable exports. Committed website JSON files are the initial seed.
-Bootstrap preserves an existing active run. Do not mount a disk over `/app`.
+Render Free sleeps after 15 minutes idle; the first request can take about a
+minute to wake it. Open Hỏi đáp before presenting. The connection check waits up
+to 75 seconds and avoids overlapping polls. See [Render's free limits](https://render.com/docs/free).
 
 Configure these server variables in Render, never in frontend code:
 
@@ -33,10 +35,13 @@ Render supplies `RENDER_EXTERNAL_HOSTNAME`. API custom domains can be added
 with `A6_ALLOWED_HOSTS`. Wildcard origins and hosts are rejected.
 
 Use one instance and one Uvicorn worker, which preserves existing locks.
-SQLite on the disk caps accepted chat attempts at 100 per Vietnam calendar day
+A transaction in Neo4j Aura caps accepted chat attempts at 100 per Vietnam calendar day
 and five per minute. Upstream failures consume an attempt. Override through
 `CHAT_DAILY_LIMIT` and `CHAT_MINUTE_LIMIT` (1 to 1000). This caps request counts,
-not exact spending. No conversation, credential or IP is stored in this database.
+not exact spending. No conversation, credential or IP is stored in the quota records.
+Reservations acquire a database lock before checking both counters, then commit
+before OpenAI is called. If Aura is unavailable, chat stops rather than falling
+back to ephemeral counters. Local mode continues to use SQLite when a code is set.
 The shared code is for an invited classroom demo, not individual user identity.
 
 `/healthz` is a fast health probe without external calls. Authenticated
@@ -58,22 +63,24 @@ React memory, not a URL, cookie or browser storage; reload asks for it again.
 
 ## Neo4j Aura
 
-Use a dedicated database and save its connection details outside the repo.
+Select the **Free** tier, not the 14-day Professional trial, and save its
+connection details outside the repo. Free databases pause after 72 hours idle;
+resume from Aura before presenting. See [Aura instance actions](https://neo4j.com/docs/aura/managing-instances/instance-actions/).
 The current graph importer creates the existing indexes and imports versioned
 reference evidence on first use. It never stores questions or chat history.
-If using a trial, record its expiry before sharing a permanent website URL.
+Do not activate a paid trial subscription for this deployment.
 
 ## Price updates and operations
 
 Deployment uses the committed, dated forecasts and does not claim they are
-today's prices. There is no scheduler or automatic retraining. Manual refresh
-is POST `/api/fpt/daily/refresh` with JSON content type, approved website Origin,
-and `X-Demo-Access-Code`. Keep secrets out of shell history. Provider download
-can take up to 90 seconds; failure preserves the previous valid forecast.
-The static classroom charts remain historical. Chat uses the backend snapshot.
+today's prices. There is no scheduler or cloud training. The local refresh
+workflow remains available; hosted refresh is disabled. The static classroom
+charts remain historical. Chat uses the packaged backend snapshot.
 
-Render automatic deploy is off so a Git push does not interrupt the demo API.
-A disk deployment briefly interrupts service. Keep local
+Render automatic application deployment is off so a Git push does not interrupt
+the demo API. Blueprint configuration changes may still auto-sync; keep the plan
+set to `free` and do not add a disk. OpenAI API usage remains separately metered;
+free hosting does not make the model API free. Keep local
 `python -m chat.local_site start` available as a presentation fallback.
 
 ## Verification

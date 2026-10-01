@@ -14,7 +14,8 @@ The user accepted this hosting arrangement on 2026-10-08. The existing Vite
 proxy, API host checks, graph connection and snapshot writes assume localhost.
 Use configuration to support both environments, without a model or UI rewrite.
 The deployment is a small invited classroom demo, not an unrestricted public
-investment service. Hosting charges and account login remain user decisions.
+investment service. The user chose free hosting only on 2026-10-08. Use Render Free and AuraDB Free;
+no paid instance or disk is authorized. Existing OpenAI usage is separate.
 
 Implementation uses the architecture and development workflows. No new
 application framework or authentication vendor is needed for a shared demo
@@ -28,8 +29,9 @@ access code. The code is an admission credential, not a user account system.
   enters Git, built JavaScript, URLs or logs. The browser retains it in memory.
 - AC-4: Accepted chat attempts have a durable global daily and minute quota.
   No questions, answers, IPs or credentials are stored in the quota database.
-- AC-5: Runtime forecasts, exports and counters survive a Render restart on the
-  persistent disk. Startup validates the shipped checkpoints without training.
+- AC-5: Each Render restart restores the same packaged forecasts and checkpoints.
+  Cloud refresh is disabled because the free filesystem is ephemeral. Aura retains
+  quota counters across restarts. Startup does not train.
 - AC-6: Neo4j and OpenAI credentials are backend environment variables only.
 - AC-7: Localhost defaults and the existing presentation continue to work.
 - AC-8: Publish only after offline checks, container checks where available,
@@ -45,8 +47,8 @@ access code. The code is an admission credential, not a user account system.
 | Deployment mode | A6_ENV, local by default, production in Render |
 | Demo code | CHAT_DEMO_CODE, generated secret of at least 24 characters |
 | Chat quotas | CHAT_DAILY_LIMIT (100), CHAT_MINUTE_LIMIT (5) |
-| Runtime folder | FPT_DAILY_HOME, /var/data/daily on Render |
-| Export folder | A6_PUBLIC_DATA_DIR, /var/data/public on Render |
+| Runtime folder | FPT_DAILY_HOME, /tmp/sequence/daily on Render |
+| Export folder | A6_PUBLIC_DATA_DIR, /tmp/sequence/public on Render |
 | Seed forecasts | The two committed website/public/data FPT JSON files |
 | Forecast weights | Existing daily/outlook artifacts, hash verified |
 | Graph and LLM settings | Existing NEO4J_* and OPENAI_* environment settings |
@@ -61,13 +63,15 @@ No cookie authentication. A 401 response opens an inline access form in chat.
 Invalid codes never trigger Neo4j retrieval or OpenAI requests.
 
 Reserve chat quota after validation and the existing concurrency/cooldown checks,
-before calling OpenAI. SQLite on the disk atomically counts attempts in Vietnam
-calendar day and UTC minute buckets. Failed upstream attempts count too. Return
-429 when capped. Delete old buckets on each accepted reservation.
+before calling OpenAI. In production, Aura transactions lock a dedicated node
+before checking Vietnam calendar day and UTC minute buckets. Commit both counts
+before calling OpenAI; failures consume an attempt. Return 429 when capped and
+503 if durable reservation fails. Never use a local fallback in production.
+Delete expired quota buckets after accepted reservations. Local SQLite remains.
 
 One Render instance and one Uvicorn worker preserve existing refresh/chat locks.
-The disk prevents horizontal scaling; a future scale change needs shared locks
-and persistent storage design. This is deliberate for the classroom demo.
+The free plan supports one instance; a future scale change needs shared
+refresh/concurrency locks and persistent forecast storage design. This is deliberate for the classroom demo.
 
 ## Persistence and migration
 
@@ -85,12 +89,13 @@ Vercel's static historical demo stays dated; live chat uses the backend snapshot
 - [x] Add frontend API configuration and access form (AC-1/2/3/7).
 - [x] Add Docker, Render and Vercel configuration plus operator documentation (AC-1/5/6).
 - [x] Run offline regression, artifact and container checks (AC-7/8).
-- [ ] Connect accounts, approve any paid resources, deploy and verify the hosted app (AC-8).
+- [ ] Connect accounts, deploy only free resources and verify the hosted app (AC-8).
 
 ## Consequences and rollback
 
-Three hosting accounts are required. Render's persistent disk entails a paid
-service and a short interruption on redeploy. A daily request cap bounds calls,
+Three hosting accounts are required. Render Free sleeps when idle and discards
+local files on restart. The frontend allows a 75-second wake-up check without
+overlapping status requests. AuraDB Free may need manual resume after inactivity. A daily request cap bounds calls,
 not exact dollars; OpenAI account spend controls remain useful. Rotate the demo
 code if it is shared outside the intended audience. Keep the local app as the
 presentation fallback. No dependency on the cloud is added to local defaults.
@@ -108,3 +113,10 @@ Verification on 2026-10-08: 46 frontend tests passed; 49 Python tests ran,
 formatting passed. Linux ARM64 Docker build and isolated startup/restart checks
 passed with about 324 MB resident API memory. Linux AMD64 hosted build and
 actual cloud integration remain to be verified.
+
+Free-tier revision: hosted refresh is disabled, production quota uses Aura, and
+Render has no disk. 52 offline Python tests ran (50 passed, two optional graph tests skipped); the
+new live local graph quota concurrency/persistence test passed separately.
+46 frontend checks, formatting and build passed. The ARM64 container passed
+startup, authenticated status and restart with a 512 MB memory/no-swap limit
+(about 329 MiB resident). Hosted AMD64 behavior remains to be verified.

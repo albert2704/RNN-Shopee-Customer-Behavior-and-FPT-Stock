@@ -64,6 +64,8 @@ def refresh(request: Request):
         or request.headers.get("content-type", "").split(";")[0] != "application/json"
     ):
         raise HTTPException(403, "Nguồn gửi yêu cầu chưa được cho phép.")
+    if not request.app.state.deployment.allow_refresh:
+        raise HTTPException(403, "Bản demo này dùng dữ liệu đã công bố. Cập nhật dữ liệu trên máy phát triển rồi triển khai lại.")
     if not refresh_lock.acquire(blocking=False):
         raise HTTPException(409, "Đang cập nhật dữ liệu.")
     try:

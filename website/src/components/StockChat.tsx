@@ -142,16 +142,19 @@ export default function StockChat({ active, onBack }: { active: boolean; onBack:
   const field = useRef<HTMLTextAreaElement>(null);
   const request = useRef<AbortController | null>(null);
   const statusSequence = useRef(0);
+  const statusBusy = useRef(false);
   const retry = useRef<Turn[] | null>(null);
   const live = useRef(true);
 
   async function checkStatus() {
+    if (statusBusy.current) return;
+    statusBusy.current = true;
     const sequence = ++statusSequence.current;
     setChecking(true);
     try {
       const response = await fetch(apiUrl('/api/chat/status'), {
         headers: accessHeaders(accessCode.current),
-        signal: AbortSignal.timeout(12000),
+        signal: AbortSignal.timeout(75000),
       });
       if (response.status === 401) {
         if (live.current && sequence === statusSequence.current) {
@@ -174,6 +177,7 @@ export default function StockChat({ active, onBack }: { active: boolean; onBack:
     } catch {
       if (live.current && sequence === statusSequence.current) setStatus(null);
     } finally {
+      statusBusy.current = false;
       if (live.current && sequence === statusSequence.current) setChecking(false);
     }
   }

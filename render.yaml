@@ -2,24 +2,22 @@ services:
   - type: web
     name: sequence-fpt-api
     runtime: docker
-    plan: 1c-2g
+    plan: free
     region: singapore
     dockerfilePath: ./models/hosting/Dockerfile
     dockerContext: .
     healthCheckPath: /healthz
     numInstances: 1
     autoDeployTrigger: off
-    disk:
-      name: fpt-runtime
-      mountPath: /var/data
-      sizeGB: 1
     envVars:
       - key: A6_ENV
         value: production
       - key: FPT_DAILY_HOME
-        value: /var/data/daily
+        value: /tmp/sequence/daily
       - key: A6_PUBLIC_DATA_DIR
-        value: /var/data/public
+        value: /tmp/sequence/public
+      - key: A6_ALLOW_REFRESH
+        value: "false"
       - key: A6_ALLOWED_ORIGINS
         sync: false
       - key: CHAT_DEMO_CODE

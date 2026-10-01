@@ -1,4 +1,4 @@
-"""Bootstrap shipped weights on the mounted disk, then serve one API worker."""
+"""Bootstrap shipped weights into runtime storage, then serve one API worker."""
 
 import os
 
