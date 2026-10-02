@@ -8,7 +8,7 @@ import tempfile
 import unittest
 import uuid
 from decimal import Decimal
-from unittest.mock import patch
+from unittest.mock import PropertyMock, patch
 
 from fastapi.testclient import TestClient
 
@@ -346,6 +346,54 @@ class ChatTests(unittest.TestCase):
                 {"OPENAI_API_KEY": "not-a-real-key", "OPENAI_MODEL": "gpt-4.1-mini"},
             )
         self.assertEqual(answer.paragraphs[0].citations, ["E2"])
+
+    def test_status_checks_configured_graph_database(self):
+        graph_config = {"NEO4J_DATABASE": "classroom-database"}
+        with patch.object(graph, "settings", return_value=graph_config), patch.object(
+            graph, "driver"
+        ) as driver, patch.object(
+            api,
+            "settings",
+            return_value={"OPENAI_API_KEY": "test-key", "OPENAI_MODEL": "test-model"},
+        ), patch.object(api.pipeline, "read_latest", return_value=DATA):
+            db = driver.return_value.__enter__.return_value
+            session = db.session.return_value.__enter__.return_value
+            self.assertTrue(api.status()["ready"])
+            driver.assert_called_once_with(graph_config)
+            db.session.assert_called_once_with(database="classroom-database")
+            query = session.run.call_args.args[0]
+            self.assertEqual(query.text, "RETURN 1")
+            self.assertGreater(query.timeout, 0)
+            self.assertLessEqual(query.timeout, 5)
+
+            session.run.return_value.consume.side_effect = RuntimeError(
+                "database unavailable"
+            )
+            unavailable = api.status()
+            self.assertFalse(unavailable["graph_connected"])
+            self.assertFalse(unavailable["ready"])
+
+    def test_readiness_warning_excludes_private_exception_data(self):
+        private = "secret-password neo4j+s://private-host private-config"
+        for code in ("Neo.ClientError.Security.Unauthorized", private):
+            with self.subTest(code=code), patch.object(
+                api.graph, "ping", side_effect=api.Neo4jError(private)
+            ), patch.object(
+                api.Neo4jError, "code", new_callable=PropertyMock, return_value=code
+            ), patch.object(
+                api, "settings",
+                return_value={"OPENAI_API_KEY": private, "OPENAI_MODEL": "test-model"},
+            ), patch.object(api.pipeline, "read_latest", return_value=DATA), patch.object(
+                api, "_readiness_log_state", (None, 0.0)
+            ), self.assertLogs(api.logger, level="WARNING") as logged:
+                self.assertFalse(api.status()["ready"])
+                self.assertFalse(api.status()["ready"])
+            self.assertEqual(len(logged.output), 1)
+            self.assertNotIn(private, logged.output[0])
+            self.assertIn("class=Neo4jError", logged.output[0])
+            expected = code if code != private else "unavailable"
+            self.assertIn("code=" + expected, logged.output[0])
+            self.assertIsNone(logged.records[0].exc_info)
 
     def test_request_bounds_and_missing_key(self):
         with TestClient(app) as client, patch.object(

@@ -1,5 +1,6 @@
 """Bounded local endpoints. No financial conversation is saved by this server."""
 
+import logging
 import threading
 import time
 
@@ -15,6 +16,33 @@ from hosting.security import allowed_origin, reserve_chat
 router = APIRouter(prefix="/api/chat")
 chat_lock = threading.Lock()
 last_attempt = 0.0
+logger = logging.getLogger(__name__)
+_readiness_log_lock = threading.Lock()
+_readiness_log_state = (None, 0.0)
+_READINESS_ERROR_CODES = {
+    "Neo.ClientError.Security.Unauthorized",
+    "Neo.ClientError.Security.Forbidden",
+    "Neo.ClientError.Security.AuthorizationFailed",
+    "Neo.ClientError.Security.AuthorizationExpired",
+    "Neo.ClientError.Security.TokenExpired",
+    "Neo.ClientError.Security.CredentialsExpired",
+    "Neo.ClientError.Database.DatabaseNotFound",
+    "Neo.TransientError.General.DatabaseUnavailable",
+}
+
+
+def log_readiness_failure(error):
+    global _readiness_log_state
+    code = error.code if isinstance(error, Neo4jError) else None
+    code = code if code in _READINESS_ERROR_CODES else "unavailable"
+    signature = (type(error).__name__, code)
+    now = time.monotonic()
+    with _readiness_log_lock:
+        previous, logged_at = _readiness_log_state
+        if signature != previous or now - logged_at >= 60:
+            # Never log the exception message, traceback, connection or settings.
+            logger.warning("Graph readiness failed: class=%s code=%s", *signature)
+            _readiness_log_state = (signature, now)
 
 
 def fail(status, code, message):
@@ -28,8 +56,8 @@ def status():
     try:
         graph.ping()
         connected = True
-    except Exception:
-        pass
+    except Exception as error:
+        log_readiness_failure(error)
     available = True
     try:
         data = pipeline.read_latest()

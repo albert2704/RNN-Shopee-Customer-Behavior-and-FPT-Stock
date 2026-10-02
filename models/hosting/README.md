@@ -4,6 +4,15 @@ Use Vercel for `website/`, one Render Free Docker web service for the API, and a
 dedicated Neo4j AuraDB Free database. Startup checks the shipped models without
 training or downloading new market data. Local defaults remain unchanged.
 
+Production website: **https://sequence-rnn.vercel.app**
+
+API: **https://sequence-fpt-api.onrender.com**
+
+For the classroom demo, open [Hỏi đáp](https://sequence-rnn.vercel.app/#hoi-dap).
+Get the private access code from Render → `sequence-fpt-api` → Environment →
+`CHAT_DEMO_CODE` → Copy value, and enter it in the website's access form.
+This is the demo access code, not the OpenAI API key or Aura password.
+
 ## Render API
 
 The root `render.yaml` uses the Free plan (512 MB), with no paid disk. Build

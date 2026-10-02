@@ -18,8 +18,9 @@ def driver(config=None):
 
 
 def ping():
-    with driver() as db:
-        db.verify_connectivity()
+    config = settings()
+    with driver(config) as db, db.session(database=config["NEO4J_DATABASE"]) as session:
+        session.run(Query("RETURN 1", timeout=4)).consume()
 
 
 def retrieve(data, question):
