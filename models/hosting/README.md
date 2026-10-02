@@ -27,9 +27,9 @@ Configure these server variables in Render, never in frontend code:
 | `OPENAI_API_KEY` | The project's OpenAI API key |
 | `OPENAI_MODEL` | `gpt-4.1-mini` or a compatible configured model |
 | `NEO4J_URI` | Aura's `neo4j+s://...` connection URI |
-| `NEO4J_USERNAME` | Database username, normally `neo4j` |
+| `NEO4J_USERNAME` | Exact username from Aura's generated credentials |
 | `NEO4J_PASSWORD` | Aura database password |
-| `NEO4J_DATABASE` | `neo4j` |
+| `NEO4J_DATABASE` | Exact database name shown in Aura Query |
 
 Render supplies `RENDER_EXTERNAL_HOSTNAME`. API custom domains can be added
 with `A6_ALLOWED_HOSTS`. Wildcard origins and hosts are rejected.
@@ -69,6 +69,8 @@ resume from Aura before presenting. See [Aura instance actions](https://neo4j.co
 The current graph importer creates the existing indexes and imports versioned
 reference evidence on first use. It never stores questions or chat history.
 Do not activate a paid trial subscription for this deployment.
+Do not assume the username or database is `neo4j`: the new Free instance may
+use its instance ID for both. Match the generated credentials and Query menu.
 
 ## Price updates and operations
 
