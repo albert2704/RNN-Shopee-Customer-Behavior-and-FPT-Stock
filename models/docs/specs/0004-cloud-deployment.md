@@ -128,8 +128,18 @@ Shopee, FPT, summary and chat pages loaded. Chat rejected an invalid access code
 and accepted the generated code; the packaged snapshot is dated 2026-10-07.
 After redeploying commit `eb23799`, the API restored the same 2026-10-07 snapshot
 and became live. The database check reported `AuthError` with
-`Neo.ClientError.Security.Unauthorized`: the user must correct the Aura password
-in Render. URI, username and database match the `Sequence demo` instance.
-A real cited answer and connected readiness remain pending. Readiness queries
-the configured database and logs only the exception class and an allowlisted
+`Neo.ClientError.Security.Unauthorized`: the configured username/password pair
+was rejected. This does not establish which credential is incorrect, and the
+configured username `725759b9` has not been independently verified.
+Readiness queries the configured database and logs only the exception class and an allowlisted
 error code for diagnosis.
+
+Follow-up on 2026-10-09: deployment `dep-db3sn9om7kps73fts06g` became live after
+saving the edited Render variables and rebuilding. Chat remains blocked by
+rejected database credentials; connected readiness and a real cited answer
+remain pending. Aura's Recover credentials link opens instructions for creating
+a new database user or cloning an instance, not a password reset or disclosure.
+A filename-only search in Downloads found no original Aura credential download.
+`SHOW USERS` through the signed-in Aura account returned access denied.
+`SHOW CURRENT USER` returned the Aura account identity, which does not verify
+the database username/password used by Render.

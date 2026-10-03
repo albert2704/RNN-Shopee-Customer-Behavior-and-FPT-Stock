@@ -78,8 +78,13 @@ resume from Aura before presenting. See [Aura instance actions](https://neo4j.co
 The current graph importer creates the existing indexes and imports versioned
 reference evidence on first use. It never stores questions or chat history.
 Do not activate a paid trial subscription for this deployment.
-Do not assume the username or database is `neo4j`: the new Free instance may
-use its instance ID for both. Match the generated credentials and Query menu.
+Verify the username and database separately; an instance ID or database name
+does not establish the login username. Match the generated credentials and Query menu.
+`Neo.ClientError.Security.Unauthorized` means the configured credential pair was
+rejected; it does not identify whether the username or password is wrong.
+Aura's Recover credentials link opens [recovery instructions](https://neo4j.com/docs/aura/getting-started/connect-instance/)
+for creating a new user or cloning an instance; opening it does not reveal or
+reset the original password.
 
 ## Price updates and operations
 
