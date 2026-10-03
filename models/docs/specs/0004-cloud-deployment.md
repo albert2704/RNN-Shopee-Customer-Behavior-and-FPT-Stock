@@ -120,3 +120,16 @@ new live local graph quota concurrency/persistence test passed separately.
 46 frontend checks, formatting and build passed. The ARM64 container passed
 startup, authenticated status and restart with a 512 MB memory/no-swap limit
 (about 329 MiB resident). Hosted AMD64 behavior remains to be verified.
+
+Cloud rollout on 2026-10-08: the Linux AMD64 image built and started on Render
+Free; `/healthz` passed and the service became live. Vercel production is
+https://sequence-rnn.vercel.app and uses https://sequence-fpt-api.onrender.com.
+Shopee, FPT, summary and chat pages loaded. Chat rejected an invalid access code
+and accepted the generated code; the packaged snapshot is dated 2026-10-07.
+After redeploying commit `eb23799`, the API restored the same 2026-10-07 snapshot
+and became live. The database check reported `AuthError` with
+`Neo.ClientError.Security.Unauthorized`: the user must correct the Aura password
+in Render. URI, username and database match the `Sequence demo` instance.
+A real cited answer and connected readiness remain pending. Readiness queries
+the configured database and logs only the exception class and an allowlisted
+error code for diagnosis.
