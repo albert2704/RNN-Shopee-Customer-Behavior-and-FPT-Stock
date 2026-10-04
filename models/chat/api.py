@@ -106,9 +106,10 @@ async def chat(request: Request):
     if not chat_lock.acquire(blocking=False):
         fail(409, "busy", "Đang trả lời một câu hỏi. Vui lòng chờ.")
     try:
-        if time.monotonic() - last_attempt < 3:
-            fail(429, "cooldown", "Đợi vài giây trước khi gửi câu hỏi tiếp theo.")
-        last_attempt = time.monotonic()
+        if request.app.state.deployment.enforce_limits:
+            if time.monotonic() - last_attempt < 3:
+                fail(429, "cooldown", "Đợi vài giây trước khi gửi câu hỏi tiếp theo.")
+            last_attempt = time.monotonic()
         # Keep slow network and database calls out of the event loop.
         from starlette.concurrency import run_in_threadpool
 

@@ -13,25 +13,29 @@ dated forecasts. Keep the local presentation working with its current defaults.
 The user accepted this hosting arrangement on 2026-10-08. The existing Vite
 proxy, API host checks, graph connection and snapshot writes assume localhost.
 Use configuration to support both environments, without a model or UI rewrite.
-The deployment is a small invited classroom demo, not an unrestricted public
-investment service. The user chose free hosting only on 2026-10-08. Use Render Free and AuraDB Free;
+The deployment is a small classroom demo. On 2026-10-09 the user requested removal
+of the demo access form and then all application question limits. Public chat
+opens directly without daily/minute quotas or an artificial cooldown.
+The user chose free hosting only on 2026-10-08. Use Render Free and AuraDB Free;
 no paid instance or disk is authorized. Existing OpenAI usage is separate.
 
 Implementation uses the architecture and development workflows. No new
-application framework or authentication vendor is needed for a shared demo
-access code. The code is an admission credential, not a user account system.
+application framework or authentication vendor is needed. An optional server
+setting can still enable code protection for API clients.
 
 ## Requirements
 
 - AC-1: The four website chapters load from Vercel, using the existing build.
 - AC-2: Chat reaches the hosted API, with exact HTTPS origins and host names.
-- AC-3: Hosted chat and refresh require a server configured demo code. It never
-  enters Git, built JavaScript, URLs or logs. The browser retains it in memory.
-- AC-4: Accepted chat attempts have a durable global daily and minute quota.
-  No questions, answers, IPs or credentials are stored in the quota database.
+- AC-3: Hosted chat opens without a demo access code or access form. Optional
+  API code protection is explicitly enabled on the server and fails closed when
+  enabled without a valid code. No code enters frontend builds, URLs or logs.
+- AC-4: Public chat has no application daily/minute quota or artificial cooldown.
+  Optional limits require explicit server opt-in. Existing limit values alone do
+  not enable them. Input validation, timeouts and processing locks remain.
 - AC-5: Each Render restart restores the same packaged forecasts and checkpoints.
-  Cloud refresh is disabled because the free filesystem is ephemeral. Aura retains
-  quota counters across restarts. Startup does not train.
+  Cloud refresh is disabled because the free filesystem is ephemeral. Optional
+  quota counters remain in Aura across restarts. Startup does not train.
 - AC-6: Neo4j and OpenAI credentials are backend environment variables only.
 - AC-7: Localhost defaults and the existing presentation continue to work.
 - AC-8: Publish only after offline checks, container checks where available,
@@ -45,8 +49,10 @@ access code. The code is an admission credential, not a user account system.
 | Allowed origins | A6_ALLOWED_ORIGINS, exact Vercel production URL |
 | Allowed hosts | A6_ALLOWED_HOSTS plus Render's RENDER_EXTERNAL_HOSTNAME |
 | Deployment mode | A6_ENV, local by default, production in Render |
-| Demo code | CHAT_DEMO_CODE, generated secret of at least 24 characters |
-| Chat quotas | CHAT_DAILY_LIMIT (100), CHAT_MINUTE_LIMIT (5) |
+| Public chat | CHAT_REQUIRE_ACCESS_CODE, false by default and in Render |
+| Optional API code | CHAT_DEMO_CODE, 24 to 128 characters, only used when protection is true |
+| Question limits | CHAT_ENFORCE_LIMITS, false by default and in Render |
+| Optional chat quotas | CHAT_DAILY_LIMIT (100), CHAT_MINUTE_LIMIT (5), only used when limits are true |
 | Runtime folder | FPT_DAILY_HOME, /tmp/sequence/daily on Render |
 | Export folder | A6_PUBLIC_DATA_DIR, /tmp/sequence/public on Render |
 | Seed forecasts | The two committed website/public/data FPT JSON files |
@@ -56,14 +62,21 @@ access code. The code is an admission credential, not a user account system.
 ## API and security
 
 Preserve existing API response formats. Add GET /healthz with no external calls.
-Require X-Demo-Access-Code on /api/chat paths and the refresh POST when configured.
-Production must fail closed if the code or explicit HTTPS origins are absent.
+Public chat requires no credential, even if a legacy CHAT_DEMO_CODE remains set.
+When CHAT_REQUIRE_ACCESS_CODE=true, require X-Demo-Access-Code on /api/chat paths
+and the refresh POST. Protected mode fails closed if its code is invalid or absent.
+Production always requires explicit HTTPS origins.
 Keep exact origin checks on mutating routes; CORS permits only configured sites.
-No cookie authentication. A 401 response opens an inline access form in chat.
-Invalid codes never trigger Neo4j retrieval or OpenAI requests.
+No cookie authentication or browser access form. In optional protected mode,
+invalid codes never trigger Neo4j retrieval or OpenAI requests.
 
-Reserve chat quota after validation and the existing concurrency/cooldown checks,
-before calling OpenAI. In production, Aura transactions lock a dedicated node
+Default public mode bypasses quota storage and the three-second cooldown, even
+with legacy daily/minute limit environment values. Provider account settings and
+limits are unchanged. The existing processing lock, validation and timeouts remain.
+
+Only when CHAT_ENFORCE_LIMITS=true, apply the cooldown and reserve chat quota
+after validation/concurrency checks, before calling OpenAI. In production,
+Aura transactions lock a dedicated node
 before checking Vietnam calendar day and UTC minute buckets. Commit both counts
 before calling OpenAI; failures consume an attempt. Return 429 when capped and
 503 if durable reservation fails. Never use a local fallback in production.
@@ -87,7 +100,7 @@ Vercel's static historical demo stays dated; live chat uses the backend snapshot
 
 - [x] Add deployment settings, authentication, quota and health endpoint (AC-2/3/4/6/7).
 - [x] Separate seed files from writable forecasts and verify startup (AC-5/7).
-- [x] Add frontend API configuration and access form (AC-1/2/3/7).
+- [x] Add frontend API configuration and direct public chat access (AC-1/2/3/7).
 - [x] Add Docker, Render and Vercel configuration plus operator documentation (AC-1/5/6).
 - [x] Run offline regression, artifact and container checks (AC-7/8).
 - [x] Connect accounts, deploy only free resources and verify the hosted app (AC-8).
@@ -96,14 +109,15 @@ Vercel's static historical demo stays dated; live chat uses the backend snapshot
 
 Three hosting accounts are required. Render Free sleeps when idle and discards
 local files on restart. The frontend allows a 75-second wake-up check without
-overlapping status requests. AuraDB Free may need manual resume after inactivity. A daily request cap bounds calls,
-not exact dollars; OpenAI account spend controls remain useful. Rotate the demo
-code if it is shared outside the intended audience. Keep the local app as the
+overlapping status requests. AuraDB Free may need manual resume after inactivity.
+OpenAI usage remains separately metered, with its existing account settings.
+Keep the local app as the
 presentation fallback. No dependency on the cloud is added to local defaults.
 
 ## Verification
 
-Exercise denied and accepted origins/codes, quota persistence and concurrent
+Exercise code-free public access without quota/cooldown, denied and accepted
+origins, optional protected API codes and optional quota persistence/concurrent
 reservations, absent production settings, seed bootstrap into an empty disk,
 restart preservation, and forecast checkpoint compatibility. Build the frontend
 with a remote API URL and verify it contains no secret. Hosted acceptance must

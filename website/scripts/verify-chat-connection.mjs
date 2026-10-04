@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { connectionLabels, isChatStatus } from '../src/domain/chat/connection.ts';
-import { apiUrl, accessHeaders } from '../src/domain/chat/api.ts';
+import { apiUrl } from '../src/domain/chat/api.ts';
 
 test('cloud API URLs use an HTTPS origin while local calls keep the Vite proxy', () => {
   assert.equal(apiUrl('/api/chat', ''), '/api/chat');
@@ -14,8 +14,6 @@ test('cloud API URLs use an HTTPS origin while local calls keep the Vite proxy',
   ]) {
     assert.throws(() => apiUrl('/api/chat', value));
   }
-  assert.deepEqual(accessHeaders(''), {});
-  assert.deepEqual(accessHeaders('demo-only'), { 'X-Demo-Access-Code': 'demo-only' });
 });
 
 test('API unreachable does not claim the saved key or Neo4j configuration is missing', () => {

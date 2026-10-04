@@ -1,4 +1,4 @@
-// Public backend address only. API keys and the demo code never belong in VITE_*.
+// Public backend address only. API keys never belong in VITE_*.
 const configuredBase = import.meta.env?.VITE_API_BASE_URL?.trim() || '';
 
 export function apiUrl(path: string, base = configuredBase): string {
@@ -16,8 +16,4 @@ export function apiUrl(path: string, base = configuredBase): string {
     throw new Error('VITE_API_BASE_URL must be an HTTPS origin');
   }
   return `${url.origin}${path}`;
-}
-
-export function accessHeaders(code: string): Record<string, string> {
-  return code ? { 'X-Demo-Access-Code': code } : {};
 }

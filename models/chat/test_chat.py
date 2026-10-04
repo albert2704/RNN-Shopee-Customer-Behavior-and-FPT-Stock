@@ -7,6 +7,7 @@ from pathlib import Path
 import tempfile
 import unittest
 import uuid
+from dataclasses import replace
 from decimal import Decimal
 from unittest.mock import PropertyMock, patch
 
@@ -442,7 +443,7 @@ class ChatTests(unittest.TestCase):
                 client.post("/api/chat", json=body, headers=headers).status_code, 200
             )
             self.assertEqual(
-                client.post("/api/chat", json=body, headers=headers).status_code, 429
+                client.post("/api/chat", json=body, headers=headers).status_code, 200
             )
             api.chat_lock.acquire()
             try:
@@ -462,6 +463,23 @@ class ChatTests(unittest.TestCase):
                 self.assertEqual(response.status_code, 502)
                 self.assertNotIn("private-key", response.text)
                 self.assertFalse(api.chat_lock.locked())
+
+    def test_optional_request_limits_keep_cooldown(self):
+        headers = {"Origin": "http://127.0.0.1:4173"}
+        body = {"messages": messages("FPT?")}
+        with TestClient(app) as client, patch.object(
+            app.state, "deployment", replace(app.state.deployment, enforce_limits=True)
+        ), patch.object(api, "settings", return_value={"OPENAI_API_KEY": "test-secret"}), patch.object(
+            api, "reserve_chat"
+        ) as reserve, patch.object(api.service, "answer", return_value={"paragraphs": []}), patch.object(
+            api.time, "monotonic", return_value=10.0
+        ):
+            api.last_attempt = 0
+            self.assertEqual(client.post("/api/chat", json=body, headers=headers).status_code, 200)
+            response = client.post("/api/chat", json=body, headers=headers)
+            self.assertEqual(response.status_code, 429)
+            self.assertEqual(response.json()["detail"]["code"], "cooldown")
+            reserve.assert_called_once()
 
     @unittest.skipUnless(
         os.environ.get("A6_TEST_NEO4J") == "1",

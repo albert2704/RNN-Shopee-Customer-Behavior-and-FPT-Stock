@@ -25,8 +25,10 @@ class Deployment:
     production: bool
     origins: set[str]
     hosts: list[str]
+    require_access_code: bool
     code: str
     quota_path: Path
+    enforce_limits: bool
     daily_limit: int
     minute_limit: int
     allow_refresh: bool
@@ -52,8 +54,11 @@ def settings():
             or parsed.scheme not in ({"https"} if production else {"http", "https"})
         ):
             raise ValueError("A6_ALLOWED_ORIGINS must contain exact web origins")
-    code = os.environ.get("CHAT_DEMO_CODE", "")
-    if (production or code) and not 24 <= len(code) <= 128:
+    require_access_code = os.environ.get("CHAT_REQUIRE_ACCESS_CODE", "false")
+    if require_access_code not in {"true", "false"}:
+        raise ValueError("CHAT_REQUIRE_ACCESS_CODE must be true or false")
+    code = os.environ.get("CHAT_DEMO_CODE", "") if require_access_code == "true" else ""
+    if require_access_code == "true" and not 24 <= len(code) <= 128:
         raise ValueError("CHAT_DEMO_CODE must contain 24 to 128 characters")
     if production and not origins:
         raise ValueError("A6_ALLOWED_ORIGINS is required in production")
@@ -74,15 +79,19 @@ def settings():
     root = Path(os.environ.get(
         "FPT_DAILY_HOME", Path(__file__).resolve().parents[1] / "daily/runtime"
     ))
-    daily_limit = int(os.environ.get("CHAT_DAILY_LIMIT", "100"))
-    minute_limit = int(os.environ.get("CHAT_MINUTE_LIMIT", "5"))
+    enforce_limits = os.environ.get("CHAT_ENFORCE_LIMITS", "false")
+    if enforce_limits not in {"true", "false"}:
+        raise ValueError("CHAT_ENFORCE_LIMITS must be true or false")
+    daily_limit = int(os.environ.get("CHAT_DAILY_LIMIT", "100")) if enforce_limits == "true" else 100
+    minute_limit = int(os.environ.get("CHAT_MINUTE_LIMIT", "5")) if enforce_limits == "true" else 5
     if not 1 <= minute_limit <= daily_limit <= 1000:
         raise ValueError("Chat limits must satisfy 1 <= minute <= daily <= 1000")
     allow_refresh = os.environ.get("A6_ALLOW_REFRESH", "false" if production else "true")
     if allow_refresh not in {"true", "false"}:
         raise ValueError("A6_ALLOW_REFRESH must be true or false")
-    return Deployment(production, origins, hosts, code, root / "chat-usage.sqlite3",
-                      daily_limit, minute_limit, allow_refresh == "true")
+    return Deployment(production, origins, hosts, require_access_code == "true", code,
+                      root / "chat-usage.sqlite3", enforce_limits == "true", daily_limit, minute_limit,
+                      allow_refresh == "true")
 
 
 def install(app):
@@ -95,7 +104,7 @@ def install(app):
         protected = request.url.path.startswith("/api/chat") or (
             request.url.path == "/api/fpt/daily/refresh"
         )
-        if config.code and protected and request.method != "OPTIONS":
+        if config.require_access_code and protected and request.method != "OPTIONS":
             supplied = request.headers.get("x-demo-access-code", "")
             if len(supplied) > 128 or not hmac.compare_digest(
                 supplied.encode(), config.code.encode()
@@ -124,7 +133,7 @@ def allowed_origin(request):
 
 def reserve_chat(config, now=None):
     """Count attempts atomically; no conversation or client identifiers are saved."""
-    if not config.code and not config.production:
+    if not config.enforce_limits:
         return
     now = now or datetime.now(timezone.utc)
     if config.production:

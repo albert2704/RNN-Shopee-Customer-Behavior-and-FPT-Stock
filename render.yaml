@@ -20,12 +20,10 @@ services:
         value: "false"
       - key: A6_ALLOWED_ORIGINS
         sync: false
-      - key: CHAT_DEMO_CODE
-        generateValue: true
-      - key: CHAT_DAILY_LIMIT
-        value: "100"
-      - key: CHAT_MINUTE_LIMIT
-        value: "5"
+      - key: CHAT_REQUIRE_ACCESS_CODE
+        value: "false"
+      - key: CHAT_ENFORCE_LIMITS
+        value: "false"
       - key: OPENAI_API_KEY
         sync: false
       - key: OPENAI_MODEL
