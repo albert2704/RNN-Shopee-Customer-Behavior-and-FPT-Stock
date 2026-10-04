@@ -85,6 +85,14 @@ rejected; it does not identify whether the username or password is wrong.
 Aura's Recover credentials link opens [recovery instructions](https://neo4j.com/docs/aura/getting-started/connect-instance/)
 for creating a new user or cloning an instance; opening it does not reveal or
 reset the original password.
+The new-user option requires database user-management privileges. A Free-tier
+console SSO admin does not receive those privileges, so console access alone
+cannot perform that recovery. See [Aura's role table](https://neo4j.com/docs/aura/user-management/).
+
+Replacement instance `15fb6283` is Running on the Free tier. Its official
+credential download verifies the username and database as `15fb6283`; use the
+private `Downloads/sequence-neo4j-credentials.txt` copy for server setup.
+Hosted readiness, a real cited answer and restart persistence passed on 2026-10-09.
 
 ## Price updates and operations
 
@@ -116,3 +124,10 @@ docker build -f models/hosting/Dockerfile -t assignment6-cloud:local .
 
 Before sharing, verify all four chapters, denied/accepted access codes, one real
 cited chat answer, and the same data date after restarting the backend.
+
+Public chat passed on 2026-10-09: the UI connected, showed the 2026-10-07 snapshot
+at 59,700 VND, and answered a synthetic six-month FPT question in Vietnamese with
+citations `H6`, `B2`, `B3`, `B5` and `B6`. The opened `H6` source matched the
+126-session forecast and stated its limitations. After a Render restart, the
+public UI reconnected with the same snapshot and price; the Aura daily quota
+counter remained `1`, confirming persistence across restart.

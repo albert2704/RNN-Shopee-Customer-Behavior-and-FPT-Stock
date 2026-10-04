@@ -1,6 +1,6 @@
 # Cloud deployment for the classroom demo
 
-**Status**: In Progress
+**Status**: Complete
 
 ## Summary
 
@@ -75,8 +75,9 @@ refresh/concurrency locks and persistent forecast storage design. This is delibe
 
 ## Persistence and migration
 
-No existing graph is deleted or copied wholesale. Point the current parameterized
-graph importer to a dedicated Aura database; it imports the same evidence on use.
+Graph import does not delete or copy an existing graph wholesale. Point the
+current parameterized graph importer to a dedicated Aura database; it imports
+the same evidence on use.
 Separate read-only seed JSON from writable exports. Bootstrap initializes an
 empty runtime using the packaged checkpoint and never overwrites an active run.
 Keep the local default paths. Set cloud paths through environment configuration.
@@ -89,7 +90,7 @@ Vercel's static historical demo stays dated; live chat uses the backend snapshot
 - [x] Add frontend API configuration and access form (AC-1/2/3/7).
 - [x] Add Docker, Render and Vercel configuration plus operator documentation (AC-1/5/6).
 - [x] Run offline regression, artifact and container checks (AC-7/8).
-- [ ] Connect accounts, deploy only free resources and verify the hosted app (AC-8).
+- [x] Connect accounts, deploy only free resources and verify the hosted app (AC-8).
 
 ## Consequences and rollback
 
@@ -111,15 +112,15 @@ include a real chat response with citations and a post-restart status check.
 Verification on 2026-10-08: 46 frontend tests passed; 49 Python tests ran,
 48 passed and one optional live graph test was skipped. Production build and
 formatting passed. Linux ARM64 Docker build and isolated startup/restart checks
-passed with about 324 MB resident API memory. Linux AMD64 hosted build and
-actual cloud integration remain to be verified.
+passed with about 324 MB resident API memory. These initial checks were followed
+by the successful hosted AMD64 build and chat verification recorded below.
 
 Free-tier revision: hosted refresh is disabled, production quota uses Aura, and
 Render has no disk. 52 offline Python tests ran (50 passed, two optional graph tests skipped); the
 new live local graph quota concurrency/persistence test passed separately.
 46 frontend checks, formatting and build passed. The ARM64 container passed
 startup, authenticated status and restart with a 512 MB memory/no-swap limit
-(about 329 MiB resident). Hosted AMD64 behavior remains to be verified.
+(about 329 MiB resident). Hosted AMD64 build, startup and chat subsequently passed.
 
 Cloud rollout on 2026-10-08: the Linux AMD64 image built and started on Render
 Free; `/healthz` passed and the service became live. Vercel production is
@@ -129,17 +130,46 @@ and accepted the generated code; the packaged snapshot is dated 2026-10-07.
 After redeploying commit `eb23799`, the API restored the same 2026-10-07 snapshot
 and became live. The database check reported `AuthError` with
 `Neo.ClientError.Security.Unauthorized`: the configured username/password pair
-was rejected. This does not establish which credential is incorrect, and the
-configured username `725759b9` has not been independently verified.
+was rejected. This did not establish which credential was incorrect, and the
+earlier configured username `725759b9` was not independently verified.
 Readiness queries the configured database and logs only the exception class and an allowlisted
 error code for diagnosis.
 
 Follow-up on 2026-10-09: deployment `dep-db3sn9om7kps73fts06g` became live after
-saving the edited Render variables and rebuilding. Chat remains blocked by
-rejected database credentials; connected readiness and a real cited answer
-remain pending. Aura's Recover credentials link opens instructions for creating
-a new database user or cloning an instance, not a password reset or disclosure.
-A filename-only search in Downloads found no original Aura credential download.
+saving the edited Render variables and rebuilding. At that point, chat remained
+blocked by rejected database credentials. Aura's Recover credentials link opens
+instructions for creating a new database user or cloning an instance, not a
+password reset or disclosure. A filename-only search in Downloads found no
+original credential download for instance `725759b9`.
 `SHOW USERS` through the signed-in Aura account returned access denied.
 `SHOW CURRENT USER` returned the Aura account identity, which does not verify
 the database username/password used by Render.
+Free-tier console SSO admins lack database user-management privileges, so that
+session cannot use the generic `CREATE USER` recovery option.
+
+The user explicitly approved deletion of the empty instance `725759b9` and its
+replacement on 2026-10-09. The old instance was deleted and a new AuraDB Free
+instance was created. The official credential download confirmed instance ID,
+username and database `15fb6283`, with URI
+`neo4j+s://15fb6283.databases.neo4j.io`. Aura showed Running on the Free tier with
+zero nodes. The official file `Neo4j-15fb6283-Created-2026-10-08.txt` was saved in
+Downloads, alongside an exact private copy, `sequence-neo4j-credentials.txt`,
+with file permissions `0600`. All four Render connection fields were checked
+against the official file before the save/rebuild/deploy step.
+Deployment `dep-db3t1mp42hec73ev7rug` became live with those verified settings.
+No password is recorded in these docs.
+
+Hosted chat verification on 2026-10-09 passed on the public Vercel site. The UI
+showed `Đã kết nối` and the packaged 2026-10-07 closing price of 59,700 VND.
+The synthetic acceptance prompt was: “Tôi có 200 triệu và muốn tìm hiểu FPT
+trong khoảng 6 tháng, tôi nên cân nhắc điều gì?” It returned a Vietnamese answer
+with citations `H6`, `B2`, `B3`, `B5` and `B6`. Opening `H6` showed the matching
+126-session experimental forecast of 70,258.70352518994 VND and its limitations.
+A read-only Aura query confirmed the 2026-10-09 daily quota counter was `1`.
+Render restart created fresh instance `xhxkg` at 00:24:21 ICT on 2026-10-09;
+startup completed at 00:24:28. It restored bundled run
+`20261007T114039-e90d31` with source date 2026-10-07. A manual public-site
+connection check again showed `Đã kết nối`, Neo4j connected, and the unchanged
+59,700 VND closing price. A second read-only Aura query confirmed
+`sequence-chat:day:2026-10-09` still held `1` request. Hosted chat, snapshot
+restoration and quota persistence across restart are verified.
