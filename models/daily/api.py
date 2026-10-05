@@ -65,7 +65,7 @@ def refresh(request: Request):
     ):
         raise HTTPException(403, "Nguồn gửi yêu cầu chưa được cho phép.")
     if not request.app.state.deployment.allow_refresh:
-        raise HTTPException(403, "Bản demo này dùng dữ liệu đã công bố. Cập nhật dữ liệu trên máy phát triển rồi triển khai lại.")
+        raise HTTPException(403, "Dữ liệu được cập nhật tự động sau giờ đóng cửa. Có thể chạy lại tác vụ Update FPT daily data trên GitHub.")
     if not refresh_lock.acquire(blocking=False):
         raise HTTPException(409, "Đang cập nhật dữ liệu.")
     try:

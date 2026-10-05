@@ -16,6 +16,8 @@ def main():
     folder, manifest = outlook.load_run(result["run_id"])
     for horizon, item in manifest["horizons"].items():
         outlook.load_model(folder, item, int(horizon))
+    from daily import published
+    published.read()  # Bounded fetch; packaged data remains available offline.
     import uvicorn
     uvicorn.run("daily.api:app", host="0.0.0.0",
                 port=int(os.environ.get("PORT", "10000")), workers=1,

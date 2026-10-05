@@ -17,9 +17,9 @@ artificial question cooldown is enabled.
 The root `render.yaml` uses the Free plan (512 MB), with no paid disk. Build
 context is the repo root; Dockerfile is `models/hosting/Dockerfile`. Do not set
 Root Directory. Runtime files in `/tmp/sequence` are disposable: every new
-instance restores the same dated forecasts and checkpoints from the repository.
-`A6_ALLOW_REFRESH=false` prevents cloud refreshes that would be lost on restart.
-Prepare data updates locally, commit the public artifacts, then redeploy.
+instance restores packaged checkpoints and synchronizes the published forecasts
+from GitHub. `A6_ALLOW_REFRESH=false` disables direct provider fetches on Render.
+The scheduled workflow below publishes updates without daily redeployment.
 
 Render Free sleeps after 15 minutes idle; the first request can take about a
 minute to wake it. Open Hỏi đáp before presenting. The connection check waits up
@@ -106,10 +106,10 @@ Hosted readiness, a real cited answer and restart persistence passed on 2026-10-
 
 ## Price updates and operations
 
-Deployment uses the committed, dated forecasts and does not claim they are
-today's prices. There is no scheduler or cloud training. The local refresh
-workflow remains available; hosted refresh is disabled. The static classroom
-charts remain historical. Chat uses the packaged backend snapshot.
+Deployment shows the actual observed closing date. The GitHub schedule below
+publishes new forecasts using frozen models, and hosted chat reads the latest
+validated publication. Direct hosted provider refresh remains disabled. The
+static classroom experiment charts remain historical.
 
 Render automatic application deployment is off so a Git push does not interrupt
 the demo API. Blueprint configuration changes may still auto-sync; keep the plan
@@ -122,7 +122,7 @@ free hosting does not make the model API free. Keep local
 From models:
 
 ```sh
-.venv/bin/python -m unittest hosting.test_hosting chat.test_chat chat.test_investment daily.test_daily outlook.test_outlook
+.venv/bin/python -m unittest hosting.test_hosting chat.test_chat chat.test_investment daily.test_daily daily.test_published outlook.test_outlook
 ```
 
 From website, run `npm run test:logic`, `npm run format:check`, `npm run build`.
@@ -142,3 +142,26 @@ citations `H6`, `B2`, `B3`, `B5` and `B6`. The opened `H6` source matched the
 126-session forecast and stated its limitations. After a Render restart, the
 public UI reconnected with the same snapshot and price; the Aura daily quota
 counter remained `1`, confirming persistence across restart.
+
+## Automatic closing price updates
+
+GitHub Actions runs `Update FPT daily data` at 16:30 and 18:30 Vietnam time,
+Monday through Friday. Use its **Run workflow** button for an immediate update.
+It fetches KBS closes through the existing Vnstock adapter, reuses all four
+frozen FPT checkpoints, and commits the daily forecast, three outlooks and
+ledger as one publication. It does not retrain or update company disclosures.
+
+The production API reads `website/public/data/fpt-published.json` from this
+repository on startup and at most every five minutes on use. No daily Render
+redeploy or paid disk is needed. Failed downloads retain the last valid data,
+with the real closing date visible. Holidays keep the last available session.
+The two ordinary JSON exports and downloadable source ZIP update together.
+
+`FPT_PUBLISHED_UPDATES` defaults to true in production and false locally.
+Set it to false to return to the packaged/local snapshot. The public refresh
+POST remains disabled on Render. No new credential is needed by the updater;
+GitHub supplies its repository token, and the price provider supports Guest use.
+
+Schedule times are best effort. GitHub can delay runs or disable public schedules
+after 60 days without repository activity. Inspect the Actions run logs when the
+displayed closing date unexpectedly stops advancing.

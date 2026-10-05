@@ -195,7 +195,8 @@ class SavedArtifactTests(unittest.TestCase):
             ):
                 refreshed = pipeline.refresh(frame, source)
                 self.assertEqual(refreshed["run_id"], original["run_id"])
-                self.assertEqual(refreshed["horizons"], original["horizons"])
+                # Public forecasts can now use newer prices than this training snapshot.
+                self.assertEqual(refreshed["horizons"], pipeline.make_forecast(frame, source)["horizons"])
                 self.assertEqual(pipeline.read_latest(), refreshed)
                 previous_bytes = (root / "runtime/latest.json").read_bytes()
                 with self.assertRaises(ValueError):

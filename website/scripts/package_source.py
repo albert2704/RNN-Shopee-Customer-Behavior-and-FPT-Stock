@@ -19,6 +19,7 @@ def build():
         ".gitignore",
         ".dockerignore",
         "render.yaml",
+        ".github/workflows/update-fpt.yml",
         "models/README.md",
         "models/CODE_MAP_VI.md",
         "models/requirements.txt",
@@ -48,6 +49,7 @@ def build():
         "website/public/data/fpt.json",
         "website/public/data/fpt-daily.json",
         "website/public/data/fpt-outlook.json",
+        "website/public/data/fpt-published.json",
         "models/daily/README.md",
         "models/daily/requirements.txt",
         "models/daily/requirements-test.txt",
@@ -128,7 +130,7 @@ def build():
             assert "raw" not in parts and "node_modules" not in parts, path
             assert "runtime" not in parts and ".env" not in parts, path
             assert not path.endswith((".pdf", ".docx", ".ipynb")), path
-            assert parts[1] in {"README.md", ".gitignore", ".dockerignore", "render.yaml", "PACKAGE_MANIFEST.json", "models", "website"}, path
+            assert parts[1] in {"README.md", ".gitignore", ".github", ".dockerignore", "render.yaml", "PACKAGE_MANIFEST.json", "models", "website"}, path
         for item in manifest["files"]:
             assert (
                 hashlib.sha256(archive.read(PREFIX + item["path"])).hexdigest()

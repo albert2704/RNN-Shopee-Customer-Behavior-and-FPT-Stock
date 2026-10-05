@@ -43,7 +43,8 @@ def read_outlook():
 
 def compatible_outlook(data):
     try:
-        outlook = read_outlook()
+        # A hosted daily read carries the outlook from the same atomic publication.
+        outlook = data["outlook"] if "outlook" in data else read_outlook()
     except (FileNotFoundError, ImportError):
         return None, "Chưa có bản dự báo theo tháng."
     # A date alone cannot detect a provider revision to historical prices.

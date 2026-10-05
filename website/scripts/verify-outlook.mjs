@@ -6,15 +6,18 @@ import { isOutlook, matchesDaily } from '../src/domain/finance/outlookContract.t
 const fixture = JSON.parse(
   readFileSync(new URL('../public/data/fpt-outlook.json', import.meta.url), 'utf8'),
 );
+const daily = JSON.parse(
+  readFileSync(new URL('../public/data/fpt-daily.json', import.meta.url), 'utf8'),
+);
 
 test('public FPT outlook follows the validated contract and matches daily source', () => {
   assert.equal(isOutlook(fixture), true);
   assert.equal(
     matchesDaily(
       fixture,
-      fixture.observed_through,
-      fixture.last_close,
-      fixture.source.closes_sha256,
+      daily.forecast.observed_through,
+      daily.forecast.last_close,
+      daily.source.closes_sha256,
     ),
     true,
   );

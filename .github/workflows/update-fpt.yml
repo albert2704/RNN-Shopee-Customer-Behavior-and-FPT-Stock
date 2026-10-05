@@ -1,0 +1,60 @@
+name: Update FPT daily data
+
+on:
+  schedule:
+    # 16:30 and 18:30 Vietnam time, Monday to Friday. UTC cron.
+    - cron: '30 9,11 * * 1-5'
+  workflow_dispatch:
+
+concurrency:
+  group: fpt-daily-publication
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    env:
+      FPT_DAILY_HOME: ${{ runner.temp }}/fpt-daily
+      A6_PUBLIC_DATA_DIR: ${{ runner.temp }}/fpt-public
+      FPT_PUBLISHED_UPDATES: 'false'
+      VNSTOCK_TELEMETRY: 'off'
+      VNSTOCK_DISABLE_AGENT_SETUP: '1'
+      VNSTOCK_DISABLE_GLOBAL_AGENT: '1'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: models/daily/requirements.txt
+      - name: Install CPU inference dependencies
+        run: |
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.1
+          python -m pip install -r models/daily/requirements.txt
+      - name: Fetch closes and run frozen models
+        working-directory: models
+        run: python -m daily.update_publication
+      - name: Validate published forecasts
+        working-directory: models
+        run: python -m unittest daily.test_published -v
+      - name: Update downloadable source snapshot
+        run: python website/scripts/package_source.py
+      - name: Commit the complete publication
+        run: |
+          git add website/public/data/fpt-daily.json website/public/data/fpt-outlook.json website/public/data/fpt-published.json website/public/downloads/a6-rnn-source.zip
+          if git diff --cached --quiet; then
+            echo "No new closing data. Existing publication retained."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Update FPT closing data and frozen forecasts'
+          git push origin HEAD:main

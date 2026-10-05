@@ -33,8 +33,9 @@ setting can still enable code protection for API clients.
 - AC-4: Public chat has no application daily/minute quota or artificial cooldown.
   Optional limits require explicit server opt-in. Existing limit values alone do
   not enable them. Input validation, timeouts and processing locks remain.
-- AC-5: Each Render restart restores the same packaged forecasts and checkpoints.
-  Cloud refresh is disabled because the free filesystem is ephemeral. Optional
+- AC-5: Each Render restart restores packaged checkpoints and the latest validated
+  published forecasts when GitHub is reachable, with a saved snapshot fallback.
+  Direct cloud price fetching is disabled. Optional
   quota counters remain in Aura across restarts. Startup does not train.
 - AC-6: Neo4j and OpenAI credentials are backend environment variables only.
 - AC-7: Localhost defaults and the existing presentation continue to work.
@@ -87,6 +88,52 @@ The free plan supports one instance; a future scale change needs shared
 refresh/concurrency locks and persistent forecast storage design. This is deliberate for the classroom demo.
 
 ## Persistence and migration
+
+### Daily publication, authorized 2026-10-10
+
+Use a scheduled GitHub Actions job on the public repository at 16:30 and 18:30
+Vietnam time each weekday, plus manual dispatch. Standard Ubuntu runners keep
+hosting free. Running only inside Render was rejected because Free sleeps and
+loses local files; a paid disk or cron service is outside the agreed scope.
+
+The job fetches the existing pinned KBS/Vnstock source once, applies the existing
+16:00 Vietnam completion cutoff, and runs the frozen daily and three outlook
+checkpoints. Never retrain. If the complete close history hash is unchanged,
+publish nothing. Reject older source dates and older same date revisions.
+
+Commit the two existing public JSON files and one `fpt-published.json` containing
+both forecasts and the complete ledger together. Regenerate the source ZIP.
+The job uses only its repository token for publishing. No market CSV, API key,
+chat transcript or new checkpoint is committed. Serialize runs and use an
+ordinary push so concurrent repository edits cannot be overwritten.
+
+Production reads that single bundle from this repository's fixed HTTPS raw URL
+at startup and on demand, at most once per five minutes with a three second
+network timeout and a two MiB response cap. Validate symbol, units, source,
+dates, positive finite prices, forecast arithmetic, complete horizons, and
+unchanged model metadata against the bundled models before activation. Retain
+the last accepted bundle on any fetch or validation failure. Persist with an
+atomic file replacement; packaged data is the cold start offline fallback.
+Carry the matching outlook inside each daily read so one chat cannot combine
+different publication generations. Local mode stays independent by default.
+`FPT_PUBLISHED_UPDATES=false` disables synchronization for rollback.
+
+Values retain their sources: price and date come from cleaned provider closes;
+predictions come from saved checkpoint inference with saved normalization;
+model metrics remain the original held out evaluation; publication time is the
+job's Vietnam clock; freshness is calculated from the observed data date.
+Company evidence remains manually curated at its own review date.
+
+Acceptance: newer and revised same date bundles reach status/chat coherently;
+older, malformed and timed out updates preserve prior data; unchanged input
+does not create a commit; restart restores a valid bundle; weights never change.
+Build and verify the publisher, consumer, scheduled workflow and hosted refresh
+as one complete path. No scope row exists for this enhancement.
+
+GitHub scheduling is best effort and can be delayed. Public repository schedules
+can stop after 60 days without activity. Holidays retain the last genuine close.
+Sources: https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule
+and https://docs.github.com/en/billing/concepts/product-billing/github-actions.
 
 Graph import does not delete or copy an existing graph wholesale. Point the
 current parameterized graph importer to a dedicated Aura database; it imports

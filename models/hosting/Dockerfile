@@ -19,6 +19,7 @@ COPY models/chat chat
 COPY models/hosting hosting
 COPY website/public/data/fpt-daily.json /app/website/public/data/fpt-daily.json
 COPY website/public/data/fpt-outlook.json /app/website/public/data/fpt-outlook.json
+COPY website/public/data/fpt-published.json /app/website/public/data/fpt-published.json
 
 EXPOSE 10000
 CMD ["python", "-m", "hosting.start"]

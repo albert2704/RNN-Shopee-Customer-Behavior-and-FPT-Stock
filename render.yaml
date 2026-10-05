@@ -18,6 +18,8 @@ services:
         value: /tmp/sequence/public
       - key: A6_ALLOW_REFRESH
         value: "false"
+      - key: FPT_PUBLISHED_UPDATES
+        value: "true"
       - key: A6_ALLOWED_ORIGINS
         sync: false
       - key: CHAT_REQUIRE_ACCESS_CODE

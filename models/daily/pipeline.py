@@ -361,6 +361,11 @@ def read_ledger():
 
 
 def read_latest():
+    from .published import read as read_publication
+
+    publication = read_publication()
+    if publication:
+        return with_freshness({**publication["daily"], "outlook": publication["outlook"]})
     active = read_json(RUNTIME / "active.json")
     # Compatibility with the first run before atomic bundle activation existed.
     return with_freshness(active.get("forecast") or read_json(RUNTIME / "latest.json"))
