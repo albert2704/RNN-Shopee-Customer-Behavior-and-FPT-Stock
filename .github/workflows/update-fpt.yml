@@ -20,8 +20,8 @@ jobs:
     permissions:
       contents: write
     env:
-      FPT_DAILY_HOME: ${{ runner.temp }}/fpt-daily
-      A6_PUBLIC_DATA_DIR: ${{ runner.temp }}/fpt-public
+      FPT_DAILY_HOME: /tmp/sequence-fpt-daily
+      A6_PUBLIC_DATA_DIR: /tmp/sequence-fpt-public
       FPT_PUBLISHED_UPDATES: 'false'
       VNSTOCK_TELEMETRY: 'off'
       VNSTOCK_DISABLE_AGENT_SETUP: '1'
