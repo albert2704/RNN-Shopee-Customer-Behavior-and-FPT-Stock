@@ -1,0 +1,25 @@
+<template>
+<section data-hf-id="hf-4i05" data-composition-id="shopee" data-width="1920" data-height="1080" data-duration="8" id="shopee" class="scene chapter"><div data-hf-id="hf-bney" class="scene-copy"><p data-hf-id="hf-ngwj" class="kicker">01 / CUSTOMER ACTIVITY</p><h2 data-hf-id="hf-2cq3" class="title"><span data-hf-id="hf-qjjq">Read the</span><span data-hf-id="hf-96va">sequence.</span></h2><p data-hf-id="hf-hq5f" class="body">Follow 30 days of behavior into an evolving hidden state.</p><p data-hf-id="hf-4lq2" class="note">Shopee Thailand · synthetic data</p></div><div data-hf-id="hf-cdmk" class="screen"><div class="screen-camera" id="shopee-camera"><img data-hf-id="hf-dfjj" src="../../assets/screens/shopee-demo.jpg" alt="Actual Sequence website screenshot"><div class="yt-hl" id="shopee-spot"></div><svg class="focus-svg" viewBox="0 0 1280 720" aria-hidden="true"><g id="shopee-focus"><rect class="focus-box" width="300" height="100"/></g></svg></div></div><p data-hf-id="hf-mlqg" class="caption">The replay uses trained weights. It does not train in your browser.</p></section>
+<script>
+const tl=gsap.timeline({paused:true});
+tl.fromTo('#shopee .hero > span, #shopee .title > span',{x:-32,opacity:0},{x:0,opacity:1,duration:0.48,stagger:0.09,ease:'power3.out'},0.12);
+tl.fromTo('#shopee .kicker, #shopee .intro-label',{y:12,opacity:0},{y:0,opacity:1,duration:0.4,ease:'power2.out'},0.08);
+tl.fromTo('#shopee .body, #shopee .note, #shopee .intro-sub, #shopee .url, #shopee .tiny, #shopee .intro-index',{y:16,opacity:0},{y:0,opacity:1,duration:0.5,stagger:0.12,ease:'power2.out'},0.36);
+tl.fromTo('#shopee .screen',{opacity:0},{opacity:1,duration:0.6,ease:'power3.out'},0.1);
+tl.fromTo('#shopee .caption',{opacity:0},{opacity:1,duration:0.4},0.6);
+
+// Guided attention follows measured regions of the unchanged 1280×720 screenshot.
+// Screenshots stay fixed; only the overlaid focus outline and spotlight move.
+
+tl.fromTo('#shopee-focus',{x:38,y:496,scaleX:0.9733333333333334,scaleY:1.11,opacity:0,svgOrigin:'0 0'},{x:38,y:496,scaleX:0.9733333333333334,scaleY:1.11,opacity:1,duration:.35,ease:'power2.out'},.95);
+tl.fromTo('#shopee-spot',{opacity:0,'--yt-hl-x':'14.375%','--yt-hl-y':'76.59722222222221%','--yt-hl-rx':'22.8125%','--yt-hl-ry':'20%'},{opacity:1,duration:.4},.95);
+tl.to('#shopee-focus',{x:398,y:510,scaleX:0.7,scaleY:0.91,duration:.6,ease:'power2.inOut'},2.65);
+tl.to('#shopee-spot',{'--yt-hl-x':'39.296875%','--yt-hl-y':'77.15277777777777%','--yt-hl-rx':'22%','--yt-hl-ry':'20%',duration:.6,ease:'power2.inOut'},2.65);
+tl.to('#shopee-focus',{x:644,y:509,scaleX:1.0033333333333334,scaleY:0.95,duration:.6,ease:'power2.inOut'},4.3);
+tl.to('#shopee-spot',{'--yt-hl-x':'62.0703125%','--yt-hl-y':'77.29166666666667%','--yt-hl-rx':'23.515625%','--yt-hl-ry':'20%',duration:.6,ease:'power2.inOut'},4.3);
+tl.to('#shopee-focus',{x:984,y:507,scaleX:0.8666666666666667,scaleY:0.97,duration:.6,ease:'power2.inOut'},5.95);
+tl.to('#shopee-spot',{'--yt-hl-x':'87.03125%','--yt-hl-y':'77.15277777777777%','--yt-hl-rx':'22%','--yt-hl-ry':'20%',duration:.6,ease:'power2.inOut'},5.95);
+tl.to('#shopee-spot, #shopee-focus',{opacity:0,duration:.4},7.05);
+window.__timelines['shopee']=tl;
+</script>
+</template>

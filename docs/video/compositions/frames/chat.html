@@ -1,0 +1,23 @@
+<template>
+<section data-hf-id="hf-wo79" data-composition-id="chat" data-width="1920" data-height="1080" data-duration="8" id="chat" class="scene chapter"><div data-hf-id="hf-bney" class="scene-copy"><p data-hf-id="hf-6iai" class="kicker">04 / FPT QUESTIONS</p><h2 data-hf-id="hf-2cq3" class="title"><span data-hf-id="hf-z5hy">Ask. Read.</span><span data-hf-id="hf-fs9t">Check sources.</span></h2><p data-hf-id="hf-vgo3" class="body">Plain-language answers draw on dated prices, model outputs and evidence.</p><p data-hf-id="hf-g6qz" class="note">Neo4j retrieval + language model</p></div><div data-hf-id="hf-cdmk" class="screen"><div class="screen-camera" id="chat-camera"><img data-hf-id="hf-vdqo" src="../../assets/screens/chatbot.jpg" alt="Actual Sequence website screenshot"><div class="yt-hl" id="chat-spot"></div><svg class="focus-svg" viewBox="0 0 1280 720" aria-hidden="true"><g id="chat-focus"><rect class="focus-box" width="300" height="100"/></g></svg></div></div><p data-hf-id="hf-yk52" class="caption">Closing-price updates use existing models. The answer shows its data date and sources.</p></section>
+<script>
+const tl=gsap.timeline({paused:true});
+tl.fromTo('#chat .hero > span, #chat .title > span',{x:-32,opacity:0},{x:0,opacity:1,duration:0.48,stagger:0.09,ease:'power3.out'},0.12);
+tl.fromTo('#chat .kicker, #chat .intro-label',{y:12,opacity:0},{y:0,opacity:1,duration:0.4,ease:'power2.out'},0.08);
+tl.fromTo('#chat .body, #chat .note, #chat .intro-sub, #chat .url, #chat .tiny, #chat .intro-index',{y:16,opacity:0},{y:0,opacity:1,duration:0.5,stagger:0.12,ease:'power2.out'},0.36);
+tl.fromTo('#chat .screen',{opacity:0},{opacity:1,duration:0.6,ease:'power3.out'},0.1);
+tl.fromTo('#chat .caption',{opacity:0},{opacity:1,duration:0.4},0.6);
+
+// Guided attention follows measured regions of the unchanged 1280×720 screenshot.
+// Screenshots stay fixed; only the overlaid focus outline and spotlight move.
+
+tl.fromTo('#chat-focus',{x:33,y:263,scaleX:1.1233333333333333,scaleY:1.05,opacity:0,svgOrigin:'0 0'},{x:33,y:263,scaleX:1.1233333333333333,scaleY:1.05,opacity:1,duration:.35,ease:'power2.out'},.95);
+tl.fromTo('#chat-spot',{opacity:0,'--yt-hl-x':'15.7421875%','--yt-hl-y':'43.81944444444444%','--yt-hl-rx':'26.328125%','--yt-hl-ry':'20%'},{opacity:1,duration:.4},.95);
+tl.to('#chat-focus',{x:444,y:199,scaleX:2.62,scaleY:0.79,duration:.6,ease:'power2.inOut'},3.2);
+tl.to('#chat-spot',{'--yt-hl-x':'65.390625%','--yt-hl-y':'33.125%','--yt-hl-rx':'61.40625%','--yt-hl-ry':'20%',duration:.6,ease:'power2.inOut'},3.2);
+tl.to('#chat-focus',{x:445,y:287,scaleX:0.5033333333333333,scaleY:0.29,duration:.6,ease:'power2.inOut'},5.4);
+tl.to('#chat-spot',{'--yt-hl-x':'40.6640625%','--yt-hl-y':'41.875%','--yt-hl-rx':'22%','--yt-hl-ry':'20%',duration:.6,ease:'power2.inOut'},5.4);
+tl.to('#chat-spot, #chat-focus',{opacity:0,duration:.4},7.05);
+window.__timelines['chat']=tl;
+</script>
+</template>

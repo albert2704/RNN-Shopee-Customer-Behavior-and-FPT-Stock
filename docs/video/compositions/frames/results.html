@@ -1,0 +1,23 @@
+<template>
+<section data-hf-id="hf-gabp" data-composition-id="results" data-width="1920" data-height="1080" data-duration="8" id="results" class="scene chapter"><div data-hf-id="hf-bney" class="scene-copy"><p data-hf-id="hf-m81r" class="kicker">03 / FULL TEST SET</p><h2 data-hf-id="hf-2cq3" class="title"><span data-hf-id="hf-fl14">Check the</span><span data-hf-id="hf-l8eu">whole test.</span></h2><p data-hf-id="hf-1b26" class="body">One good prediction is not enough. Compare against a simple baseline.</p><p data-hf-id="hf-gdbv" class="note">Lower average error is better</p></div><div data-hf-id="hf-cdmk" class="screen"><div class="screen-camera" id="results-camera"><img data-hf-id="hf-spfz" src="../../assets/screens/results.jpg" alt="Actual Sequence website screenshot"><div class="yt-hl" id="results-spot"></div><svg class="focus-svg" viewBox="0 0 1280 720" aria-hidden="true"><g id="results-focus"><rect class="focus-box" width="300" height="100"/></g></svg></div></div><p data-hf-id="hf-1v58" class="caption">In these saved experiments, the RNN does not beat the previous-value baseline.</p></section>
+<script>
+const tl=gsap.timeline({paused:true});
+tl.fromTo('#results .hero > span, #results .title > span',{x:-32,opacity:0},{x:0,opacity:1,duration:0.48,stagger:0.09,ease:'power3.out'},0.12);
+tl.fromTo('#results .kicker, #results .intro-label',{y:12,opacity:0},{y:0,opacity:1,duration:0.4,ease:'power2.out'},0.08);
+tl.fromTo('#results .body, #results .note, #results .intro-sub, #results .url, #results .tiny, #results .intro-index',{y:16,opacity:0},{y:0,opacity:1,duration:0.5,stagger:0.12,ease:'power2.out'},0.36);
+tl.fromTo('#results .screen',{opacity:0},{opacity:1,duration:0.6,ease:'power3.out'},0.1);
+tl.fromTo('#results .caption',{opacity:0},{opacity:1,duration:0.4},0.6);
+
+// Guided attention follows measured regions of the unchanged 1280×720 screenshot.
+// Screenshots stay fixed; only the overlaid focus outline and spotlight move.
+
+tl.fromTo('#results-focus',{x:31,y:307,scaleX:1.9533333333333334,scaleY:0.58,opacity:0,svgOrigin:'0 0'},{x:31,y:307,scaleX:1.9533333333333334,scaleY:0.58,opacity:1,duration:.35,ease:'power2.out'},.95);
+tl.fromTo('#results-spot',{opacity:0,'--yt-hl-x':'25.3125%','--yt-hl-y':'46.666666666666664%','--yt-hl-rx':'45.78125%','--yt-hl-ry':'20%'},{opacity:1,duration:.4},.95);
+tl.to('#results-focus',{x:31,y:379,scaleX:1.9533333333333334,scaleY:0.84,duration:.6,ease:'power2.inOut'},3);
+tl.to('#results-spot',{'--yt-hl-x':'25.3125%','--yt-hl-y':'58.47222222222222%','--yt-hl-rx':'45.78125%','--yt-hl-ry':'20%',duration:.6,ease:'power2.inOut'},3);
+tl.to('#results-focus',{x:663,y:307,scaleX:1.9366666666666668,scaleY:1.56,duration:.6,ease:'power2.inOut'},5.3);
+tl.to('#results-spot',{'--yt-hl-x':'74.4921875%','--yt-hl-y':'53.47222222222222%','--yt-hl-rx':'45.390625%','--yt-hl-ry':'21.666666666666668%',duration:.6,ease:'power2.inOut'},5.3);
+tl.to('#results-spot, #results-focus',{opacity:0,duration:.4},7.05);
+window.__timelines['results']=tl;
+</script>
+</template>

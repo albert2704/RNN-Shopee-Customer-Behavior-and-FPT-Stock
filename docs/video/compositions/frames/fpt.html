@@ -1,0 +1,23 @@
+<template>
+<section data-hf-id="hf-blf1" data-composition-id="fpt" data-width="1920" data-height="1080" data-duration="8" id="fpt" class="scene chapter"><div data-hf-id="hf-bney" class="scene-copy"><p data-hf-id="hf-9mtq" class="kicker">02 / HISTORICAL FPT DEMO</p><h2 data-hf-id="hf-2cq3" class="title"><span data-hf-id="hf-e0h7">Make one</span><span data-hf-id="hf-0y8i">prediction.</span></h2><p data-hf-id="hf-iajl" class="body">Compare the next-session forecast with the actual closing price.</p><p data-hf-id="hf-drne" class="note">30 returns → one forecast</p></div><div data-hf-id="hf-cdmk" class="screen"><div class="screen-camera" id="fpt-camera"><img data-hf-id="hf-na0z" src="../../assets/screens/fpt-demo.jpg" alt="Actual Sequence website screenshot"><div class="yt-hl" id="fpt-spot"></div><svg class="focus-svg" viewBox="0 0 1280 720" aria-hidden="true"><g id="fpt-focus"><rect class="focus-box" width="300" height="100"/></g></svg></div></div><p data-hf-id="hf-jv0g" class="caption">Reveal the actual outcome, then compare it with keeping the previous price.</p></section>
+<script>
+const tl=gsap.timeline({paused:true});
+tl.fromTo('#fpt .hero > span, #fpt .title > span',{x:-32,opacity:0},{x:0,opacity:1,duration:0.48,stagger:0.09,ease:'power3.out'},0.12);
+tl.fromTo('#fpt .kicker, #fpt .intro-label',{y:12,opacity:0},{y:0,opacity:1,duration:0.4,ease:'power2.out'},0.08);
+tl.fromTo('#fpt .body, #fpt .note, #fpt .intro-sub, #fpt .url, #fpt .tiny, #fpt .intro-index',{y:16,opacity:0},{y:0,opacity:1,duration:0.5,stagger:0.12,ease:'power2.out'},0.36);
+tl.fromTo('#fpt .screen',{opacity:0},{opacity:1,duration:0.6,ease:'power3.out'},0.1);
+tl.fromTo('#fpt .caption',{opacity:0},{opacity:1,duration:0.4},0.6);
+
+// Guided attention follows measured regions of the unchanged 1280×720 screenshot.
+// Screenshots stay fixed; only the overlaid focus outline and spotlight move.
+
+tl.fromTo('#fpt-focus',{x:793,y:201,scaleX:0.23333333333333334,scaleY:2.07,opacity:0,svgOrigin:'0 0'},{x:793,y:201,scaleX:0.23333333333333334,scaleY:2.07,opacity:1,duration:.35,ease:'power2.out'},.95);
+tl.fromTo('#fpt-spot',{opacity:0,'--yt-hl-x':'64.6875%','--yt-hl-y':'42.291666666666664%','--yt-hl-rx':'22%','--yt-hl-ry':'28.75%'},{opacity:1,duration:.4},.95);
+tl.to('#fpt-focus',{x:905,y:198,scaleX:1.13,scaleY:0.97,duration:.6,ease:'power2.inOut'},3);
+tl.to('#fpt-spot',{'--yt-hl-x':'83.9453125%','--yt-hl-y':'34.23611111111111%','--yt-hl-rx':'26.484375%','--yt-hl-ry':'20%',duration:.6,ease:'power2.inOut'},3);
+tl.to('#fpt-focus',{x:905,y:339,scaleX:1.13,scaleY:0.56,duration:.6,ease:'power2.inOut'},5.3);
+tl.to('#fpt-spot',{'--yt-hl-x':'83.9453125%','--yt-hl-y':'50.97222222222222%','--yt-hl-rx':'26.484375%','--yt-hl-ry':'20%',duration:.6,ease:'power2.inOut'},5.3);
+tl.to('#fpt-spot, #fpt-focus',{opacity:0,duration:.4},7.05);
+window.__timelines['fpt']=tl;
+</script>
+</template>

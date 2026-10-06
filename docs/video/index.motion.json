@@ -1,0 +1,25 @@
+{
+  "duration": 40,
+  "assertions": [
+    {
+      "kind": "appearsBy",
+      "selector": "#shopee-focus",
+      "bySec": 5.6
+    },
+    {
+      "kind": "appearsBy",
+      "selector": "#fpt-focus",
+      "bySec": 13.6
+    },
+    {
+      "kind": "appearsBy",
+      "selector": "#results-focus",
+      "bySec": 21.6
+    },
+    {
+      "kind": "appearsBy",
+      "selector": "#chat-focus",
+      "bySec": 29.6
+    }
+  ]
+}

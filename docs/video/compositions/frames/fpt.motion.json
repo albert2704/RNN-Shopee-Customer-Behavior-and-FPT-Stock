@@ -1,0 +1,10 @@
+{
+  "duration": 8,
+  "assertions": [
+    {
+      "kind": "appearsBy",
+      "selector": "#fpt-focus",
+      "bySec": 1.5
+    }
+  ]
+}

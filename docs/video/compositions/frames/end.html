@@ -1,0 +1,10 @@
+<template>
+<section data-hf-id="hf-zin1" data-composition-id="end" data-width="1920" data-height="1080" data-duration="4" id="end" class="scene end"><div data-hf-id="hf-dw1r" class="intro-body"><p data-hf-id="hf-vpyf" class="intro-label">EXPLORE IT YOURSELF</p><h2 data-hf-id="hf-m6s3" class="hero"><span data-hf-id="hf-bp6k">Try the app.</span><span data-hf-id="hf-onw3">Read the code.</span><span data-hf-id="hf-gk3u">Question the results.</span></h2><p data-hf-id="hf-mwqo" class="url">sequence-rnn.vercel.app</p><p data-hf-id="hf-m8iv" class="tiny">Educational project · Vietnamese interface · English documentation</p></div></section>
+<script>
+const tl=gsap.timeline({paused:true});
+tl.fromTo('#end .hero > span, #end .title > span',{x:-32,opacity:0},{x:0,opacity:1,duration:0.48,stagger:0.09,ease:'power3.out'},0.12);
+tl.fromTo('#end .kicker, #end .intro-label',{y:12,opacity:0},{y:0,opacity:1,duration:0.4,ease:'power2.out'},0.08);
+tl.fromTo('#end .body, #end .note, #end .intro-sub, #end .url, #end .tiny, #end .intro-index',{y:16,opacity:0},{y:0,opacity:1,duration:0.5,stagger:0.12,ease:'power2.out'},0.36);
+window.__timelines['end']=tl;
+</script>
+</template>

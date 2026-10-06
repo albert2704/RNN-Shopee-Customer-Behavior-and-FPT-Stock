@@ -1,0 +1,10 @@
+<template>
+<section data-hf-id="hf-0mxm" data-composition-id="intro" data-width="1920" data-height="1080" data-duration="4" id="intro" class="scene"><div data-hf-id="hf-dw1r" class="intro-body"><p data-hf-id="hf-bnr7" class="intro-label">EXPLORE THE PROJECT</p><h1 data-hf-id="hf-4rwm" class="hero"><span data-hf-id="hf-eaa3">From sequences</span><span data-hf-id="hf-c89p">to questions<span data-hf-id="hf-ijtl" class="dot" style="display:inline">.</span></span></h1><p data-hf-id="hf-as6o" class="intro-sub">RNN experiments, honest evaluation, and a grounded FPT chatbot.</p></div><div data-hf-id="hf-7ue1" class="intro-index"><span data-hf-id="hf-iltv">01 / SHOPEE</span><span data-hf-id="hf-jito">02 / FPT</span><span data-hf-id="hf-ed1j">03 / RESULTS</span><span data-hf-id="hf-wncm">04 / CHAT</span></div></section>
+<script>
+const tl=gsap.timeline({paused:true});
+tl.fromTo('#intro .hero > span, #intro .title > span',{x:-32,opacity:0},{x:0,opacity:1,duration:0.48,stagger:0.09,ease:'power3.out'},0.12);
+tl.fromTo('#intro .kicker, #intro .intro-label',{y:12,opacity:0},{y:0,opacity:1,duration:0.4,ease:'power2.out'},0.08);
+tl.fromTo('#intro .body, #intro .note, #intro .intro-sub, #intro .url, #intro .tiny, #intro .intro-index',{y:16,opacity:0},{y:0,opacity:1,duration:0.5,stagger:0.12,ease:'power2.out'},0.36);
+window.__timelines['intro']=tl;
+</script>
+</template>
