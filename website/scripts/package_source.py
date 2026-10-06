@@ -16,6 +16,8 @@ def build():
     # Chỉ lấy tệp cần để đọc, chạy và tái lập hai bộ dữ liệu; không gom cả workspace.
     files = [
         "README.md",
+        "README.vi.md",
+        "docs/CODE_GUIDE.md",
         ".gitignore",
         ".dockerignore",
         "render.yaml",
@@ -73,6 +75,8 @@ def build():
     files.extend(str(path.relative_to(PROJECT)) for path in sorted((PROJECT / "models/outlook").glob("*.py")))
     files.extend(str(path.relative_to(PROJECT)) for path in sorted((PROJECT / "models/hosting").glob("*.py")))
     for folder, suffixes in [
+        ("docs/images", {".jpg"}),
+        ("docs/media", {".mp4"}),
         ("models/src", {".py"}),
         ("models/results/provenance", {".py", ".json"}),
         ("models/data/processed", {".csv", ".npz"}),
@@ -130,7 +134,7 @@ def build():
             assert "raw" not in parts and "node_modules" not in parts, path
             assert "runtime" not in parts and ".env" not in parts, path
             assert not path.endswith((".pdf", ".docx", ".ipynb")), path
-            assert parts[1] in {"README.md", ".gitignore", ".github", ".dockerignore", "render.yaml", "PACKAGE_MANIFEST.json", "models", "website"}, path
+            assert parts[1] in {"README.md", "README.vi.md", ".gitignore", ".github", ".dockerignore", "render.yaml", "PACKAGE_MANIFEST.json", "docs", "models", "website"}, path
         for item in manifest["files"]:
             assert (
                 hashlib.sha256(archive.read(PREFIX + item["path"])).hexdigest()
