@@ -158,14 +158,14 @@ The recorded daily and longer-horizon evaluations do not establish an advantage 
 
 ## 4. How a chat answer is produced
 
-The entry point is [`service.answer()`](../models/chat/service.py#L318):
+The entry point is [`service.answer()`](../models/chat/service.py#L392):
 
 1. Read the latest validated daily forecast with its matching outlooks through [`daily.pipeline.read_latest()`](../models/daily/pipeline.py#L363).
 2. Attach curated company information and compatible outlook evidence in [`investment.py`](../models/chat/investment.py). Company snippets live in [`company_evidence.json`](../models/chat/company_evidence.json).
 3. Choose plain-language, technical or explicit calculation handling using `reply_mode()` and form a search query from recent user messages.
 4. In [`graph.retrieve()`](../models/chat/graph.py#L26), build a versioned corpus with [`evidence.corpus()`](../models/chat/evidence.py#L26), import reference facts into Neo4j and retrieve relevant documents with full-text search plus fixed, parameterized Cypher traversal.
 5. Prepare the retrieved evidence and, only for an explicit calculation question, add the calculator result. Merely mentioning a budget does not automatically calculate a share allocation.
-6. [`service.generate()`](../models/chat/service.py#L276) sends the retrieved evidence and recent conversation context to OpenAI for a structured answer.
+6. [`service.generate()`](../models/chat/service.py#L338) sends the retrieved evidence and recent conversation context to OpenAI for a structured answer. `answer_style()` keeps ordinary replies short and puts the answer first; a current request for detail enables a fuller explanation. This is a writing instruction, not response truncation. Dates, forecast horizons and citations still accompany the relevant claims.
 7. Validate the answer structure and citation IDs, then return paragraphs and sources to [`StockChat.tsx`](../website/src/components/StockChat.tsx).
 
 The knowledge graph stores **stock, source, input snapshot, model run, forecast, horizon forecast, evaluation, evidence and publication** nodes. Relationships answer questions such as “Which model produced this forecast?” and “Which data source supports it?”

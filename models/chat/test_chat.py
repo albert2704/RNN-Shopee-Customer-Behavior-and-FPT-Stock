@@ -255,6 +255,28 @@ class ChatTests(unittest.TestCase):
         self.assertIn("60800", ledger)
         self.assertIn('"comparable": false', ledger)
 
+    def test_answer_style_follows_latest_question_without_losing_technical_mode(self):
+        history = messages("Giải thích chi tiết dự báo FPT trong sáu tháng")
+        for question, expected in [
+            ("Vậy có nên mua không?", "concise"),
+            ("Giá FPT đang dùng là bao nhiêu?", "concise"),
+            ("50 triệu mua được bao nhiêu cổ phiếu?", "concise"),
+            ("Phân tích chi tiết lý do nên theo dõi thêm.", "detailed"),
+            ("MAE của RNN là bao nhiêu?", "concise"),
+            ("Nói ngắn gọn MAE của RNN là bao nhiêu?", "concise"),
+            ("Không cần chi tiết, có nên mua FPT không?", "concise"),
+            ("Đừng tóm tắt, giải thích chi tiết.", "detailed"),
+            ("Không cần giải thích kỹ MAE, chỉ cho tôi con số.", "concise"),
+            ("Tôi có 200 triệu, nên đầu tư thế nào?", "concise"),
+        ]:
+            with self.subTest(question=question):
+                conversation = history + messages(question)
+                self.assertEqual(service.answer_style(conversation), expected)
+                self.assertEqual(service.requested_horizon(conversation), 6)
+        self.assertTrue(
+            service.reply_mode(messages("Nói ngắn gọn MAE của RNN là bao nhiêu?"))["technical"]
+        )
+
     def test_explicit_share_question_gets_exact_calculation_only(self):
         good = service.Answer(
             paragraphs=[
@@ -303,6 +325,15 @@ class ChatTests(unittest.TestCase):
             self.assertEqual(body["text"]["format"]["type"], "json_schema")
             self.assertTrue(body["text"]["format"]["strict"])
             self.assertIn("retrieved_documents", body["input"][0]["content"])
+            context = json.loads(body["input"][0]["content"].split("\n", 1)[1])
+            self.assertEqual(context["answer_style"], "concise")
+            self.assertEqual(context["requested_months"], 6)
+            self.assertEqual(context["selected_horizon"], horizon)
+            self.assertEqual(context["assessment_guidance"]["stance"], "watch")
+            self.assertTrue(body["instructions"].startswith(service.SYSTEM + "\n" + service.CONCISE_STYLE))
+            self.assertIn("ĐÃ CHO BIẾT: 6 tháng", body["instructions"])
+            self.assertNotIn(service.UNKNOWN_HORIZON_STYLE, body["instructions"])
+            self.assertNotIn("Bạn dự định đầu tư trong bao lâu?", body["instructions"])
             answer = {
                 "paragraphs": [{"text": "Dữ liệu FPT đã lưu.", "citations": ["E2"]}],
             }
@@ -338,10 +369,14 @@ class ChatTests(unittest.TestCase):
             api_key="not-a-real-key",
             http_client=httpx2.Client(transport=httpx2.MockTransport(handler)),
         )
+        horizon = {"citation_id": "H6", "text": "Dự báo sáu tháng chưa được kiểm chứng tốt."}
+        evidence = mock_evidence()
+        evidence["documents"].append(horizon)
+        evidence["assessment_guidance"] = {"6": {"stance": "watch", "source": "H6"}}
         with patch.object(service, "OpenAI", return_value=client):
             answer = service.generate(
-                messages("FPT?"),
-                mock_evidence(),
+                messages("Tôi định giữ sáu tháng, đã có tiền dự phòng.", "Vậy có nên mua không?"),
+                evidence,
                 None,
                 {},
                 {"OPENAI_API_KEY": "not-a-real-key", "OPENAI_MODEL": "gpt-4.1-mini"},
