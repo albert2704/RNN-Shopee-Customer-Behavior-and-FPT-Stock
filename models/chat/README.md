@@ -4,7 +4,7 @@ Mở **Chat đầu tư** ở đầu website hoặc **Mở chat đầu tư** trê
 
 Chat dành cho người đang cân nhắc đầu tư cổ phiếu. Mặc định, câu trả lời dùng tiếng Việt thông thường để giải thích dự báo FPT, ngày giá tham chiếu và ý nghĩa của dự báo cho một phiên kế tiếp. Trả lời thẳng câu hỏi và chỉ hỏi thêm một thông tin liên quan khi cần; không tự chuyển cuộc trò chuyện thành bài giảng mô hình hoặc bảng tính vốn.
 
-Câu trả lời bắt đầu bằng kết luận hoặc số liệu được hỏi, rồi nêu 1–2 lý do cần thiết. Mặc định dùng 1–2 đoạn ngắn, thường khoảng 60–100 từ; câu hỏi đơn giản có thể ngắn hơn. Chỉ giải thích dài hơn khi câu hỏi hiện tại yêu cầu chi tiết. Câu hỏi kỹ thuật vẫn nhận số liệu thật và câu trả lời ngắn khi không yêu cầu giải thích dài. Yêu cầu “ngắn gọn” được ưu tiên, kể cả khi hỏi kỹ thuật. Câu hỏi tiếp nối chỉ bổ sung phần mới. Đây là hướng dẫn diễn đạt, không phải cắt văn bản hay giới hạn số câu hỏi. Ngày dữ liệu, thời hạn dự báo, nguồn và những điều kiện ảnh hưởng đến kết luận vẫn được giữ.
+Câu trả lời dùng các gạch đầu dòng ngắn: kết luận hoặc số liệu được hỏi trước, rồi 1–2 lý do cần thiết. Mỗi ý có nút nguồn trích dẫn ngay bên cạnh, mở đúng tài liệu hỗ trợ ý đó. Mặc định có 2–4 ý, thường tổng khoảng 60–100 từ; câu hỏi đơn giản có thể chỉ cần một ý. Câu hỏi làm rõ không cần nguồn nếu không chứa nhận định hay số liệu. Chỉ giải thích dài hơn khi câu hỏi hiện tại yêu cầu chi tiết. Câu hỏi kỹ thuật vẫn nhận số liệu thật và câu trả lời ngắn khi không yêu cầu giải thích dài. Yêu cầu “ngắn gọn” được ưu tiên, kể cả khi hỏi kỹ thuật. Câu hỏi tiếp nối chỉ bổ sung phần mới. Đây là hướng dẫn diễn đạt, không phải cắt văn bản hay giới hạn số câu hỏi. Ngày dữ liệu, thời hạn dự báo, nguồn và những điều kiện ảnh hưởng đến kết luận vẫn được giữ.
 
 ## Chạy
 

@@ -47,24 +47,26 @@ function Evidence({ reply }: { reply: Reply }) {
       <p className="stock-chat-data-date">
         Dữ liệu giá đến {date(reply.freshness.observed_through)}
       </p>
-      {reply.paragraphs.map((p, index) => (
-        <p className="stock-chat-answer" key={index}>
-          {p.text}{' '}
-          {p.citations.map((id) => (
-            <button
-              className="stock-chat-citation"
-              key={id}
-              aria-label={`Xem nguồn ${id}`}
-              onClick={() => {
-                setOpen(true);
-                setSelected(id);
-              }}
-            >
-              {id}
-            </button>
-          ))}
-        </p>
-      ))}
+      <ul className="stock-chat-answer-list" aria-label="Câu trả lời">
+        {reply.paragraphs.map((point, index) => (
+          <li className="stock-chat-answer" key={index}>
+            {point.text}{' '}
+            {point.citations.map((id) => (
+              <button
+                className="stock-chat-citation"
+                key={id}
+                aria-label={`Xem nguồn ${id}`}
+                onClick={() => {
+                  setOpen(true);
+                  setSelected(id);
+                }}
+              >
+                {id}
+              </button>
+            ))}
+          </li>
+        ))}
+      </ul>
       <details
         className="stock-chat-sources"
         open={open}

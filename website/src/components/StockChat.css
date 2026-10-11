@@ -257,6 +257,18 @@
   font-size: 12px;
   line-height: 1.6;
 }
+.stock-chat-answer-list {
+  list-style: disc outside;
+  margin: 10px 0;
+  padding-inline-start: 1.25em;
+}
+.stock-chat-answer-list > li {
+  padding-inline-start: 0.25em;
+  white-space: pre-wrap;
+}
+.stock-chat-answer-list > li + li {
+  margin-top: 10px;
+}
 .stock-chat-citation {
   padding: 1px 5px;
   border-radius: 4px;
