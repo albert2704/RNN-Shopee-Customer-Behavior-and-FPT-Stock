@@ -89,7 +89,27 @@ refresh/concurrency locks and persistent forecast storage design. This is delibe
 
 ## Persistence and migration
 
-### Daily publication, authorized 2026-10-10
+### Website-entry refresh, authorized 2026-10-15
+
+The user replaced scheduled daily updates with a check on website entry. Keep
+all existing source, checkpoint, normalization and complete-session rules.
+The browser starts one explicit POST per document and reads progress until it
+finishes. The API runs one background job shared by concurrent visitors. A
+five-minute reuse window includes failures, but a visit after the 16:00 cutoff
+can start a new check. No timer launches jobs without a visitor.
+
+Render Free remains the execution host. Decouple provider file helpers from
+Torch imports to fit the existing 512 MiB allowance. Run all four frozen models
+before one validated atomic publication activation. Regular reads and startup
+restore saved data without network refresh; unchanged inputs preserve issuance
+and ledger. Update the displayed reference after completion; retain cached data
+and show a notice on failure. Earlier chat answers retain their cited snapshot.
+The runtime cache and ledger are ephemeral across free-service sleep/restart;
+restore the bundled fallback, then refresh on the next visit. Retain the GitHub
+workflow only for manual fallback publication; remove cron. No paid services,
+new credentials, retraining or automatic company-disclosure updates are added.
+
+### Daily publication, authorized 2026-10-10 (schedule superseded 2026-10-15)
 
 Use a scheduled GitHub Actions job on the public repository at 16:30 and 18:30
 Vietnam time each weekday, plus manual dispatch. Standard Ubuntu runners keep

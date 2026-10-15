@@ -129,6 +129,22 @@ class DailyCoreTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "hash"):
                 load_snapshot(path)
 
+    def test_snapshot_preserves_provider_decimal_and_content_hash(self):
+        import hashlib
+        from .pipeline import load_snapshot, write_json, digest
+
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder)
+            frame = pd.DataFrame({"date": pd.date_range("2021-01-01", periods=61),
+                                  "close": [32159.999999999996] * 61})
+            frame.to_csv(path / "closes.csv", index=False)
+            expected = digest(path / "closes.csv")
+            write_json(path / "source.json", {"closes_sha256": expected,
+                                              "last_date": "2021-03-02"})
+            loaded, _ = load_snapshot(path)
+            self.assertEqual(loaded.close.iloc[0], frame.close.iloc[0])
+            self.assertEqual(hashlib.sha256(loaded.to_csv(index=False).encode()).hexdigest(), expected)
+
     def test_failed_publish_preserves_active_model_and_journal(self):
         from . import pipeline
 

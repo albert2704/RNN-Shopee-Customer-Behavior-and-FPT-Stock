@@ -112,6 +112,55 @@ class PublicationTests(unittest.TestCase):
             self.assertIsNone(published.read())
             fetch.assert_not_called()
 
+    def test_api_read_only_restores_cache_without_network(self):
+        with patch.object(published, "download") as fetch:
+            self.assertEqual(pipeline.read_latest()["outlook"], self.bundle["outlook"])
+            fetch.assert_not_called()
+
+    def test_visit_refresh_activates_matching_generation_and_full_ledger(self):
+        from outlook import pipeline as outlook
+        candidate = self.revised(True)
+        with (
+            patch.object(pipeline, "fetch_snapshot", return_value=(None, candidate["daily"]["source"], None)),
+            patch.object(pipeline, "make_forecast", return_value=(candidate["daily"], candidate["ledger"])) as infer,
+            patch.object(outlook, "make_forecast", return_value=candidate["outlook"]),
+        ):
+            result = pipeline.refresh()
+        self.assertEqual(result["outlook"], candidate["outlook"])
+        self.assertEqual(infer.call_args.kwargs["ledger"], self.bundle["ledger"])
+        self.assertEqual(pipeline.read_json(self.cache)["daily"], candidate["daily"])
+        self.assertEqual(pipeline.read_latest()["source"], candidate["daily"]["source"])
+
+    def test_visit_unchanged_or_older_data_never_runs_inference(self):
+        with patch.object(pipeline, "make_forecast") as infer:
+            for old in (False, True):
+                source = dict(self.bundle["daily"]["source"])
+                if old:
+                    source["last_date"] = "2020-01-01"
+                with patch.object(pipeline, "fetch_snapshot", return_value=(None, source, None)):
+                    if old:
+                        with self.assertRaises(ValueError):
+                            pipeline.refresh()
+                    else:
+                        self.assertEqual(pipeline.refresh()["forecast"], self.bundle["daily"]["forecast"])
+                infer.assert_not_called()
+
+    def test_failed_outlook_or_save_preserves_both_forecasts(self):
+        from outlook import pipeline as outlook
+        candidate = self.revised(True)
+        with (
+            patch.object(pipeline, "fetch_snapshot", return_value=(None, candidate["daily"]["source"], None)),
+            patch.object(pipeline, "make_forecast", return_value=(candidate["daily"], candidate["ledger"])),
+            patch.object(outlook, "make_forecast", side_effect=ValueError("invalid outlook")),
+        ):
+            with self.assertRaises(ValueError):
+                pipeline.refresh()
+        self.assertEqual(published.read(remote=False), self.bundle)
+        with patch.object(pipeline, "write_json", side_effect=OSError):
+            with self.assertRaises(OSError):
+                published.activate(candidate)
+        self.assertEqual(published.read(remote=False), self.bundle)
+
     def test_unchanged_input_skips_inference_and_artifact_writes(self):
         with (
             patch.object(pipeline, "bootstrap"),

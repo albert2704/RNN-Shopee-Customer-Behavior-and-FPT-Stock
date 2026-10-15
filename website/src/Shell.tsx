@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { ArrowLeft, ArrowRight, BookOpen, Maximize2, X } from 'lucide-react';
 import Explorer from './App';
 import Presentation from './components/Presentation';
@@ -6,6 +6,7 @@ import DemoStage from './components/DemoStage';
 import DemoSummary from './components/demo/DemoSummary';
 import DemoDialog, { type DemoModal } from './components/demo/DemoDialog';
 import StockChat from './components/StockChat';
+import { refreshOnVisit, subscribeVisit, visitSnapshot } from './domain/chat/visit';
 import Appendix from './components/Appendix';
 import { useDemoData } from './hooks/useDemoData';
 import { useDemoPlayback } from './hooks/useDemoPlayback';
@@ -21,6 +22,10 @@ import './editorial-fonts.css';
 import './Editorial.css';
 
 export default function Shell() {
+  const refresh = useSyncExternalStore(subscribeVisit, visitSnapshot);
+  useEffect(() => {
+    void refreshOnVisit();
+  }, []);
   const [chapter, setChapter] = useState<Chapter>(() => chapterFromHash(location.hash));
   const [chatVisited, setChatVisited] = useState(chapter === 'chat');
   const [dataset, setDataset] = useState<DatasetId>('shopee');
@@ -247,7 +252,11 @@ export default function Shell() {
           )}
           {chatVisited && (
             <div className="chat-chapter" hidden={chapter !== 'chat'}>
-              <StockChat active={chapter === 'chat'} onBack={() => navigate('shopee')} />
+              <StockChat
+                active={chapter === 'chat'}
+                refresh={refresh}
+                onBack={() => navigate('shopee')}
+              />
             </div>
           )}
           {chapter === 'appendix' && (

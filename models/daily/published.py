@@ -130,7 +130,16 @@ def download():
     return json.loads(raw)
 
 
-def read():
+def activate(bundle):
+    """Commit all four forecasts together after successful on-visit inference."""
+    global _cache
+    with _lock:
+        accepted = validate(bundle, _cache)
+        pipeline.write_json(cache_path(), accepted)
+        _cache = copy.deepcopy(accepted)
+
+
+def read(*, remote=True):
     global _cache, _attempt
     if not enabled():
         return None
@@ -143,7 +152,7 @@ def read():
                     except Exception as error:
                         print(f"FPT saved publication rejected: {type(error).__name__}", flush=True)
         now = time.monotonic()
-        if _attempt is None or now - _attempt >= TTL:
+        if remote and (_attempt is None or now - _attempt >= TTL):
             _attempt = now
             try:
                 candidate = validate(download(), _cache)

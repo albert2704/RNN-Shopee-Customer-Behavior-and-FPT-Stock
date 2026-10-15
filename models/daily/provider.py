@@ -11,7 +11,7 @@ os.environ["VNSTOCK_DISABLE_AGENT_SETUP"] = "1"
 os.environ["VNSTOCK_DISABLE_GLOBAL_AGENT"] = "1"
 
 from .core import clean_closes, vietnam_now
-from .pipeline import digest, write_json
+from .storage import digest, write_json
 
 VERSION = "4.0.9"
 SOURCE_URL = "https://www.vnstocks.com/docs/vnstock/du-lieu-thi-truong-market-data"

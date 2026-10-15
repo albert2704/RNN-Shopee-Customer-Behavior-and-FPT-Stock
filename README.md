@@ -85,13 +85,13 @@ Sources and attribution:
 
 The [source manifest](models/data/source_manifest.json) records dataset provenance, schemas, licenses and hashes. Raw CSV downloads are excluded from Git and the source ZIP. Processed teaching data, model checkpoints and saved evaluation results are included.
 
-## Automatic FPT closing updates
+## FPT updates when you open the website
 
-The [GitHub Actions workflow](.github/workflows/update-fpt.yml) runs at **16:30 and 18:30 Vietnam time, Monday–Friday**. It fetches completed FPT closes, validates them, then uses the saved daily and 1/3/6-month models to publish a consistent set of forecasts. **An update runs inference; it does not retrain the models.**
+Opening the website requests a background check for completed FPT closing prices. The saved price and its actual date remain visible while the API fetches KBS data and runs the frozen daily and 1/3/6-month models. All four forecasts switch together after validation. **Updates run inference; they do not retrain.**
 
-The hosted API checks the [published bundle](website/public/data/fpt-published.json) on startup and at most every five minutes while in use. Holidays or unavailable data retain the last valid publication and its actual closing date. GitHub schedule times are best effort. Run **Update FPT daily data → Run workflow** in [Actions](https://github.com/albert2704/RNN-Shopee-Customer-Behavior-and-FPT-Stock/actions/workflows/update-fpt.yml) to request a manual update.
+There is no daily schedule. Concurrent visits share one update; visits within five minutes reuse its result, with a new check allowed after the 16:00 Vietnam cutoff. No new work starts merely because the page stays open, you switch chapters or send another question. Failures retain the previous data and show an update notice.
 
-The historical teaching charts stay fixed so their results remain reproducible. Scheduled price updates do not automatically refresh the curated company disclosures. See [deployment and operations](models/hosting/README.md#automatic-closing-price-updates).
+The free server can take about a minute to wake. Its temporary cache is lost on sleep/restart, so it restores the packaged snapshot and refreshes on the next visit. The [manual workflow](.github/workflows/update-fpt.yml) remains available to publish a durable fallback snapshot. Historical teaching charts and curated company disclosures remain unchanged. See [deployment and operations](models/hosting/README.md#updates-on-website-entry).
 
 ## Run locally
 

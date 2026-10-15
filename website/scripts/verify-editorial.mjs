@@ -41,7 +41,9 @@ await context.route('**/api/**', async (route) => {
   const pathname = new URL(request.url()).pathname;
   apiRequests.push({ pathname, method: request.method() });
   let body = {};
-  if (pathname === '/api/chat/status' && statusAvailable) {
+  if (pathname === '/api/fpt/visit') {
+    body = { state: 'ready', checked_at: '2026-10-15T17:00:00+07:00' };
+  } else if (pathname === '/api/chat/status' && statusAvailable) {
     body = {
       ready: true,
       api_key_configured: true,
@@ -196,10 +198,24 @@ try {
     ['#explore-results', 'appendix'],
   ];
   for (const [hash, id] of redirects) {
+    const before = apiRequests.filter(
+      ({ pathname, method }) => pathname === '/api/fpt/visit' && method === 'POST',
+    ).length;
     await page.goto(`${baseURL}/${hash}`);
     await expect(page).toHaveURL(new RegExp(`${hashes[id]}$`));
     await expect(chapterButton(id)).toHaveAttribute('aria-current', 'page');
+    await expect
+      .poll(
+        () =>
+          apiRequests.filter(
+            ({ pathname, method }) => pathname === '/api/fpt/visit' && method === 'POST',
+          ).length,
+      )
+      .toBe(before + 1);
   }
+  const visitsBeforeDemo = apiRequests.filter(
+    ({ pathname, method }) => pathname === '/api/fpt/visit' && method === 'POST',
+  ).length;
   await page.goto(`${baseURL}/#demo`);
   await expect(workspace(datasets[0])).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
@@ -487,8 +503,16 @@ try {
     await screenshot(`mobile-${id}`);
   }
   assert.ok(
-    !apiRequests.some(({ pathname }) => pathname.startsWith('/api/fpt/')),
-    'Presentation navigation does not request removed forecast-page APIs',
+    !apiRequests.some(
+      ({ pathname }) => pathname.startsWith('/api/fpt/') && pathname !== '/api/fpt/visit',
+    ),
+    'Presentation navigation only uses the on-visit refresh API',
+  );
+  assert.equal(
+    apiRequests.filter(({ pathname, method }) => pathname === '/api/fpt/visit' && method === 'POST')
+      .length,
+    visitsBeforeDemo + 1,
+    'One visit refresh despite chapter navigation, focus and multiple chat messages',
   );
   assert.deepEqual(pageErrors, [], 'No unhandled page errors');
   pass('All five mobile views avoid horizontal overflow and retain usable replay controls');

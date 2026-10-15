@@ -17,9 +17,9 @@ artificial question cooldown is enabled.
 The root `render.yaml` uses the Free plan (512 MB), with no paid disk. Build
 context is the repo root; Dockerfile is `models/hosting/Dockerfile`. Do not set
 Root Directory. Runtime files in `/tmp/sequence` are disposable: every new
-instance restores packaged checkpoints and synchronizes the published forecasts
-from GitHub. `A6_ALLOW_REFRESH=false` disables direct provider fetches on Render.
-The scheduled workflow below publishes updates without daily redeployment.
+instance restores packaged checkpoints and the fallback publication.
+`A6_ALLOW_REFRESH=true` enables the background refresh requested on website entry.
+The provider process imports lightweight file helpers, without a second Torch runtime.
 
 Render Free sleeps after 15 minutes idle; the first request can take about a
 minute to wake it. Open Hỏi đáp before presenting. The connection check waits up
@@ -30,6 +30,8 @@ Configure these server variables in Render, never in frontend code:
 | Variable | Value |
 | --- | --- |
 | `A6_ENV` | `production` |
+| `A6_ALLOW_REFRESH` | `true`; enable website-entry refresh |
+| `FPT_PUBLISHED_UPDATES` | `true`; serve one atomic daily/outlook publication |
 | `A6_ALLOWED_ORIGINS` | Exact Vercel HTTPS production origin |
 | `CHAT_REQUIRE_ACCESS_CODE` | `false` (default); public chat needs no code |
 | `CHAT_ENFORCE_LIMITS` | `false` (default); no application question-count caps or cooldown |
@@ -106,10 +108,11 @@ Hosted readiness, a real cited answer and restart persistence passed on 2026-10-
 
 ## Price updates and operations
 
-Deployment shows the actual observed closing date. The GitHub schedule below
-publishes new forecasts using frozen models, and hosted chat reads the latest
-validated publication. Direct hosted provider refresh remains disabled. The
-static classroom experiment charts remain historical.
+Deployment shows the actual observed closing date. Opening the website requests
+one background refresh; cached evidence remains usable while it runs. Chat reads
+the matching daily and longer-horizon forecasts. The historical classroom charts
+remain fixed. Startup, health checks, status reads and chat messages do not fetch
+market data.
 
 Render automatic application deployment is off so a Git push does not interrupt
 the demo API. Blueprint configuration changes may still auto-sync; keep the plan
@@ -122,7 +125,7 @@ free hosting does not make the model API free. Keep local
 From models:
 
 ```sh
-.venv/bin/python -m unittest hosting.test_hosting chat.test_chat chat.test_investment daily.test_daily daily.test_published outlook.test_outlook
+.venv/bin/python -m unittest hosting.test_hosting chat.test_chat chat.test_investment daily.test_daily daily.test_published daily.test_visits outlook.test_outlook
 ```
 
 From website, run `npm run test:logic`, `npm run format:check`, `npm run build`.
@@ -143,25 +146,33 @@ citations `H6`, `B2`, `B3`, `B5` and `B6`. The opened `H6` source matched the
 public UI reconnected with the same snapshot and price; the Aura daily quota
 counter remained `1`, confirming persistence across restart.
 
-## Automatic closing price updates
+## Updates on website entry
 
-GitHub Actions runs `Update FPT daily data` at 16:30 and 18:30 Vietnam time,
-Monday through Friday. Use its **Run workflow** button for an immediate update.
-It fetches KBS closes through the existing Vnstock adapter, reuses all four
-frozen FPT checkpoints, and commits the daily forecast, three outlooks and
-ledger as one publication. It does not retrain or update company disclosures.
+`Shell.tsx` calls `refreshOnVisit()` once per document, including React StrictMode.
+It POSTs `/api/fpt/visit`, then polls the read-only GET only while work is running.
+Navigation, tab focus and chat messages never start another update. The chat
+reference price reloads after completion; existing answers keep their own citations.
 
-The production API reads `website/public/data/fpt-published.json` from this
-repository on startup and at most every five minutes on use. No daily Render
-redeploy or paid disk is needed. Failed downloads retain the last valid data,
-with the real closing date visible. Holidays keep the last available session.
-The two ordinary JSON exports and downloadable source ZIP update together.
+`daily/visits.py` shares one background job among concurrent visitors. Nearby
+visits reuse its result for five minutes; crossing 16:00 Vietnam time allows a
+fresh attempt even within that interval. This is request deduplication, not a
+schedule: no visitors means no provider calls. Failures are also deduplicated.
 
-`FPT_PUBLISHED_UPDATES` defaults to true in production and false locally.
-Set it to false to return to the packaged/local snapshot. The public refresh
-POST remains disabled on Render. No new credential is needed by the updater;
-GitHub supplies its repository token, and the price provider supports Guest use.
+The existing pinned KBS/Vnstock adapter excludes today's bar before 16:00 and
+validates prices and dates. `pipeline.refresh()` reuses all four frozen checkpoints,
+rejects older cutoffs, skips inference for unchanged data, and activates daily,
+outlook and ledger in one validated atomic publication. Ordinary reads do not
+pull GitHub. Provider timeout, invalid data or failed inference retains the
+previous publication. No new API credential or paid hosting resource is needed.
 
-Schedule times are best effort. GitHub can delay runs or disable public schedules
-after 60 days without repository activity. Inspect the Actions run logs when the
-displayed closing date unexpectedly stops advancing.
+Render Free's temporary disk is lost on sleep/restart. The next instance restores
+the packaged snapshot and a visitor triggers another fetch. The runtime forecast
+ledger is therefore not a durable performance record across restarts.
+The manual **Publish FPT snapshot manually** GitHub workflow can update the
+packaged fallback and source ZIP; it has no cron trigger. Company disclosures
+and historical teaching charts are not updated by this task.
+
+Verification: a real KBS fetch and all four frozen forecasts completed in about
+nine seconds inside a Linux container limited to 512 MiB (324 MiB measured peak).
+Provider CSVs are read with round-trip float precision so their hashes remain
+stable; the regression includes the value `32159.999999999996`.

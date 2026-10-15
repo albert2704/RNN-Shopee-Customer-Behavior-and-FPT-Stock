@@ -1,19 +1,18 @@
 """Loopback API. Start from models/: python -m daily.api"""
 
-import threading
 import time
 
 from fastapi import FastAPI, HTTPException, Request
 from hosting.security import install, allowed_origin
 
-from . import pipeline
+from . import pipeline, visits
 from chat.api import router as chat_router
 from chat.investment import compatible_outlook, company_documents
 
 app = FastAPI(title="FPT daily forecast", docs_url=None, redoc_url=None)
 install(app)
 app.include_router(chat_router)
-refresh_lock = threading.Lock()
+refresh_lock = visits.refresh_lock
 last_attempt = 0.0
 
 
@@ -55,6 +54,22 @@ def investment_outlook():
         ) from error
 
 
+@app.get("/api/fpt/visit")
+def visit_status():
+    # Polling this endpoint never fetches prices or runs inference.
+    return visits.status()
+
+
+@app.post("/api/fpt/visit")
+def visit(request: Request):
+    if (not allowed_origin(request)
+            or request.headers.get("content-type", "").split(";")[0] != "application/json"):
+        raise HTTPException(403, "Nguồn gửi yêu cầu chưa được cho phép.")
+    if not request.app.state.deployment.allow_refresh:
+        raise HTTPException(403, "Chưa bật cập nhật dữ liệu khi mở website.")
+    return visits.start()
+
+
 @app.post("/api/fpt/daily/refresh")
 def refresh(request: Request):
     global last_attempt
@@ -65,7 +80,7 @@ def refresh(request: Request):
     ):
         raise HTTPException(403, "Nguồn gửi yêu cầu chưa được cho phép.")
     if not request.app.state.deployment.allow_refresh:
-        raise HTTPException(403, "Dữ liệu được cập nhật tự động sau giờ đóng cửa. Có thể chạy lại tác vụ Update FPT daily data trên GitHub.")
+        raise HTTPException(403, "Chưa bật cập nhật dữ liệu trên máy chủ.")
     if not refresh_lock.acquire(blocking=False):
         raise HTTPException(409, "Đang cập nhật dữ liệu.")
     try:

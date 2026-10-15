@@ -13,6 +13,7 @@ import {
 import './StockChat.css';
 import { connectionLabels, isChatStatus, type ChatStatus } from '../domain/chat/connection';
 import { apiUrl } from '../domain/chat/api';
+import type { VisitRefresh } from '../domain/chat/visit';
 type Source = {
   citation_id: string;
   title: string;
@@ -128,7 +129,15 @@ function Evidence({ reply }: { reply: Reply }) {
   );
 }
 
-export default function StockChat({ active, onBack }: { active: boolean; onBack: () => void }) {
+export default function StockChat({
+  active,
+  onBack,
+  refresh,
+}: {
+  active: boolean;
+  onBack: () => void;
+  refresh: VisitRefresh;
+}) {
   const [status, setStatus] = useState<ChatStatus | null>(null);
   const [checking, setChecking] = useState(true);
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -141,11 +150,15 @@ export default function StockChat({ active, onBack }: { active: boolean; onBack:
   const request = useRef<AbortController | null>(null);
   const statusSequence = useRef(0);
   const statusBusy = useRef(false);
+  const statusQueued = useRef(false);
   const retry = useRef<Turn[] | null>(null);
   const live = useRef(true);
 
   async function checkStatus() {
-    if (statusBusy.current) return;
+    if (statusBusy.current) {
+      statusQueued.current = true;
+      return;
+    }
     statusBusy.current = true;
     const sequence = ++statusSequence.current;
     setChecking(true);
@@ -164,6 +177,10 @@ export default function StockChat({ active, onBack }: { active: boolean; onBack:
     } finally {
       statusBusy.current = false;
       if (live.current && sequence === statusSequence.current) setChecking(false);
+      if (statusQueued.current && live.current) {
+        statusQueued.current = false;
+        void checkStatus();
+      }
     }
   }
   useEffect(() => {
@@ -180,6 +197,9 @@ export default function StockChat({ active, onBack }: { active: boolean; onBack:
     window.sessionStorage.removeItem('fpt-chat-prefill');
     setInput(question.slice(0, 4000));
   }, [active]);
+  useEffect(() => {
+    if (active && refresh.state === 'ready') void checkStatus();
+  }, [active, refresh.state, refresh.checked_at]);
   useEffect(() => {
     if (active) void checkStatus();
     const focus = () => {
@@ -316,6 +336,15 @@ export default function StockChat({ active, onBack }: { active: boolean; onBack:
               <p>{checking ? 'Đang kiểm tra dữ liệu…' : 'Chưa đọc được dữ liệu từ máy chủ'}</p>
             )}
           </div>
+          <p className="stock-chat-refresh-status" role="status">
+            {refresh.state === 'refreshing'
+              ? 'Đang kiểm tra giá đóng cửa mới…'
+              : refresh.state === 'ready'
+                ? 'Đã kiểm tra giá đóng cửa khi bạn mở website.'
+                : refresh.state === 'failed'
+                  ? 'Chưa cập nhật được. Đang dùng dữ liệu đã lưu.'
+                  : ''}
+          </p>
           <p className="stock-chat-scope">
             Có mô hình thử nghiệm riêng cho khoảng 1, 3 và 6 tháng. Trao đổi dựa trên dữ liệu FPT
             hiện có; quyết định đầu tư còn tùy mục tiêu, thời hạn và tình hình tài chính của bạn.

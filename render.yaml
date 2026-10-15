@@ -17,7 +17,7 @@ services:
       - key: A6_PUBLIC_DATA_DIR
         value: /tmp/sequence/public
       - key: A6_ALLOW_REFRESH
-        value: "false"
+        value: "true"
       - key: FPT_PUBLISHED_UPDATES
         value: "true"
       - key: A6_ALLOWED_ORIGINS

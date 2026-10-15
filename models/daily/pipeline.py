@@ -21,6 +21,7 @@ import pandas as pd
 import torch
 
 from .core import clean_closes, forecast_input, prepare_windows, score, vietnam_now
+from .storage import digest, read_json, write_json
 
 MODELS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(MODELS / "src"))
@@ -36,32 +37,13 @@ PUBLIC_DIR = Path(os.environ.get("A6_PUBLIC_DATA_DIR", BUNDLED_PUBLIC.parent))
 PUBLIC = PUBLIC_DIR / "fpt-daily.json"
 
 
-def digest(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
-
-
-def read_json(path):
-    return json.loads(Path(path).read_text())
-
-
-def write_json(path, value):
-    """Atomic replacement so refresh failures cannot truncate the last result."""
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.NamedTemporaryFile(
-        mode="w", dir=path.parent, delete=False, encoding="utf-8"
-    ) as handle:
-        json.dump(value, handle, ensure_ascii=False, indent=2, allow_nan=False)
-        temporary = handle.name
-    os.replace(temporary, path)
-
-
 def load_snapshot(folder):
     folder = Path(folder)
     metadata = read_json(folder / "source.json")
     if digest(folder / "closes.csv") != metadata["closes_sha256"]:
         raise ValueError("Dataset hash mismatch")
-    raw = pd.read_csv(folder / "closes.csv").rename(columns={"date": "time"})
+    # Preserve provider float values so the validated CSV hashes round-trip exactly.
+    raw = pd.read_csv(folder / "closes.csv", float_precision="round_trip").rename(columns={"date": "time"})
     frame = clean_closes(raw, price_multiplier=1)
     if frame.date.iloc[-1].strftime("%Y-%m-%d") != metadata["last_date"]:
         raise ValueError("Snapshot includes a session that is not complete yet")
@@ -232,7 +214,7 @@ def resolve_ledger(entries, frame):
     return entries
 
 
-def make_forecast(frame, source, *, run_id=None):
+def make_forecast(frame, source, *, run_id=None, ledger=None):
     model, saved, manifest = load_active(run_id)
     trained_source = manifest["source"]
     for field in ["provider", "package_version", "price_basis", "price_multiplier"]:
@@ -271,7 +253,7 @@ def make_forecast(frame, source, *, run_id=None):
         "actual": None,
         "input_sha256": window_hash,
     }
-    ledger = resolve_ledger(read_ledger(), frame)
+    ledger = resolve_ledger(read_ledger() if ledger is None else ledger, frame)
     existing = next((item for item in ledger if item["id"] == identifier), None)
     if existing:
         record = existing
@@ -323,7 +305,23 @@ def with_freshness(result):
 
 
 def refresh():
+    from . import published
+
+    previous = published.read(remote=False)
     frame, source, _ = fetch_snapshot()
+    if previous:
+        current = previous["daily"]
+        if source["last_date"] < current["source"]["last_date"]:
+            raise ValueError("Provider cutoff is older than the current publication")
+        if source["closes_sha256"] == current["source"]["closes_sha256"]:
+            return read_latest()
+        from outlook.pipeline import make_forecast as make_outlook
+
+        result, ledger = make_forecast(frame, source, ledger=previous["ledger"])
+        monthly = make_outlook(frame, source)
+        published.activate({"schema_version": 1, "published_at": vietnam_now().isoformat(),
+                            "daily": result, "outlook": monthly, "ledger": ledger})
+        return read_latest()
     result, ledger = make_forecast(frame, source)
     # Both forecasts use the same validated close series. Reads reject any transient
     # hash mismatch rather than combining prices from two different revisions.
@@ -363,7 +361,8 @@ def read_ledger():
 def read_latest():
     from .published import read as read_publication
 
-    publication = read_publication()
+    # Reads never start an update. Only a website visit or an explicit refresh does.
+    publication = read_publication(remote=False)
     if publication:
         return with_freshness({**publication["daily"], "outlook": publication["outlook"]})
     active = read_json(RUNTIME / "active.json")

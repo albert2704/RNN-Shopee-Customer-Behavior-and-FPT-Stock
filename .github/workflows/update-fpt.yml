@@ -1,9 +1,6 @@
-name: Update FPT daily data
+name: Publish FPT snapshot manually
 
 on:
-  schedule:
-    # 16:30 and 18:30 Vietnam time, Monday to Friday. UTC cron.
-    - cron: '30 9,11 * * 1-5'
   workflow_dispatch:
 
 concurrency:

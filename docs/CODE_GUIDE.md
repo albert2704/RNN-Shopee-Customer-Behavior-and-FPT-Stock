@@ -143,8 +143,8 @@ The chatbot uses KBS/Vnstock data and separately trained checkpoints, rather tha
 | Fetch | [`daily/provider.py`](../models/daily/provider.py), `fetch()` | Request FPT daily closes from KBS via Vnstock and record provenance |
 | Validate | [`daily/core.py`](../models/daily/core.py#L17), `clean_closes()` | Convert explicitly supplied price units; reject invalid/conflicting/future records; exclude today's bar before 16:00 Vietnam time |
 | Prepare daily training | [`daily/core.py`](../models/daily/core.py#L55), `prepare_windows()` | Create 30-return windows, chronological splits and training-only scalers |
-| Train daily | [`daily/pipeline.py`](../models/daily/pipeline.py#L98), `train()` | Call the shared trainer and save an independent run with evidence |
-| Forecast daily | [`daily/pipeline.py`](../models/daily/pipeline.py#L235), `make_forecast()` | Load the saved model/scaler and infer from the latest 31 closes |
+| Train daily | [`daily/pipeline.py`](../models/daily/pipeline.py#L80), `train()` | Call the shared trainer and save an independent run with evidence |
+| Forecast daily | [`daily/pipeline.py`](../models/daily/pipeline.py#L217), `make_forecast()` | Load the saved model/scaler and infer from the latest 31 closes |
 | Prepare longer horizons | [`outlook/core.py`](../models/outlook/core.py#L27), `prepare_windows()` | Use 60 returns to predict `log(Close[t+h] / Close[t])` for `h = 21, 63, 126` |
 | Train longer horizons | [`outlook/pipeline.py`](../models/outlook/pipeline.py#L234), `train()` | Train one independent RNN per horizon |
 | Publish updates | [`daily/update_publication.py`](../models/daily/update_publication.py#L11), `update()` | Fetch once, run frozen daily/outlook models and validate a complete publication |
@@ -152,7 +152,7 @@ The chatbot uses KBS/Vnstock data and separately trained checkpoints, rather tha
 
 Longer-horizon models predict their horizons directly; they do not repeat the one-day prediction 126 times. Their chronological splits remove boundary examples whose future target would cross into the next evaluation region. One, three and six months are approximate labels for recorded trading-session counts, not exact calendar dates.
 
-The [scheduled workflow](../.github/workflows/update-fpt.yml) runs at 16:30 and 18:30 on weekdays in Vietnam. It commits the daily forecast, outlooks, ledger bundle and source ZIP together when inputs change. The production API reads that publication on startup and at most every five minutes during use. It does not need a daily redeploy, a running developer laptop or daily retraining. Company disclosures are not refreshed by this price task.
+Opening the website calls [`refreshOnVisit()`](../website/src/domain/chat/visit.ts) once. It requests a background job through [`daily/visits.py`](../models/daily/visits.py). Concurrent visitors share the same job; status polling does not start another one. [`pipeline.refresh()`](../models/daily/pipeline.py) fetches completed closes and computes all four forecasts before [`published.activate()`](../models/daily/published.py) atomically switches the full bundle. Unchanged input skips inference; failures preserve cached data. The daily schedule is removed. The [manual workflow](../.github/workflows/update-fpt.yml) only publishes a durable fallback on demand. Company disclosures and historical charts remain fixed.
 
 The recorded daily and longer-horizon evaluations do not establish an advantage over the unchanged-price baseline. The source does not confirm corporate-action adjustment, so the code preserves the supplied price basis and avoids treating incompatible historical prices as comparable outcomes.
 
@@ -160,7 +160,7 @@ The recorded daily and longer-horizon evaluations do not establish an advantage 
 
 The entry point is [`service.answer()`](../models/chat/service.py#L397):
 
-1. Read the latest validated daily forecast with its matching outlooks through [`daily.pipeline.read_latest()`](../models/daily/pipeline.py#L363).
+1. Read the latest validated daily forecast with its matching outlooks through [`daily.pipeline.read_latest()`](../models/daily/pipeline.py#L361).
 2. Attach curated company information and compatible outlook evidence in [`investment.py`](../models/chat/investment.py). Company snippets live in [`company_evidence.json`](../models/chat/company_evidence.json).
 3. Choose plain-language, technical or explicit calculation handling using `reply_mode()` and form a search query from recent user messages.
 4. In [`graph.retrieve()`](../models/chat/graph.py#L26), build a versioned corpus with [`evidence.corpus()`](../models/chat/evidence.py#L26), import reference facts into Neo4j and retrieve relevant documents with full-text search plus fixed, parameterized Cypher traversal.
@@ -194,7 +194,7 @@ For environment setup, see [Run locally](../README.md#run-locally). From `models
 python src/experiments.py --verify-only --no-write
 python scripts/independent_audit.py --skip-raw --no-write
 python -m pip install -r chat/requirements.txt -r daily/requirements-test.txt
-python -m unittest hosting.test_hosting chat.test_chat chat.test_investment daily.test_daily daily.test_published outlook.test_outlook
+python -m unittest hosting.test_hosting chat.test_chat chat.test_investment daily.test_daily daily.test_published daily.test_visits outlook.test_outlook
 ```
 
 From `website/`:

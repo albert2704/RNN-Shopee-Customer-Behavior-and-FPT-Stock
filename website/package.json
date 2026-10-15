@@ -10,9 +10,9 @@
     "test:ui": "node scripts/verify-editorial.mjs",
     "test:presentation": "node scripts/verify-editorial.mjs",
     "test:flow": "node scripts/verify-editorial.mjs",
-    "format": "prettier --write src scripts/verify-logic.mjs scripts/verify-inputs.mjs scripts/verify-chat-connection.mjs scripts/verify-outlook.mjs scripts/verify-chapters.mjs scripts/verify-editorial.mjs",
-    "format:check": "prettier --check src scripts/verify-logic.mjs scripts/verify-inputs.mjs scripts/verify-chat-connection.mjs scripts/verify-outlook.mjs scripts/verify-chapters.mjs scripts/verify-editorial.mjs",
-    "test:logic": "node --test scripts/verify-logic.mjs scripts/verify-inputs.mjs scripts/verify-chat-connection.mjs scripts/verify-outlook.mjs scripts/verify-chapters.mjs"
+    "format": "prettier --write src scripts/verify-logic.mjs scripts/verify-inputs.mjs scripts/verify-chat-connection.mjs scripts/verify-outlook.mjs scripts/verify-chapters.mjs scripts/verify-editorial.mjs scripts/verify-visit.mjs",
+    "format:check": "prettier --check src scripts/verify-logic.mjs scripts/verify-inputs.mjs scripts/verify-chat-connection.mjs scripts/verify-outlook.mjs scripts/verify-chapters.mjs scripts/verify-editorial.mjs scripts/verify-visit.mjs",
+    "test:logic": "node --test scripts/verify-logic.mjs scripts/verify-inputs.mjs scripts/verify-chat-connection.mjs scripts/verify-outlook.mjs scripts/verify-chapters.mjs scripts/verify-visit.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

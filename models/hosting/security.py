@@ -102,7 +102,7 @@ def install(app):
     @app.middleware("http")
     async def demo_access(request, call_next):
         protected = request.url.path.startswith("/api/chat") or (
-            request.url.path == "/api/fpt/daily/refresh"
+            request.url.path in {"/api/fpt/daily/refresh", "/api/fpt/visit"}
         )
         if config.require_access_code and protected and request.method != "OPTIONS":
             supplied = request.headers.get("x-demo-access-code", "")

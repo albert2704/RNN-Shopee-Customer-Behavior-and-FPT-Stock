@@ -33,7 +33,7 @@ python -m daily.pipeline fetch
 python -m daily.pipeline train --snapshot daily/runtime/snapshots/<snapshot-id>
 ```
 
-Hoặc `python -m daily.pipeline train` để lấy dữ liệu rồi train. Mỗi lần tạo thư mục run riêng. Muốn lấy giá và suy luận bằng mô hình đã lưu, dùng `python -m daily.pipeline refresh`. Không có scheduler ngầm: cập nhật khi bấm nút hoặc chạy lệnh, không tự huấn luyện mỗi ngày.
+Hoặc `python -m daily.pipeline train` để lấy dữ liệu rồi train. Mỗi lần tạo thư mục run riêng. Muốn lấy giá và suy luận bằng mô hình đã lưu, dùng `python -m daily.pipeline refresh`. Không có scheduler ngầm: website yêu cầu cập nhật khi mở trang, hoặc có thể chạy lệnh thủ công; không tự huấn luyện mỗi ngày.
 
 Nguồn là **KBS qua Vnstock Community 4.0.9**, `Market().equity('FPT').ohlcv(..., source='kbs', interval='1D', count=10000)`. `count` được đặt rõ vì mặc định chỉ trả 100 dòng. Community giới hạn lịch sử tối đa tám năm; chương trình yêu cầu từ đầu năm cách hiện tại bảy năm. Giá stock của adapter KBS là nghìn VND, được nhân 1.000. Vnstock có thể tạo cache dưới `~/.vnstock`; chương trình tắt telemetry và thiết lập hướng dẫn AI tự động. Không cần ghi API key vào code.
 
